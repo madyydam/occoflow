@@ -1,0 +1,131 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--primary);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--primary-foreground);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-violet: var(--violet);
+  --color-violet-soft: var(--violet-soft);
+  --color-sky-soft: var(--sky-soft);
+  --color-panel: var(--panel);
+  --color-sidebar: var(--sidebar);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--foreground);
+  --font-sans: "DM Sans", sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+}
+:root {
+  font-size: 14px;
+  --background: #F8F9FD;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --popover: #FFFFFF;
+  --primary: #2563EB;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EFF4FF;
+  --muted: #F3F5FA;
+  --muted-foreground: #64748B;
+  --accent: #EEF2FF;
+  --border: #EEF2F6;
+  --destructive: #EF4444;
+  --success: #10B981;
+  --success-soft: #ECFDF5;
+  --warning: #F97316;
+  --warning-soft: #FFF4EC;
+  --violet: #EC4899;
+  --violet-soft: #FDF0F7;
+  --sky-soft: #EEF4FF;
+  --panel: #FBFCFE;
+  --sidebar: #FFFFFF;
+  --radius: 1rem;
+}
+.rounded-xl, .rounded-2xl { box-shadow: 0 1px 2px rgb(15 23 42 / 0.03), 0 8px 24px -12px rgb(15 23 42 / 0.08); }
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-sans); }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+::selection { background: var(--accent); color: var(--foreground); }
+/* ── 3D Card Flip Animation for Auth ── */
+.auth-perspective {
+  perspective: 1200px;
+  -webkit-perspective: 1200px;
+}
+
+/* ── Smooth Page & Tab Transitions ── */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes tabFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.995) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tab-transition {
+  animation: tabFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* ── 3 Fine Spinners & Loading Bar ── */
+@keyframes shimmerLoading {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(110%); }
+  100% { transform: translateX(260%); }
+}
+
+.loading-bar-indeterminate {
+  animation: shimmerLoading 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes reverseSpin {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+.animate-spin-reverse {
+  animation: reverseSpin 3.5s linear infinite;
+}
+
+.animate-spin-slow {
+  animation: spin 6s linear infinite;
+}
+

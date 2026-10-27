@@ -1,0 +1,491 @@
+// ==============================================================================
+// OCCO FLOW — PRISMA ORM SCHEMA SPECIFICATION
+// ==============================================================================
+// Location: database/schema.prisma & prisma/schema.prisma
+// Database Provider: PostgreSQL (Supabase)
+// ==============================================================================
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ------------------------------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------------------------------
+
+enum LeadStatus {
+  New
+  Contacted
+  Qualified
+  Follow_up   @map("Follow-up")
+  Won
+  Lost
+}
+
+enum DealStage {
+  New
+  Qualified
+  Proposal
+  Negotiation
+  Won
+  Lost
+}
+
+enum TaskPriority {
+  Low
+  Medium
+  High
+}
+
+enum TaskStatus {
+  Pending
+  In_Progress @map("In Progress")
+  Completed
+}
+
+enum SubscriptionStatus {
+  trial_active
+  trial_expired
+  subscribed
+  subscription_expired
+  subscription_cancelled
+}
+
+enum BillingCycle {
+  monthly
+  yearly
+}
+
+enum SubscriptionPlan {
+  none
+  standard_monthly
+  standard_yearly
+  premium_monthly
+  premium_yearly
+}
+
+enum AdminRole {
+  super_admin
+  admin
+  support
+  finance
+}
+
+// ------------------------------------------------------------------------------
+// CORE CRM MODELS
+// ------------------------------------------------------------------------------
+
+model Business {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  industry         String?         @default("General")
+  phone            String?         @default("")
+  email            String?         @default("")
+  address          String?         @default("")
+  logoUrl          String?         @default("") @map("logo_url")
+  isSuspended      Boolean         @default(false) @map("is_suspended")
+  suspensionReason String          @default("") @map("suspension_reason")
+  suspendedAt      DateTime?       @map("suspended_at")
+  lastActiveAt     DateTime?       @default(now()) @map("last_active_at")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  profiles         Profile[]
+  memberships      Membership[]
+  subscription     Subscription?
+  leads            Lead[]
+  contacts         Contact[]
+  deals            Deal[]
+  tasks            Task[]
+  notes            Note[]
+  followUps        FollowUp[]
+  activities       Activity[]
+  notifications    Notification[]
+  supportTickets   SupportTicket[]
+
+  @@map("businesses")
+}
+
+model Profile {
+  id         String    @id @db.Uuid
+  fullName   String    @default("") @map("full_name")
+  phone      String?   @default("")
+  avatarUrl  String?   @default("") @map("avatar_url")
+  businessId String?   @map("business_id") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  business   Business? @relation(fields: [businessId], references: [id], onDelete: SetNull)
+
+  @@index([businessId])
+  @@map("profiles")
+}
+
+model Membership {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  role       String?  @default("owner")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+  @@index([userId])
+  @@index([businessId])
+  @@map("memberships")
+}
+
+model Subscription {
+  id                     String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId             String             @unique @map("business_id") @db.Uuid
+  status                 SubscriptionStatus @default(trial_active)
+  plan                   SubscriptionPlan   @default(none)
+  billingCycle           BillingCycle?      @map("billing_cycle")
+  trialStartedAt         DateTime           @default(now()) @map("trial_started_at")
+  trialEndsAt            DateTime           @map("trial_ends_at")
+  subscriptionStartedAt  DateTime?          @map("subscription_started_at")
+  subscriptionEndsAt     DateTime?          @map("subscription_ends_at")
+  providerCustomerId     String?            @default("") @map("provider_customer_id")
+  providerSubscriptionId String?            @default("") @map("provider_subscription_id")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+
+  business               Business           @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Lead {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String        @map("business_id") @db.Uuid
+  name           String
+  phone          String?       @default("")
+  email          String?       @default("")
+  company        String?       @default("")
+  source         String?       @default("Website")
+  status         LeadStatus    @default(New)
+  priority       LeadPriority  @default(Medium)
+  value          Decimal?      @default(0) @db.Decimal(14, 2)
+  notes          String?       @default("")
+  assignedUserId String?       @map("assigned_user_id") @db.Uuid
+  archived       Boolean?      @default(false)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+
+  business       Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  contacts       Contact[]
+  deals          Deal[]
+  tasks          Task[]
+  notesRel       Note[]
+  followUps      FollowUp[]
+  activities     Activity[]
+
+  @@index([businessId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("leads")
+}
+
+model Contact {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String     @map("business_id") @db.Uuid
+  name       String
+  phone      String?    @default("")
+  email      String?    @default("")
+  company    String?    @default("")
+  tags       String[]   @default([])
+  notes      String?    @default("")
+  leadId     String?    @map("lead_id") @db.Uuid
+  archived   Boolean?   @default(false)
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  business   Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  lead       Lead?      @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  deals      Deal[]
+  notesRel   Note[]
+  followUps  FollowUp[]
+  activities Activity[]
+
+  @@index([businessId])
+  @@map("contacts")
+}
+
+model Deal {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String     @map("business_id") @db.Uuid
+  title          String
+  customer       String
+  value          Decimal?   @default(0) @db.Decimal(14, 2)
+  stage          DealStage  @default(New)
+  closeDate      DateTime?  @map("close_date") @db.Date
+  description    String?    @default("")
+  leadId         String?    @map("lead_id") @db.Uuid
+  contactId      String?    @map("contact_id") @db.Uuid
+  assignedUserId String?    @map("assigned_user_id") @db.Uuid
+  archived       Boolean?   @default(false)
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  business       Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  lead           Lead?      @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  contact        Contact?   @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  tasks          Task[]
+  notes          Note[]
+  activities     Activity[]
+
+  @@index([businessId])
+  @@index([stage])
+  @@map("deals")
+}
+
+model Task {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId     String       @map("business_id") @db.Uuid
+  title          String
+  description    String?      @default("")
+  dueDate        DateTime?    @map("due_date") @db.Date
+  dueTime        String?      @default("") @map("due_time")
+  priority       TaskPriority @default(Medium)
+  status         TaskStatus   @default(Pending)
+  relatedLeadId  String?      @map("related_lead_id") @db.Uuid
+  relatedDealId  String?      @map("related_deal_id") @db.Uuid
+  assignedUserId String?      @map("assigned_user_id") @db.Uuid
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  business       Business     @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  lead           Lead?        @relation(fields: [relatedLeadId], references: [id], onDelete: SetNull)
+  deal           Deal?        @relation(fields: [relatedDealId], references: [id], onDelete: SetNull)
+
+  @@index([businessId])
+  @@index([dueDate])
+  @@map("tasks")
+}
+
+model Note {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String    @map("business_id") @db.Uuid
+  userId     String?   @map("user_id") @db.Uuid
+  leadId     String?   @map("lead_id") @db.Uuid
+  contactId  String?   @map("contact_id") @db.Uuid
+  dealId     String?   @map("deal_id") @db.Uuid
+  content    String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  business   Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  lead       Lead?     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  contact    Contact?  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  deal       Deal?     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+  @@map("notes")
+}
+
+model FollowUp {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId   String    @map("business_id") @db.Uuid
+  leadId       String?   @map("lead_id") @db.Uuid
+  contactId    String?   @map("contact_id") @db.Uuid
+  scheduledAt  DateTime  @map("scheduled_at")
+  note         String?   @default("")
+  status       String    @default("Pending")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  lead         Lead?     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  contact      Contact?  @relation(fields: [contactId], references: [id], onDelete: SetNull)
+
+  @@index([businessId])
+  @@index([scheduledAt])
+  @@map("follow_ups")
+}
+
+model Activity {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  userId     String?  @map("user_id") @db.Uuid
+  leadId     String?  @map("lead_id") @db.Uuid
+  contactId  String?  @map("contact_id") @db.Uuid
+  dealId     String?  @map("deal_id") @db.Uuid
+  type       String   @default("note")
+  title      String
+  detail     String?  @default("")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  lead       Lead?    @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  contact    Contact? @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  deal       Deal?    @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([leadId])
+  @@map("activities")
+}
+
+model Notification {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  businessId String   @map("business_id") @db.Uuid
+  type       String   @default("info")
+  title      String
+  body       String?  @default("")
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+// ------------------------------------------------------------------------------
+// ADMIN & SUPPORT TICKET MODELS
+// ------------------------------------------------------------------------------
+
+model AdminUser {
+  id          String      @id @db.Uuid
+  email       String
+  fullName    String      @map("full_name")
+  role        AdminRole   @default(admin)
+  isActive    Boolean     @default(true) @map("is_active")
+  lastLoginAt DateTime?   @map("last_login_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  tickets     SupportTicket[] @relation("AssignedAdmin")
+  replies     SupportTicket[] @relation("AdminReplier")
+
+  @@map("admin_users")
+}
+
+model PlatformSetting {
+  key         String   @id
+  value       String
+  label       String?
+  description String?
+  updatedBy   String?  @map("updated_by") @db.Uuid
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("platform_settings")
+}
+
+model AdminAuditLog {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  adminId    String?  @map("admin_id") @db.Uuid
+  adminEmail String   @map("admin_email")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  entityName String   @default("") @map("entity_name")
+  oldValue   Json?    @default("{}") @map("old_value")
+  newValue   Json?    @default("{}") @map("new_value")
+  metadata   Json?    @default("{}")
+  ipAddress  String   @default("") @map("ip_address")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt(sort: Desc)])
+  @@index([adminId])
+  @@index([entityType, entityId])
+  @@map("admin_audit_logs")
+}
+
+model SupportTicket {
+  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  businessId         String?          @map("business_id") @db.Uuid
+  userId             String?          @map("user_id") @db.Uuid
+  type               String           @default("problem") // problem, suggestion, feedback
+  subject            String
+  description        String           @default("")
+  priority           String           @default("medium")
+  status             String           @default("new") // new, under_review, in_progress, resolved, closed
+  assignedAdminId    String?          @map("assigned_admin_id") @db.Uuid
+  adminResponse      String           @default("") @map("admin_response")
+  adminRespondedAt   DateTime?        @map("admin_responded_at")
+  adminRespondedById String?          @map("admin_responded_by_id") @db.Uuid
+  rating             Int?             // 1 to 5 stars
+  ratingComment      String           @default("") @map("rating_comment")
+  resolvedAt         DateTime?        @map("resolved_at")
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @updatedAt @map("updated_at")
+
+  business           Business?        @relation(fields: [businessId], references: [id], onDelete: SetNull)
+  assignedAdmin      AdminUser?       @relation("AssignedAdmin", fields: [assignedAdminId], references: [id], onDelete: SetNull)
+  adminReplier       AdminUser?       @relation("AdminReplier", fields: [adminRespondedById], references: [id], onDelete: SetNull)
+  messages           SupportMessage[]
+
+  @@index([businessId])
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@index([rating])
+  @@index([createdAt(sort: Desc)])
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ticketId       String        @map("ticket_id") @db.Uuid
+  senderType     String        @map("sender_type") // customer, admin
+  senderId       String?       @map("sender_id") @db.Uuid
+  message        String
+  isInternalNote Boolean       @default(false) @map("is_internal_note")
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  ticket         SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@map("support_messages")
+}
+
+model PlatformNotificationAdmin {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title             String
+  message           String
+  type              String    @default("info")
+  audience          String    @default("all")
+  targetAudience    String    @default("all") @map("target_audience")
+  targetPlan        String?   @map("target_plan")
+  targetBusinessIds String[]  @default([]) @map("target_business_ids")
+  status            String    @default("sent") // draft, scheduled, sent
+  isPublished       Boolean   @default(true) @map("is_published")
+  viewsCount        Int       @default(0) @map("views_count")
+  viewedUserIds     String[]  @default([]) @map("viewed_user_ids")
+  scheduledAt       DateTime? @map("scheduled_at")
+  sentAt            DateTime? @default(now()) @map("sent_at")
+  createdBy         String?   @map("created_by") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  @@map("platform_notifications_admin")
+}
+
+model CustomSoftwareInquiry {
+  id                     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  inquiryNumber          String?   @map("inquiry_number")
+  fullName               String    @map("full_name")
+  companyName            String    @map("company_name")
+  email                  String
+  phone                  String
+  preferredContactMethod String    @default("email") @map("preferred_contact_method")
+  projectType            String    @map("project_type")
+  budgetRange            String    @map("budget_range")
+  timeline               String
+  requirements           String
+  status                 String    @default("new") // new, contacted, in_process, closed, cancelled
+  adminNotes             String    @default("") @map("admin_notes")
+  assignedTo             String?   @map("assigned_to") @db.Uuid
+  ipAddress              String?   @map("ip_address")
+  userAgent              String?   @map("user_agent")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  updatedAt              DateTime  @default(now()) @map("updated_at")
+
+  @@map("custom_software_inquiries")
+}
