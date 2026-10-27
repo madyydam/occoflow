@@ -4,14 +4,14 @@ const env = (import.meta as unknown as { env?: Record<string, string | undefined
 const supabaseUrl =
   env["VITE_SUPABASE_URL"] ||
   process.env["SUPABASE_URL"] ||
-  "https://otmasdfjeqaqojfqyfjd.supabase.co";
+  "";
 
 const supabaseSecretKey =
   process.env["SUPABASE_SECRET_KEY"] ||
   "";
 
 // Server-side service-role client that bypasses RLS safely
-const supabaseAdmin = createClient(supabaseUrl, supabaseSecretKey || "dummy_secret_key", {
+const supabaseAdmin = createClient(supabaseUrl || "https://placeholder.supabase.co", supabaseSecretKey || "dummy_secret_key", {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 

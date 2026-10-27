@@ -8,16 +8,26 @@ import type {
 const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
 const supabaseUrl =
   env["VITE_SUPABASE_URL"] ||
-  "https://otmasdfjeqaqojfqyfjd.supabase.co";
+  "";
 
 const supabaseAnonKey =
   env["VITE_SUPABASE_ANON_KEY"] ||
   env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
-  "sb_publishable_Zz_2uaYwNzQKEx_yb4MHfg_JxpzQpVr";
+  "";
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: { persistSession: true, autoRefreshToken: true },
-});
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn(
+    "[Occo Flow] Warning: VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not defined in environment variables. Please check your .env configuration."
+  );
+}
+
+export const supabase = createClient(
+  supabaseUrl || "https://placeholder.supabase.co",
+  supabaseAnonKey || "placeholder_anon_key",
+  {
+    auth: { persistSession: true, autoRefreshToken: true },
+  }
+);
 
 // ── Row mappers ───────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -28,15 +28,15 @@ The application connects to Supabase via environment variables configured in [`.
 
 ```env
 # Server-side & Migration Keys
-SUPABASE_URL=https://otmasdfjeqaqojfqyfjd.supabase.co
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_Zz_2uaYwNzQKEx_yb4MHfg_JxpzQpVr
-SUPABASE_SECRET_KEY=sb_secret_your_service_role_key_here
-SUPABASE_JWKS_URL=https://otmasdfjeqaqojfqyfjd.supabase.co/auth/v1/.well-known/jwks.json
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
+SUPABASE_SECRET_KEY=your-supabase-secret-key
+SUPABASE_JWKS_URL=https://your-project-id.supabase.co/auth/v1/.well-known/jwks.json
 
 # Client Vite Keys (bundled to frontend)
-VITE_SUPABASE_URL=https://otmasdfjeqaqojfqyfjd.supabase.co
-VITE_SUPABASE_ANON_KEY=sb_publishable_Zz_2uaYwNzQKEx_yb4MHfg_JxpzQpVr
-VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_Zz_2uaYwNzQKEx_yb4MHfg_JxpzQpVr
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-supabase-publishable-key
+VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-publishable-key
 ```
 
 ---
@@ -45,7 +45,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_Zz_2uaYwNzQKEx_yb4MHfg_JxpzQpVr
 
 ### Method A: One-Click via Supabase Dashboard (Recommended)
 1. Open your Supabase Project Dashboard:
-   👉 **[Supabase Project otmasdfjeqaqojfqyfjd](https://supabase.com/dashboard/project/otmasdfjeqaqojfqyfjd)**
+   👉 **[Supabase Dashboard](https://supabase.com/dashboard)**
 2. In the left navigation bar, click on **SQL Editor**.
 3. Click **"New query"** (+ button).
 4. Open [`database/schema.sql`](./schema.sql), copy the entire file contents, and paste them into the query editor.

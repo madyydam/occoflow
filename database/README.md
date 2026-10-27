@@ -17,7 +17,7 @@ Welcome to the centralized database directory for **Occo Flow** by **Heyocco**. 
 ## 🚀 Quick Setup (1 Minute)
 
 1. Open your Supabase Dashboard:
-   👉 **[Supabase Project otmasdfjeqaqojfqyfjd](https://supabase.com/dashboard/project/otmasdfjeqaqojfqyfjd)**
+   👉 **[Supabase Dashboard](https://supabase.com/dashboard)**
 2. Go to **SQL Editor** ➔ Click **New query**.
 3. Copy all contents from [`database/schema.sql`](./schema.sql), paste into the editor, and click **Run**.
 4. That's it! Your Supabase database is completely provisioned with all 7 tables and initial seed data.

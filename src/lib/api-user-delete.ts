@@ -13,14 +13,14 @@ function getSupabaseAdmin(cfEnv: CfEnv = {}) {
     cfEnv["SUPABASE_URL"] ||
     process.env["SUPABASE_URL"] ||
     env["VITE_SUPABASE_URL"] ||
-    "https://otmasdfjeqaqojfqyfjd.supabase.co";
+    "";
 
   const supabaseSecretKey =
     cfEnv["SUPABASE_SECRET_KEY"] ||
     process.env["SUPABASE_SECRET_KEY"] ||
     "";
 
-  return createClient(supabaseUrl, supabaseSecretKey || "dummy_secret_key", {
+  return createClient(supabaseUrl || "https://placeholder.supabase.co", supabaseSecretKey || "dummy_secret_key", {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
