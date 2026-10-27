@@ -1,15 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
-  CreditCard, Search, IndianRupee, TrendingUp, AlertCircle,
-  CheckCircle2, RefreshCw, ArrowUpRight, ShieldCheck, Loader2
+  CreditCard,
+  Search,
+  IndianRupee,
+  TrendingUp,
+  AlertCircle,
+  CheckCircle2,
+  RefreshCw,
+  ArrowUpRight,
+  ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
 import {
-  AdminShell, AdminPageHeader, AdminBadge,
-  AdminKpiCard, AdminEmptyState, statusColor
+  AdminShell,
+  AdminPageHeader,
+  AdminBadge,
+  AdminKpiCard,
+  AdminEmptyState,
+  statusColor,
 } from "@/components/admin-shell";
-import { adminSubscriptionService, PLAN_PRICES, PLAN_LABELS, type AdminSubscription } from "@/lib/admin-service";
+import {
+  adminSubscriptionService,
+  PLAN_PRICES,
+  PLAN_LABELS,
+  type AdminSubscription,
+} from "@/lib/admin-service";
 import { format } from "date-fns";
 
 export const Route = createFileRoute("/admin/subscriptions")({
@@ -38,7 +55,14 @@ function AdminSubscriptions() {
     try {
       const data = await adminSubscriptionService.list();
       // Show actual paid or cancelled memberships (not empty trials)
-      setSubs(data.filter((s) => s.status === "subscribed" || s.status === "subscription_cancelled" || s.status === "subscription_expired"));
+      setSubs(
+        data.filter(
+          (s) =>
+            s.status === "subscribed" ||
+            s.status === "subscription_cancelled" ||
+            s.status === "subscription_expired",
+        ),
+      );
     } catch {
       setSubs([]);
     } finally {
@@ -67,13 +91,26 @@ function AdminSubscriptions() {
   const { activePaid, mrr, arr, churnedCount } = useMemo(() => {
     const paid = subs.filter((s) => s.status === "subscribed");
     const computedMrr = paid.reduce((acc, curr) => {
-      if (curr.plan === "crm_monthly" || curr.plan === "standard_monthly" || curr.plan === "premium_monthly") return acc + 999;
-      if (curr.plan === "crm_yearly" || curr.plan === "standard_yearly" || curr.plan === "premium_yearly") return acc + Math.round(9999 / 12);
-      if (curr.plan.includes("lifetime") || curr.billingCycle === "lifetime") return acc + Math.round(14999 / 12);
+      if (
+        curr.plan === "crm_monthly" ||
+        curr.plan === "standard_monthly" ||
+        curr.plan === "premium_monthly"
+      )
+        return acc + 999;
+      if (
+        curr.plan === "crm_yearly" ||
+        curr.plan === "standard_yearly" ||
+        curr.plan === "premium_yearly"
+      )
+        return acc + Math.round(9999 / 12);
+      if (curr.plan.includes("lifetime") || curr.billingCycle === "lifetime")
+        return acc + Math.round(14999 / 12);
       return acc;
     }, 0);
     const computedArr = computedMrr * 12;
-    const churned = subs.filter((s) => s.status === "subscription_cancelled" || s.status === "subscription_expired").length;
+    const churned = subs.filter(
+      (s) => s.status === "subscription_cancelled" || s.status === "subscription_expired",
+    ).length;
 
     return {
       activePaid: paid,
@@ -199,12 +236,12 @@ function AdminSubscriptions() {
                           <div className="font-bold text-[#0f172a]">{s.businessName}</div>
                           <div className="text-[10px] text-slate-400">ID: {s.businessId}</div>
                         </td>
-                        <td className="px-4 py-3.5 font-semibold text-slate-800">
-                          {s.ownerName}
-                        </td>
+                        <td className="px-4 py-3.5 font-semibold text-slate-800">{s.ownerName}</td>
                         <td className="px-4 py-3.5">
                           <span className="font-bold text-[#0f172a]">{label}</span>
-                          <span className="block text-[10px] text-slate-400 capitalize">{s.billingCycle || "Standard"}</span>
+                          <span className="block text-[10px] text-slate-400 capitalize">
+                            {s.billingCycle || "Standard"}
+                          </span>
                         </td>
                         <td className="px-4 py-3.5 font-bold text-[#0f172a]">
                           ₹{price.toLocaleString("en-IN")}
@@ -213,7 +250,10 @@ function AdminSubscriptions() {
                           </span>
                         </td>
                         <td className="px-4 py-3.5">
-                          <AdminBadge label={s.status.replace("_", " ")} color={statusColor(s.status)} />
+                          <AdminBadge
+                            label={s.status.replace("_", " ")}
+                            color={statusColor(s.status)}
+                          />
                         </td>
                         <td className="px-4 py-3.5 text-slate-500">
                           {s.subscriptionEndsAt

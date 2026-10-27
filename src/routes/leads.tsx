@@ -42,7 +42,10 @@ export const Route = createFileRoute("/leads")({
   head: () => ({
     meta: [
       { title: "Leads | Occo Flow" },
-      { name: "description", content: "Manage leads, follow-ups and customer enquiries in one place." },
+      {
+        name: "description",
+        content: "Manage leads, follow-ups and customer enquiries in one place.",
+      },
     ],
   }),
   component: LeadsPage,
@@ -69,7 +72,9 @@ function LeadsContent() {
   // View Format: Grid vs List (persisted in localStorage)
   const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
     if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("occo_leads_view_mode") || localStorage.getItem("futora_leads_view_mode");
+      const saved =
+        localStorage.getItem("occo_leads_view_mode") ||
+        localStorage.getItem("futora_leads_view_mode");
       if (saved === "grid" || saved === "list") return saved;
     }
     return "grid";
@@ -102,7 +107,7 @@ function LeadsContent() {
     const list = leads.filter(
       (x) =>
         (status === "All" || x.status === status) &&
-        (!q || `${x.name} ${x.phone} ${x.company} ${x.email}`.toLowerCase().includes(q))
+        (!q || `${x.name} ${x.phone} ${x.company} ${x.email}`.toLowerCase().includes(q)),
     );
     return sort ? [...list].sort((a, b) => (b.value || 0) - (a.value || 0)) : list;
   }, [leads, query, status, sort]);
@@ -117,7 +122,11 @@ function LeadsContent() {
       {/* Action bar with Search, Import, Export, Grid/List Toggle & Add Lead */}
       <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div className="flex-1 min-w-[200px]">
-          <SearchBar value={query} onChange={setQuery} placeholder="Search name, phone, email or company..." />
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+            placeholder="Search name, phone, email or company..."
+          />
         </div>
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <Button
@@ -231,11 +240,7 @@ function LeadsContent() {
               /* Grid Format View */
               <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
                 {filtered.map((lead) => (
-                  <LeadCard
-                    key={lead.id}
-                    lead={lead}
-                    onDelete={(l) => setLeadToDelete(l)}
-                  />
+                  <LeadCard key={lead.id} lead={lead} onDelete={(l) => setLeadToDelete(l)} />
                 ))}
               </div>
             ) : (
@@ -257,10 +262,7 @@ function LeadsContent() {
                     </thead>
                     <tbody className="divide-y divide-border">
                       {filtered.map((lead) => (
-                        <tr
-                          key={lead.id}
-                          className="group hover:bg-muted/30 transition-colors"
-                        >
+                        <tr key={lead.id} className="group hover:bg-muted/30 transition-colors">
                           {/* Lead Name & Company */}
                           <td className="py-3 px-4">
                             <Link
@@ -321,8 +323,8 @@ function LeadsContent() {
                                 lead.priority === "High"
                                   ? "bg-rose-100 text-rose-700"
                                   : lead.priority === "Medium"
-                                  ? "bg-sky-100 text-sky-700"
-                                  : "bg-slate-100 text-slate-600"
+                                    ? "bg-sky-100 text-sky-700"
+                                    : "bg-slate-100 text-slate-600"
                               }`}
                             >
                               {lead.priority || "Medium"}
@@ -349,7 +351,9 @@ function LeadsContent() {
                                   size="icon"
                                   className="size-8 rounded-lg border-border shadow-none"
                                   title={`Message ${lead.phone}`}
-                                  onClick={() => toast.info(`Message ${lead.phone} using your messaging app`)}
+                                  onClick={() =>
+                                    toast.info(`Message ${lead.phone} using your messaging app`)
+                                  }
                                 >
                                   <MessageCircle size={13} />
                                 </Button>
@@ -401,10 +405,8 @@ function LeadsContent() {
             </AlertDialogTitle>
             <AlertDialogDescription className="text-xs text-muted-foreground leading-relaxed pt-1">
               Are you sure you want to delete{" "}
-              <span className="font-semibold text-foreground">
-                "{leadToDelete?.name}"
-              </span>
-              ? This lead will be permanently deleted from your CRM database. This action cannot be undone.
+              <span className="font-semibold text-foreground">"{leadToDelete?.name}"</span>? This
+              lead will be permanently deleted from your CRM database. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4 gap-2">

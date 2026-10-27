@@ -26,9 +26,15 @@ export const Route = createFileRoute("/feedback")({
   head: () => ({
     meta: [
       { title: "Problems & Suggestions | Occo Flow" },
-      { name: "description", content: "Submit problems, suggestions, and feedback directly to our team." },
+      {
+        name: "description",
+        content: "Submit problems, suggestions, and feedback directly to our team.",
+      },
       { property: "og:title", content: "Problems & Suggestions | Occo Flow" },
-      { property: "og:description", content: "Submit problems, suggestions, and feedback directly to our team." },
+      {
+        property: "og:description",
+        content: "Submit problems, suggestions, and feedback directly to our team.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -132,7 +138,7 @@ function FeedbackContent() {
           table: "support_tickets",
           filter: `business_id=eq.${business.id}`,
         },
-        debouncedReload
+        debouncedReload,
       )
       .subscribe();
 
@@ -185,8 +191,8 @@ function FeedbackContent() {
           type === "problem"
             ? "Problem ticket submitted. Our team will review it shortly!"
             : type === "suggestion"
-            ? "Suggestion received! Thank you for helping us improve."
-            : "Feedback submitted successfully. Thank you!"
+              ? "Suggestion received! Thank you for helping us improve."
+              : "Feedback submitted successfully. Thank you!",
         );
         setSubject("");
         setDescription("");
@@ -299,8 +305,8 @@ function FeedbackContent() {
                 type === "problem"
                   ? "What is the problem or bug you encountered?"
                   : type === "suggestion"
-                  ? "What feature or improvement would you like?"
-                  : "Tell us your thoughts or feedback..."
+                    ? "What feature or improvement would you like?"
+                    : "Tell us your thoughts or feedback..."
               }
               className="h-11 rounded-xl border-border bg-card text-xs shadow-none placeholder:text-muted-foreground"
             />
@@ -371,20 +377,23 @@ function FeedbackContent() {
                       <div className="flex flex-col items-center justify-center gap-1.5">
                         <Inbox size={24} className="text-slate-300" />
                         <p className="text-xs font-bold text-foreground">No submissions yet</p>
-                        <p className="text-[11px] text-muted-foreground">Submit your first ticket using the form above.</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          Submit your first ticket using the form above.
+                        </p>
                       </div>
                     </td>
                   </tr>
                 ) : (
                   items.map((item) => {
-                    const badgeClass = statusBadgeStyles[item.status] || "bg-muted text-muted-foreground";
+                    const badgeClass =
+                      statusBadgeStyles[item.status] || "bg-muted text-muted-foreground";
                     const label = statusLabels[item.status] || item.status;
                     const typeBadgeClass =
                       item.type === "problem"
                         ? "bg-rose-50 text-rose-700 border-rose-200/90"
                         : item.type === "suggestion"
-                        ? "bg-amber-50 text-amber-700 border-amber-200/90"
-                        : "bg-sky-50 text-sky-700 border-sky-200/90";
+                          ? "bg-amber-50 text-amber-700 border-amber-200/90"
+                          : "bg-sky-50 text-sky-700 border-sky-200/90";
 
                     return (
                       <tr key={item.id} className="hover:bg-muted/30 transition-colors">
@@ -406,7 +415,9 @@ function FeedbackContent() {
 
                         {/* Subject & Details */}
                         <td className="py-3.5 px-4 align-top max-w-xs">
-                          <p className="font-bold text-foreground text-xs leading-snug">{item.subject}</p>
+                          <p className="font-bold text-foreground text-xs leading-snug">
+                            {item.subject}
+                          </p>
                           <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
                             {item.description}
                           </p>
@@ -419,7 +430,9 @@ function FeedbackContent() {
 
                         {/* Status */}
                         <td className="py-3.5 px-4 align-top whitespace-nowrap">
-                          <Badge className={`rounded-md border px-2 py-0.5 text-[10px] font-bold shadow-none ${badgeClass}`}>
+                          <Badge
+                            className={`rounded-md border px-2 py-0.5 text-[10px] font-bold shadow-none ${badgeClass}`}
+                          >
                             {label}
                           </Badge>
                         </td>

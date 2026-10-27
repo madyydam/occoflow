@@ -6,7 +6,14 @@ import { useCRM } from "@/lib/crm-context";
 import { useAuth } from "@/lib/auth-context";
 import { AppShell } from "@/components/crm-shell";
 import { AccessGuard } from "@/components/access-guard";
-import { KpiCard, SectionHeading, LeadCard, TaskCard, EmptyState, QuickForm } from "@/components/crm-ui";
+import {
+  KpiCard,
+  SectionHeading,
+  LeadCard,
+  TaskCard,
+  EmptyState,
+  QuickForm,
+} from "@/components/crm-ui";
 import { money } from "@/lib/crm-data";
 import { format, isToday, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -16,7 +23,10 @@ export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard | Occo Flow" },
-      { name: "description", content: "Your CRM overview — leads, follow-ups, deals and tasks at a glance." },
+      {
+        name: "description",
+        content: "Your CRM overview — leads, follow-ups, deals and tasks at a glance.",
+      },
     ],
   }),
   component: DashboardPage,
@@ -76,7 +86,9 @@ function LiveDateTime() {
             </motion.span>
           </AnimatePresence>
         </span>
-        <span className="ml-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">{ampm}</span>
+        <span className="ml-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+          {ampm}
+        </span>
       </div>
     </div>
   );
@@ -90,15 +102,20 @@ function DashboardContent() {
   const kpis = useMemo(() => {
     const totalLeads = leads.length;
     const newLeads = leads.filter((l) => l.status === "New").length;
-    const todayFollowUps = followUps.filter((f) => f.status === "Pending" && isToday(parseISO(f.scheduledAt))).length;
+    const todayFollowUps = followUps.filter(
+      (f) => f.status === "Pending" && isToday(parseISO(f.scheduledAt)),
+    ).length;
     const openDeals = deals.filter((d) => d.stage !== "Won" && d.stage !== "Lost").length;
     return { totalLeads, newLeads, todayFollowUps, openDeals };
   }, [leads, deals, followUps]);
 
   const recentLeads = useMemo(() => leads.slice(0, 4), [leads]);
   const todayTasks = useMemo(
-    () => tasks.filter((t) => t.dueDate && isToday(parseISO(t.dueDate)) && t.status !== "Completed").slice(0, 4),
-    [tasks]
+    () =>
+      tasks
+        .filter((t) => t.dueDate && isToday(parseISO(t.dueDate)) && t.status !== "Completed")
+        .slice(0, 4),
+    [tasks],
   );
   const recentActivity = useMemo(() => activities.slice(0, 5), [activities]);
 
@@ -124,7 +141,9 @@ function DashboardContent() {
     <>
       {/* Greeting */}
       <div className="mb-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary">{business?.name ?? "Workspace"}</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+          {business?.name ?? "Workspace"}
+        </p>
         <h2 className="font-display text-base sm:text-lg font-bold leading-snug text-foreground">
           Here's what's happening in your business today.
         </h2>
@@ -133,10 +152,30 @@ function DashboardContent() {
 
       {/* KPI Cards */}
       <div className="mb-5 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-        <KpiCard label="Total Leads" value={kpis.totalLeads} icon={Users} tone="bg-sky-soft text-primary" />
-        <KpiCard label="New Leads" value={kpis.newLeads} icon={CircleUserRound} tone="bg-violet-soft text-violet" />
-        <KpiCard label="Follow-ups Today" value={kpis.todayFollowUps} icon={Phone} tone="bg-warning-soft text-warning" />
-        <KpiCard label="Open Deals" value={kpis.openDeals} icon={Briefcase} tone="bg-success-soft text-success" />
+        <KpiCard
+          label="Total Leads"
+          value={kpis.totalLeads}
+          icon={Users}
+          tone="bg-sky-soft text-primary"
+        />
+        <KpiCard
+          label="New Leads"
+          value={kpis.newLeads}
+          icon={CircleUserRound}
+          tone="bg-violet-soft text-violet"
+        />
+        <KpiCard
+          label="Follow-ups Today"
+          value={kpis.todayFollowUps}
+          icon={Phone}
+          tone="bg-warning-soft text-warning"
+        />
+        <KpiCard
+          label="Open Deals"
+          value={kpis.openDeals}
+          icon={Briefcase}
+          tone="bg-success-soft text-success"
+        />
       </div>
 
       <div className="grid gap-4.5 lg:grid-cols-[1fr_300px]">
@@ -147,7 +186,9 @@ function DashboardContent() {
             <SectionHeading title="Recent Leads" link="/leads" />
             {recentLeads.length ? (
               <div className="grid gap-2.5 sm:grid-cols-2">
-                {recentLeads.map((lead) => <LeadCard key={lead.id} lead={lead} compact />)}
+                {recentLeads.map((lead) => (
+                  <LeadCard key={lead.id} lead={lead} compact />
+                ))}
               </div>
             ) : (
               <EmptyState
@@ -164,7 +205,9 @@ function DashboardContent() {
             <section>
               <SectionHeading title="Today's Tasks" link="/tasks" />
               <div className="grid gap-2.5">
-                {todayTasks.map((task) => <TaskCard key={task.id} task={task} />)}
+                {todayTasks.map((task) => (
+                  <TaskCard key={task.id} task={task} />
+                ))}
               </div>
             </section>
           )}
@@ -176,13 +219,22 @@ function DashboardContent() {
           <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4 shadow-2xs">
             <p className="mb-2.5 text-xs font-bold text-foreground">Quick Actions</p>
             <div className="flex flex-col gap-1.5">
-              <Button onClick={() => setForm("lead")} className="h-8.5 w-full justify-start rounded-lg text-xs font-semibold">
+              <Button
+                onClick={() => setForm("lead")}
+                className="h-8.5 w-full justify-start rounded-lg text-xs font-semibold"
+              >
                 <Plus size={14} /> Add Lead
               </Button>
-              <Link to="/leads" className="flex h-8.5 w-full items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-accent text-foreground">
+              <Link
+                to="/leads"
+                className="flex h-8.5 w-full items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-accent text-foreground"
+              >
                 <Users size={14} /> View All Leads
               </Link>
-              <Link to="/deals" className="flex h-8.5 w-full items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-accent text-foreground">
+              <Link
+                to="/deals"
+                className="flex h-8.5 w-full items-center gap-2 rounded-lg border border-border bg-background px-3 text-xs font-medium transition-colors hover:bg-accent text-foreground"
+              >
                 <TrendingUp size={14} /> View Pipeline
               </Link>
             </div>
@@ -200,7 +252,9 @@ function DashboardContent() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-foreground">{act.title}</p>
-                      {act.detail && <p className="text-[11px] text-muted-foreground">{act.detail}</p>}
+                      {act.detail && (
+                        <p className="text-[11px] text-muted-foreground">{act.detail}</p>
+                      )}
                       <p className="mt-0.5 text-[10px] text-muted-foreground">
                         {format(parseISO(act.createdAt), "MMM d · h:mm a")}
                       </p>
@@ -209,7 +263,9 @@ function DashboardContent() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Activity will appear here as you use the CRM.</p>
+              <p className="text-sm text-muted-foreground">
+                Activity will appear here as you use the CRM.
+              </p>
             )}
           </div>
 

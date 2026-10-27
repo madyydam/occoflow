@@ -1,13 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import {
-  Bell, Plus, Send, Megaphone,
-  Trash2, Loader2, Eye
-} from "lucide-react";
+import { Bell, Plus, Send, Megaphone, Trash2, Loader2, Eye } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
-import {
-  AdminShell, AdminEmptyState, AdminBadge
-} from "@/components/admin-shell";
+import { AdminShell, AdminEmptyState, AdminBadge } from "@/components/admin-shell";
 import { useAdminAuth } from "@/lib/admin-context";
 import { adminNotificationService } from "@/lib/admin-service";
 import { supabase } from "@/lib/supabase";
@@ -30,7 +25,6 @@ function AdminNotificationsPage() {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function AdminNotifications() {
   const { adminUser } = useAdminAuth();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,7 +64,7 @@ function AdminNotifications() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "platform_notifications_admin" },
-        debouncedReload
+        debouncedReload,
       )
       .subscribe();
 
@@ -97,7 +91,7 @@ function AdminNotifications() {
         viewed_user_ids: [],
         sent_at: new Date().toISOString(),
       },
-      adminUser.id
+      adminUser.id,
     );
     setSending(false);
 
@@ -156,7 +150,8 @@ function AdminNotifications() {
         ) : (
           <div className="divide-y divide-slate-100">
             {notifications.map((n) => {
-              const viewCount = n.views_count ?? (Array.isArray(n.viewed_user_ids) ? n.viewed_user_ids.length : 0);
+              const viewCount =
+                n.views_count ?? (Array.isArray(n.viewed_user_ids) ? n.viewed_user_ids.length : 0);
               return (
                 <div key={n.id} className="p-5 transition-colors hover:bg-slate-50/60">
                   <div className="flex items-start justify-between gap-4">
@@ -175,12 +170,24 @@ function AdminNotifications() {
                           {/* Live Views Counter with Eye Icon */}
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200/80 px-2.5 py-0.5 text-xs font-bold text-[#2563eb]">
                             <Eye size={13} className="text-[#2563eb]" />
-                            <span>{viewCount} {viewCount === 1 ? "view" : "views"}</span>
+                            <span>
+                              {viewCount} {viewCount === 1 ? "view" : "views"}
+                            </span>
                           </span>
                           <span>•</span>
-                          <span>Audience: <strong className="text-slate-700 capitalize">{n.target_audience || n.audience || "all"}</strong></span>
+                          <span>
+                            Audience:{" "}
+                            <strong className="text-slate-700 capitalize">
+                              {n.target_audience || n.audience || "all"}
+                            </strong>
+                          </span>
                           <span>•</span>
-                          <span>{format(new Date(n.created_at || n.sent_at || Date.now()), "dd MMM yyyy, h:mm a")}</span>
+                          <span>
+                            {format(
+                              new Date(n.created_at || n.sent_at || Date.now()),
+                              "dd MMM yyyy, h:mm a",
+                            )}
+                          </span>
                         </div>
                       </div>
                     </div>

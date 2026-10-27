@@ -1,13 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
-  ScrollText, Search, ShieldCheck, Activity,
-  Clock, ArrowUpRight, Loader2
+  ScrollText,
+  Search,
+  ShieldCheck,
+  Activity,
+  Clock,
+  ArrowUpRight,
+  Loader2,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
-import {
-  AdminShell, AdminPageHeader, AdminEmptyState
-} from "@/components/admin-shell";
+import { AdminShell, AdminPageHeader, AdminEmptyState } from "@/components/admin-shell";
 import { adminAuditService, type AdminAuditLog } from "@/lib/admin-service";
 import { format } from "date-fns";
 
@@ -48,11 +51,12 @@ function AdminAuditLogs() {
   const filtered = useMemo(() => {
     if (!search.trim()) return logs;
     const q = search.toLowerCase();
-    return logs.filter((l) =>
-      l.action.toLowerCase().includes(q) ||
-      l.adminEmail.toLowerCase().includes(q) ||
-      l.entityName.toLowerCase().includes(q) ||
-      l.entityType.toLowerCase().includes(q)
+    return logs.filter(
+      (l) =>
+        l.action.toLowerCase().includes(q) ||
+        l.adminEmail.toLowerCase().includes(q) ||
+        l.entityName.toLowerCase().includes(q) ||
+        l.entityType.toLowerCase().includes(q),
     );
   }, [logs, search]);
 
@@ -122,9 +126,7 @@ function AdminAuditLogs() {
                       <td className="px-4 py-3.5 text-slate-800">
                         {log.entityName || log.entityId || "System"}
                       </td>
-                      <td className="px-4 py-3.5 text-slate-500 capitalize">
-                        {log.entityType}
-                      </td>
+                      <td className="px-4 py-3.5 text-slate-500 capitalize">{log.entityType}</td>
                       <td className="px-4 py-3.5 text-slate-500">
                         {format(new Date(log.createdAt), "dd MMM yyyy, h:mm:ss a")}
                       </td>

@@ -60,7 +60,11 @@ export const Route = createFileRoute("/payments")({
   head: () => ({
     meta: [
       { title: "Payment Reminders & Invoices | Occo Flow" },
-      { name: "description", content: "Track customer dues, automated WhatsApp reminders, and collect payments via UPI QR." },
+      {
+        name: "description",
+        content:
+          "Track customer dues, automated WhatsApp reminders, and collect payments via UPI QR.",
+      },
     ],
   }),
   component: PaymentsPage,
@@ -88,7 +92,9 @@ function PaymentsContent() {
 
   // Modals state
   const [newModalOpen, setNewModalOpen] = useState(false);
-  const [activeInstallmentRecord, setActiveInstallmentRecord] = useState<PaymentRecord | null>(null);
+  const [activeInstallmentRecord, setActiveInstallmentRecord] = useState<PaymentRecord | null>(
+    null,
+  );
   const [activeUpiRecord, setActiveUpiRecord] = useState<PaymentRecord | null>(null);
   const [activeReminderRecord, setActiveReminderRecord] = useState<PaymentRecord | null>(null);
   const [activePtpRecord, setActivePtpRecord] = useState<PaymentRecord | null>(null);
@@ -96,7 +102,7 @@ function PaymentsContent() {
   const [batchModalOpen, setBatchModalOpen] = useState(false);
 
   // Load records from Supabase
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!business?.id) return;
     setIsLoading(true);
     try {
@@ -108,13 +114,11 @@ function PaymentsContent() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [business?.id]);
 
   useEffect(() => {
-    if (business?.id) {
-      loadData();
-    }
-  }, [business?.id]);
+    loadData();
+  }, [loadData]);
 
   // Dues Dashboard Metrics
   const metrics = useMemo(() => {
@@ -150,7 +154,7 @@ function PaymentsContent() {
       }
 
       // Collected this month from installments
-      for (const inst of (r.installments || [])) {
+      for (const inst of r.installments || []) {
         if (!inst?.date) continue;
         const d = new Date(inst.date);
         if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
@@ -298,7 +302,9 @@ function PaymentsContent() {
         {/* Total Outstanding */}
         <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs">
           <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Total Outstanding</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider">
+              Total Outstanding
+            </span>
             <div className="grid size-7 place-items-center rounded-lg bg-rose-50 text-rose-600">
               <IndianRupee size={14} />
             </div>
@@ -320,7 +326,9 @@ function PaymentsContent() {
           <p className="text-xl font-extrabold text-slate-900 leading-tight">
             ₹{metrics.dueToday.toLocaleString("en-IN")}
           </p>
-          <span className="text-[10px] text-amber-600 font-semibold">{metrics.dueTodayCount} bills due today</span>
+          <span className="text-[10px] text-amber-600 font-semibold">
+            {metrics.dueTodayCount} bills due today
+          </span>
         </div>
 
         {/* Overdue */}
@@ -334,7 +342,9 @@ function PaymentsContent() {
           <p className="text-xl font-extrabold text-rose-700 leading-tight">
             ₹{metrics.overdue.toLocaleString("en-IN")}
           </p>
-          <span className="text-[10px] text-rose-600 font-semibold">{metrics.overdueCount} bills past due date</span>
+          <span className="text-[10px] text-rose-600 font-semibold">
+            {metrics.overdueCount} bills past due date
+          </span>
         </div>
 
         {/* Upcoming 7 Days */}
@@ -394,7 +404,9 @@ function PaymentsContent() {
                 : "border-slate-200/90 bg-slate-50/50 hover:bg-slate-100/60"
             }`}
           >
-            <span className="block text-[10px] uppercase font-bold text-slate-500">Current (Not Due)</span>
+            <span className="block text-[10px] uppercase font-bold text-slate-500">
+              Current (Not Due)
+            </span>
             <span className="text-sm font-extrabold text-slate-800 block my-0.5">
               ₹{aging.notDue.amount.toLocaleString("en-IN")}
             </span>
@@ -411,7 +423,9 @@ function PaymentsContent() {
                 : "border-slate-200/90 bg-slate-50/50 hover:bg-slate-100/60"
             }`}
           >
-            <span className="block text-[10px] uppercase font-bold text-amber-700">1 - 30 Days</span>
+            <span className="block text-[10px] uppercase font-bold text-amber-700">
+              1 - 30 Days
+            </span>
             <span className="text-sm font-extrabold text-amber-800 block my-0.5">
               ₹{aging.days1To30.amount.toLocaleString("en-IN")}
             </span>
@@ -428,7 +442,9 @@ function PaymentsContent() {
                 : "border-slate-200/90 bg-slate-50/50 hover:bg-slate-100/60"
             }`}
           >
-            <span className="block text-[10px] uppercase font-bold text-orange-700">31 - 60 Days</span>
+            <span className="block text-[10px] uppercase font-bold text-orange-700">
+              31 - 60 Days
+            </span>
             <span className="text-sm font-extrabold text-orange-800 block my-0.5">
               ₹{aging.days31To60.amount.toLocaleString("en-IN")}
             </span>
@@ -445,7 +461,9 @@ function PaymentsContent() {
                 : "border-slate-200/90 bg-slate-50/50 hover:bg-slate-100/60"
             }`}
           >
-            <span className="block text-[10px] uppercase font-bold text-rose-700">61 - 90 Days</span>
+            <span className="block text-[10px] uppercase font-bold text-rose-700">
+              61 - 90 Days
+            </span>
             <span className="text-sm font-extrabold text-rose-800 block my-0.5">
               ₹{aging.days61To90.amount.toLocaleString("en-IN")}
             </span>
@@ -462,11 +480,15 @@ function PaymentsContent() {
                 : "border-red-200/80 bg-red-50/40 hover:bg-red-50/80"
             }`}
           >
-            <span className="block text-[10px] uppercase font-bold text-red-700">90+ Days (Critical)</span>
+            <span className="block text-[10px] uppercase font-bold text-red-700">
+              90+ Days (Critical)
+            </span>
             <span className="text-sm font-extrabold text-red-900 block my-0.5">
               ₹{aging.days90Plus.amount.toLocaleString("en-IN")}
             </span>
-            <span className="text-[10px] text-red-700 font-medium">{aging.days90Plus.count} bills overdue</span>
+            <span className="text-[10px] text-red-700 font-medium">
+              {aging.days90Plus.count} bills overdue
+            </span>
           </button>
         </div>
       </div>
@@ -496,10 +518,10 @@ function PaymentsContent() {
                   ? s === "Overdue"
                     ? "bg-rose-600 text-white shadow-2xs"
                     : s === "Paid"
-                    ? "bg-emerald-600 text-white shadow-2xs"
-                    : s === "PTP"
-                    ? "bg-purple-600 text-white shadow-2xs"
-                    : "bg-slate-900 text-white shadow-2xs"
+                      ? "bg-emerald-600 text-white shadow-2xs"
+                      : s === "PTP"
+                        ? "bg-purple-600 text-white shadow-2xs"
+                        : "bg-slate-900 text-white shadow-2xs"
                   : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
               }`}
             >
@@ -552,7 +574,9 @@ function PaymentsContent() {
                         <div className="flex items-start gap-2.5">
                           <div className="min-w-0">
                             <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-slate-900 truncate">{r.customerName}</span>
+                              <span className="font-bold text-slate-900 truncate">
+                                {r.customerName}
+                              </span>
                               {r.recurringInterval !== "none" && (
                                 <Badge className="bg-sky-50 text-sky-700 border-sky-200 text-[9px] px-1 py-0">
                                   {r.recurringInterval}
@@ -560,7 +584,9 @@ function PaymentsContent() {
                               )}
                             </div>
                             <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
-                              <span className="font-mono text-slate-600 font-semibold">{r.invoiceNumber}</span>
+                              <span className="font-mono text-slate-600 font-semibold">
+                                {r.invoiceNumber}
+                              </span>
                               <span>·</span>
                               <span className="flex items-center gap-1">
                                 <Phone size={11} /> {r.customerPhone}
@@ -568,7 +594,9 @@ function PaymentsContent() {
                             </div>
                             {r.promiseToPayDate && (
                               <div className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md w-fit">
-                                <span>🤝 PTP: {new Date(r.promiseToPayDate).toLocaleDateString()}</span>
+                                <span>
+                                  🤝 PTP: {new Date(r.promiseToPayDate).toLocaleDateString()}
+                                </span>
                                 {r.promiseToPayAmount && <span>(₹{r.promiseToPayAmount})</span>}
                               </div>
                             )}
@@ -579,7 +607,11 @@ function PaymentsContent() {
                       {/* Total Amount */}
                       <td className="py-3.5 px-4 font-semibold text-slate-800">
                         ₹{r.totalAmount.toLocaleString("en-IN")}
-                        {r.notes && <p className="text-[10px] text-slate-400 truncate max-w-[140px]">{r.notes}</p>}
+                        {r.notes && (
+                          <p className="text-[10px] text-slate-400 truncate max-w-[140px]">
+                            {r.notes}
+                          </p>
+                        )}
                       </td>
 
                       {/* Paid & Balance */}
@@ -590,7 +622,8 @@ function PaymentsContent() {
                             <span className="text-[10px] font-normal text-slate-400 ml-1">due</span>
                           </p>
                           <p className="text-[11px] text-emerald-600 font-medium">
-                            ₹{r.paidAmount.toLocaleString("en-IN")} paid ({r.installments.length} receipts)
+                            ₹{r.paidAmount.toLocaleString("en-IN")} paid ({r.installments.length}{" "}
+                            receipts)
                           </p>
                         </div>
                       </td>
@@ -600,7 +633,9 @@ function PaymentsContent() {
                         <div>
                           <p className="font-semibold text-slate-800">{r.dueDate}</p>
                           {r.status === "Paid" ? (
-                            <span className="text-[10px] text-emerald-600 font-semibold">Settled</span>
+                            <span className="text-[10px] text-emerald-600 font-semibold">
+                              Settled
+                            </span>
                           ) : isOverdue ? (
                             <span className="text-[10px] font-bold text-rose-600 flex items-center gap-1">
                               <AlertTriangle size={11} /> {days} days overdue
@@ -610,7 +645,9 @@ function PaymentsContent() {
                               <Clock size={11} /> Due Today!
                             </span>
                           ) : (
-                            <span className="text-[10px] text-slate-400">in {Math.abs(days)} days</span>
+                            <span className="text-[10px] text-slate-400">
+                              in {Math.abs(days)} days
+                            </span>
                           )}
                         </div>
                       </td>
@@ -622,10 +659,10 @@ function PaymentsContent() {
                             r.status === "Paid"
                               ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                               : r.status === "Partial"
-                              ? "bg-amber-50 text-amber-700 border border-amber-200"
-                              : r.status === "Overdue"
-                              ? "bg-rose-50 text-rose-700 border border-rose-200"
-                              : "bg-slate-100 text-slate-700 border border-slate-200"
+                                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                : r.status === "Overdue"
+                                  ? "bg-rose-50 text-rose-700 border border-rose-200"
+                                  : "bg-slate-100 text-slate-700 border border-slate-200"
                           }`}
                         >
                           {r.status}

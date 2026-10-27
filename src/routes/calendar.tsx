@@ -11,9 +11,15 @@ export const Route = createFileRoute("/calendar")({
   head: () => ({
     meta: [
       { title: "Calendar | Occo Flow" },
-      { name: "description", content: "See your follow-ups, tasks and meetings in one simple agenda." },
+      {
+        name: "description",
+        content: "See your follow-ups, tasks and meetings in one simple agenda.",
+      },
       { property: "og:title", content: "Calendar | Occo Flow" },
-      { property: "og:description", content: "See your follow-ups, tasks and meetings in one simple agenda." },
+      {
+        property: "og:description",
+        content: "See your follow-ups, tasks and meetings in one simple agenda.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -81,20 +87,22 @@ function CalendarContent() {
         <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <h2 className="font-display text-base font-bold text-foreground">
-              {[
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December",
-              ][month]}{" "}
+              {
+                [
+                  "January",
+                  "February",
+                  "March",
+                  "April",
+                  "May",
+                  "June",
+                  "July",
+                  "August",
+                  "September",
+                  "October",
+                  "November",
+                  "December",
+                ][month]
+              }{" "}
               2026
             </h2>
             <div className="flex gap-1">
@@ -159,8 +167,8 @@ function CalendarContent() {
             {day === 0
               ? "Today"
               : day === 1
-              ? "Tomorrow"
-              : `${days[((day % 7) + 7) % 7]}, September ${26 + day}`}{" "}
+                ? "Tomorrow"
+                : `${days[((day % 7) + 7) % 7]}, September ${26 + day}`}{" "}
             <span className="ml-1 text-xs font-medium text-muted-foreground">
               {items.length} events
             </span>
@@ -173,23 +181,15 @@ function CalendarContent() {
                   className="flex items-center gap-4 rounded-lg border border-border bg-card p-4 shadow-sm"
                 >
                   <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-sky-soft text-primary">
-                    {item.type === "Task" ? (
-                      <ListTodo size={19} />
-                    ) : (
-                      <Phone size={19} />
-                    )}
+                    {item.type === "Task" ? <ListTodo size={19} /> : <Phone size={19} />}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-foreground">
-                      {item.title}
-                    </p>
+                    <p className="truncate text-sm font-bold text-foreground">{item.title}</p>
                     <p className="mt-1 truncate text-xs text-muted-foreground">
                       {item.detail} · {item.type}
                     </p>
                   </div>
-                  <span className="shrink-0 text-xs font-bold text-primary">
-                    {item.time}
-                  </span>
+                  <span className="shrink-0 text-xs font-bold text-primary">{item.time}</span>
                 </div>
               ))}
             </div>

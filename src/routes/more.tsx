@@ -19,9 +19,15 @@ export const Route = createFileRoute("/more")({
   head: () => ({
     meta: [
       { title: "More | Occo Flow" },
-      { name: "description", content: "Explore contacts, calendar, analytics and workspace settings." },
+      {
+        name: "description",
+        content: "Explore contacts, calendar, analytics and workspace settings.",
+      },
       { property: "og:title", content: "More | Occo Flow" },
-      { property: "og:description", content: "Explore contacts, calendar, analytics and workspace settings." },
+      {
+        property: "og:description",
+        content: "Explore contacts, calendar, analytics and workspace settings.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -68,9 +74,12 @@ function MoreContent() {
           {initials}
         </div>
         <div>
-          <p className="text-sm font-bold text-foreground">{profile?.fullName || "Business Owner"}</p>
+          <p className="text-sm font-bold text-foreground">
+            {profile?.fullName || "Business Owner"}
+          </p>
           <p className="text-xs text-muted-foreground">
-            {business?.name || "Workspace"} · {accessState === "subscribed" ? "Subscribed" : "Free Trial"}
+            {business?.name || "Workspace"} ·{" "}
+            {accessState === "subscribed" ? "Subscribed" : "Free Trial"}
           </p>
         </div>
       </div>

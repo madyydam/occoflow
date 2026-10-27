@@ -1,5 +1,11 @@
 import {
-  createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode,
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ReactNode,
 } from "react";
 import { supabase } from "./supabase";
 import { adminAuthService, type AdminUser } from "./admin-service";
@@ -125,12 +131,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(
     () => ({ adminUser, accessState, signIn, signOut, refresh }),
-    [adminUser, accessState, signIn, signOut, refresh]
+    [adminUser, accessState, signIn, signOut, refresh],
   );
 
-  return (
-    <AdminContext.Provider value={value}>
-      {children}
-    </AdminContext.Provider>
-  );
+  return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
 }

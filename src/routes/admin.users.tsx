@@ -1,14 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
-  Users, Search, Timer, CreditCard, ShieldAlert,
-  Clock, CheckCircle2, AlertTriangle, Phone, Mail, Building2,
-  CalendarPlus, Ban, Eye, RotateCcw, ArrowUpRight, Sparkles, Loader2, Trash2
+  Users,
+  Search,
+  Timer,
+  CreditCard,
+  ShieldAlert,
+  Clock,
+  CheckCircle2,
+  AlertTriangle,
+  Phone,
+  Mail,
+  Building2,
+  CalendarPlus,
+  Ban,
+  Eye,
+  RotateCcw,
+  ArrowUpRight,
+  Sparkles,
+  Loader2,
+  Trash2,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
 import {
-  AdminShell, AdminPageHeader, AdminBadge,
-  AdminKpiCard, AdminEmptyState, ConfirmDialog, statusColor
+  AdminShell,
+  AdminPageHeader,
+  AdminBadge,
+  AdminKpiCard,
+  AdminEmptyState,
+  ConfirmDialog,
+  statusColor,
 } from "@/components/admin-shell";
 import { useAdminAuth } from "@/lib/admin-context";
 import { adminBusinessService, PLAN_PRICES, PLAN_LABELS } from "@/lib/admin-service";
@@ -47,7 +68,12 @@ interface UserRecord {
   isSuspended: boolean;
   suspensionReason: string;
   subscriptionId: string;
-  subscriptionStatus: "trial_active" | "trial_expired" | "subscribed" | "subscription_expired" | "subscription_cancelled";
+  subscriptionStatus:
+    | "trial_active"
+    | "trial_expired"
+    | "subscribed"
+    | "subscription_expired"
+    | "subscription_cancelled";
   plan: string;
   billingCycle: string | null;
   trialStartedAt: string;
@@ -62,7 +88,7 @@ function AdminUsersManagement() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"subscribed" | "trials">(
-    searchParams.tab === "trials" ? "trials" : "subscribed"
+    searchParams.tab === "trials" ? "trials" : "subscribed",
   );
   const [search, setSearch] = useState("");
   const [trialFilter, setTrialFilter] = useState<"all" | "active" | "expired">("all");
@@ -93,7 +119,8 @@ function AdminUsersManagement() {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select(`
+        .select(
+          `
           id,
           full_name,
           phone,
@@ -117,7 +144,8 @@ function AdminUsersManagement() {
               subscription_ends_at
             )
           )
-        `)
+        `,
+        )
         .order("created_at", { ascending: false });
 
       if (error || !data) {
@@ -178,8 +206,16 @@ function AdminUsersManagement() {
     const channel = supabase
       .channel("admin-users-realtime-sync")
       .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, debouncedReload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "businesses" }, debouncedReload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "subscriptions" }, debouncedReload)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "businesses" },
+        debouncedReload,
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "subscriptions" },
+        debouncedReload,
+      )
       .subscribe();
 
     return () => {
@@ -194,7 +230,7 @@ function AdminUsersManagement() {
       (u) =>
         u.subscriptionStatus === "subscribed" ||
         u.subscriptionStatus === "subscription_cancelled" ||
-        u.subscriptionStatus === "subscription_expired"
+        u.subscriptionStatus === "subscription_expired",
     );
   }, [users]);
 
@@ -203,12 +239,14 @@ function AdminUsersManagement() {
       (u) =>
         u.subscriptionStatus === "trial_active" ||
         u.subscriptionStatus === "trial_expired" ||
-        u.plan === "none"
+        u.plan === "none",
     );
   }, [users]);
 
   // Sub-counts
-  const activeSubscribedCount = subscribedUsers.filter((u) => u.subscriptionStatus === "subscribed").length;
+  const activeSubscribedCount = subscribedUsers.filter(
+    (u) => u.subscriptionStatus === "subscribed",
+  ).length;
   const activeTrialCount = trialUsers.filter((u) => {
     const end = new Date(u.trialEndsAt);
     return u.subscriptionStatus === "trial_active" && end >= now;
@@ -261,7 +299,7 @@ function AdminUsersManagement() {
       await adminBusinessService.suspend(
         u.businessId,
         suspendReason || "Administrative suspension",
-        { id: adminUser.id, email: adminUser.email }
+        { id: adminUser.id, email: adminUser.email },
       );
       toast.success(`User ${u.fullName}'s account has been suspended.`);
     } else {
@@ -286,10 +324,12 @@ function AdminUsersManagement() {
       const res = await adminBusinessService.deletePermanently(
         u.id,
         u.businessId,
-        adminUser ? { id: adminUser.id, email: adminUser.email } : undefined
+        adminUser ? { id: adminUser.id, email: adminUser.email } : undefined,
       );
       if (res.success) {
-        toast.success(`User "${u.fullName || u.email || 'User'}" has been permanently deleted from the database.`);
+        toast.success(
+          `User "${u.fullName || u.email || "User"}" has been permanently deleted from the database.`,
+        );
         setDeleteModal({ open: false, user: null });
         setUsers((prev) => prev.filter((item) => item.id !== u.id));
       } else {
@@ -381,9 +421,7 @@ function AdminUsersManagement() {
             <span>Users on Trial</span>
             <span
               className={`rounded-full px-2 py-0.5 text-[11px] font-extrabold ${
-                activeTab === "trials"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-slate-200 text-slate-600"
+                activeTab === "trials" ? "bg-blue-100 text-blue-700" : "bg-slate-200 text-slate-600"
               }`}
             >
               {trialUsers.length}
@@ -396,7 +434,9 @@ function AdminUsersManagement() {
           <Search className="pointer-events-none absolute left-3 top-3 size-4 text-slate-400" />
           <input
             type="text"
-            placeholder={activeTab === "subscribed" ? "Search subscribed users..." : "Search trial users..."}
+            placeholder={
+              activeTab === "subscribed" ? "Search subscribed users..." : "Search trial users..."
+            }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 text-xs sm:text-sm text-[#0f172a] placeholder:text-slate-400 focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-blue-100"
@@ -453,7 +493,7 @@ function AdminUsersManagement() {
                       filteredSubscribed.map((u) => {
                         const price = PLAN_PRICES[u.plan] ?? 0;
                         const label = PLAN_LABELS[u.plan] ?? u.plan;
-                        const initial = u.fullName ? u.fullName[0]?.toUpperCase() ?? "U" : "U";
+                        const initial = u.fullName ? (u.fullName[0]?.toUpperCase() ?? "U") : "U";
 
                         return (
                           <tr key={u.id} className="transition-colors hover:bg-slate-50/70">
@@ -464,8 +504,12 @@ function AdminUsersManagement() {
                                   {initial}
                                 </div>
                                 <div className="min-w-0">
-                                  <div className="font-bold text-[#0f172a] truncate">{u.fullName}</div>
-                                  <div className="text-[10px] text-slate-400">ID: {u.id.slice(0, 8)}…</div>
+                                  <div className="font-bold text-[#0f172a] truncate">
+                                    {u.fullName}
+                                  </div>
+                                  <div className="text-[10px] text-slate-400">
+                                    ID: {u.id.slice(0, 8)}…
+                                  </div>
                                 </div>
                               </div>
                             </td>
@@ -497,7 +541,8 @@ function AdminUsersManagement() {
                             <td className="px-4 py-3.5">
                               <div className="font-bold text-[#0f172a]">{label}</div>
                               <div className="text-[10px] font-semibold text-emerald-600">
-                                ₹{price.toLocaleString("en-IN")}{u.plan.includes("yearly") ? "/yr" : "/mo"}
+                                ₹{price.toLocaleString("en-IN")}
+                                {u.plan.includes("yearly") ? "/yr" : "/mo"}
                               </div>
                             </td>
 
@@ -585,7 +630,8 @@ function AdminUsersManagement() {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <p className="text-xs font-semibold text-slate-500">
-              Users currently testing the CRM on 3-day free trial or those whose trial expired without upgrade.
+              Users currently testing the CRM on 3-day free trial or those whose trial expired
+              without upgrade.
             </p>
 
             {/* Trial Filter Buttons */}
@@ -651,7 +697,7 @@ function AdminUsersManagement() {
                         const isExpired = u.subscriptionStatus === "trial_expired" || end < now;
                         const hoursLeft = Math.max(0, differenceInHours(end, now));
                         const daysLeft = Math.max(0, differenceInDays(end, now));
-                        const initial = u.fullName ? u.fullName[0]?.toUpperCase() ?? "U" : "U";
+                        const initial = u.fullName ? (u.fullName[0]?.toUpperCase() ?? "U") : "U";
 
                         return (
                           <tr key={u.id} className="transition-colors hover:bg-slate-50/70">
@@ -662,8 +708,12 @@ function AdminUsersManagement() {
                                   {initial}
                                 </div>
                                 <div className="min-w-0">
-                                  <div className="font-bold text-[#0f172a] truncate">{u.fullName}</div>
-                                  <div className="text-[10px] text-slate-400">ID: {u.id.slice(0, 8)}…</div>
+                                  <div className="font-bold text-[#0f172a] truncate">
+                                    {u.fullName}
+                                  </div>
+                                  <div className="text-[10px] text-slate-400">
+                                    ID: {u.id.slice(0, 8)}…
+                                  </div>
                                 </div>
                               </div>
                             </td>
@@ -777,7 +827,12 @@ function AdminUsersManagement() {
       {/* ============================================================ */}
       {/* USER DETAIL MODAL                                            */}
       {/* ============================================================ */}
-      <Dialog open={!!detailUser} onOpenChange={(v) => { if (!v) setDetailUser(null); }}>
+      <Dialog
+        open={!!detailUser}
+        onOpenChange={(v) => {
+          if (!v) setDetailUser(null);
+        }}
+      >
         <DialogContent className="max-w-lg rounded-2xl p-6">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-bold text-[#0f172a]">
@@ -792,7 +847,7 @@ function AdminUsersManagement() {
               <div className="rounded-xl border border-slate-100 bg-slate-50/80 p-4 space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="grid size-10 place-items-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-xs">
-                    {detailUser.fullName ? detailUser.fullName[0]?.toUpperCase() ?? "U" : "U"}
+                    {detailUser.fullName ? (detailUser.fullName[0]?.toUpperCase() ?? "U") : "U"}
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-[#0f172a]">{detailUser.fullName}</h4>
@@ -802,12 +857,20 @@ function AdminUsersManagement() {
 
                 <div className="grid grid-cols-2 gap-2 pt-2 text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Phone</span>
-                    <span className="font-semibold text-slate-800">{detailUser.phone || "Not provided"}</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                      Phone
+                    </span>
+                    <span className="font-semibold text-slate-800">
+                      {detailUser.phone || "Not provided"}
+                    </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Email</span>
-                    <span className="font-semibold text-slate-800">{detailUser.email || "Not provided"}</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                      Email
+                    </span>
+                    <span className="font-semibold text-slate-800">
+                      {detailUser.email || "Not provided"}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -820,11 +883,15 @@ function AdminUsersManagement() {
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Industry</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                      Industry
+                    </span>
                     <span className="font-semibold text-slate-800">{detailUser.industry}</span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px] uppercase font-bold">Registration Date</span>
+                    <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                      Registration Date
+                    </span>
                     <span className="font-semibold text-slate-800">
                       {format(new Date(detailUser.createdAt), "dd MMM yyyy, h:mm a")}
                     </span>
@@ -846,7 +913,10 @@ function AdminUsersManagement() {
                 </p>
                 {detailUser.subscriptionStatus === "subscribed" && (
                   <p className="text-slate-500 text-[11px]">
-                    Renews: {detailUser.subscriptionEndsAt ? format(new Date(detailUser.subscriptionEndsAt), "dd MMM yyyy") : "—"}
+                    Renews:{" "}
+                    {detailUser.subscriptionEndsAt
+                      ? format(new Date(detailUser.subscriptionEndsAt), "dd MMM yyyy")
+                      : "—"}
                   </p>
                 )}
                 {detailUser.subscriptionStatus.startsWith("trial") && (

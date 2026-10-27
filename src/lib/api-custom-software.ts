@@ -15,61 +15,69 @@ export async function handleCustomSoftwareApi(request: Request): Promise<Respons
   if (request.method !== "POST") {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed. Use POST." }),
-      { status: 405, headers }
+      { status: 405, headers },
     );
   }
 
   try {
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
-      return new Response(
-        JSON.stringify({ success: false, error: "Invalid JSON request body." }),
-        { status: 400, headers }
-      );
+      return new Response(JSON.stringify({ success: false, error: "Invalid JSON request body." }), {
+        status: 400,
+        headers,
+      });
     }
 
     const fullName = String(body.full_name || body.fullName || "").trim();
     const companyName = String(body.company_name || body.companyName || "").trim();
-    const email = String(body.email || "").trim().toLowerCase();
+    const email = String(body.email || "")
+      .trim()
+      .toLowerCase();
     const phone = String(body.phone || "").trim();
     const requirements = String(body.requirements || "").trim();
     const projectType = String(body.project_type || body.projectType || "crm_erp").trim();
     const budgetRange = String(body.budget_range || body.budgetRange || "").trim();
     const timeline = String(body.timeline || "").trim();
     const preferredContactMethod = String(
-      body.preferred_contact_method || body.preferredContactMethod || "email"
+      body.preferred_contact_method || body.preferredContactMethod || "email",
     ).trim();
 
     // Backend Validation
     if (!fullName || fullName.length < 2) {
       return new Response(
         JSON.stringify({ success: false, error: "Full name is required (minimum 2 characters)." }),
-        { status: 400, headers }
+        { status: 400, headers },
       );
     }
     if (!companyName) {
       return new Response(
         JSON.stringify({ success: false, error: "Company or business name is required." }),
-        { status: 400, headers }
+        { status: 400, headers },
       );
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
       return new Response(
         JSON.stringify({ success: false, error: "Valid email address is required." }),
-        { status: 400, headers }
+        { status: 400, headers },
       );
     }
     if (!phone || phone.length < 7) {
       return new Response(
-        JSON.stringify({ success: false, error: "Valid phone number is required (minimum 7 digits)." }),
-        { status: 400, headers }
+        JSON.stringify({
+          success: false,
+          error: "Valid phone number is required (minimum 7 digits).",
+        }),
+        { status: 400, headers },
       );
     }
     if (!requirements || requirements.length < 15) {
       return new Response(
-        JSON.stringify({ success: false, error: "Please provide a detailed requirement description (minimum 15 characters)." }),
-        { status: 400, headers }
+        JSON.stringify({
+          success: false,
+          error: "Please provide a detailed requirement description (minimum 15 characters).",
+        }),
+        { status: 400, headers },
       );
     }
 
@@ -105,8 +113,11 @@ export async function handleCustomSoftwareApi(request: Request): Promise<Respons
     if (error || !data) {
       console.error("[CustomSoftwareApi] Supabase insert error:", error);
       return new Response(
-        JSON.stringify({ success: false, error: error?.message || "Failed to store inquiry in database." }),
-        { status: 500, headers }
+        JSON.stringify({
+          success: false,
+          error: error?.message || "Failed to store inquiry in database.",
+        }),
+        { status: 500, headers },
       );
     }
 
@@ -124,13 +135,13 @@ export async function handleCustomSoftwareApi(request: Request): Promise<Respons
           createdAt: data.created_at,
         },
       }),
-      { status: 201, headers }
+      { status: 201, headers },
     );
   } catch (err: any) {
     console.error("[CustomSoftwareApi] Internal server error:", err);
     return new Response(
       JSON.stringify({ success: false, error: err?.message || "Internal server error." }),
-      { status: 500, headers }
+      { status: 500, headers },
     );
   }
 }

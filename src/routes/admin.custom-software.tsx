@@ -1,21 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import {
-  Code2, Search, Filter, RefreshCw, Eye, Trash2, Mail, Phone,
-  Building, Calendar, Clock, DollarSign, Layers, CheckCircle2,
-  AlertCircle, MessageSquare, Send, ArrowUpDown, ChevronDown,
-  Sparkles, Save, UserCheck, X
+  Code2,
+  Search,
+  Filter,
+  RefreshCw,
+  Eye,
+  Trash2,
+  Mail,
+  Phone,
+  Building,
+  Calendar,
+  Clock,
+  DollarSign,
+  Layers,
+  CheckCircle2,
+  AlertCircle,
+  MessageSquare,
+  Send,
+  ArrowUpDown,
+  ChevronDown,
+  Sparkles,
+  Save,
+  UserCheck,
+  X,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
-import {
-  AdminShell, AdminEmptyState, AdminBadge
-} from "@/components/admin-shell";
+import { AdminShell, AdminEmptyState, AdminBadge } from "@/components/admin-shell";
 import {
   customSoftwareService,
   PROJECT_TYPE_LABELS,
   STATUS_LABELS,
   type CustomSoftwareInquiry,
-  type CustomSoftwareStatus
+  type CustomSoftwareStatus,
 } from "@/lib/custom-software-service";
 import { supabase } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -96,7 +113,7 @@ function AdminCustomSoftware() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "custom_software_inquiries" },
-        debouncedReload
+        debouncedReload,
       )
       .subscribe();
 
@@ -121,7 +138,7 @@ function AdminCustomSoftware() {
     if (ok) {
       toast.success(`Inquiry status updated to ${STATUS_LABELS[newStatus]?.label || newStatus}.`);
       setInquiries((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status: newStatus } : item))
+        prev.map((item) => (item.id === id ? { ...item, status: newStatus } : item)),
       );
       if (selectedInquiry?.id === id) {
         setSelectedInquiry((prev) => (prev ? { ...prev, status: newStatus } : null));
@@ -141,7 +158,9 @@ function AdminCustomSoftware() {
     if (ok) {
       toast.success("Admin notes saved successfully.");
       setInquiries((prev) =>
-        prev.map((item) => (item.id === selectedInquiry.id ? { ...item, adminNotes: modalNotes } : item))
+        prev.map((item) =>
+          item.id === selectedInquiry.id ? { ...item, adminNotes: modalNotes } : item,
+        ),
       );
       setSelectedInquiry((prev) => (prev ? { ...prev, adminNotes: modalNotes } : null));
     } else {
@@ -170,13 +189,17 @@ function AdminCustomSoftware() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs">
           <p className="text-xs font-semibold text-slate-500">Total Inquiries</p>
-          <p className="mt-1 font-display text-2xl font-extrabold text-[#0f172a]">{metrics.total}</p>
+          <p className="mt-1 font-display text-2xl font-extrabold text-[#0f172a]">
+            {metrics.total}
+          </p>
           <p className="mt-1 text-[11px] text-slate-400">All received leads</p>
         </div>
 
         <div className="rounded-2xl border border-blue-200 bg-blue-50/40 p-4 sm:p-5 shadow-xs">
           <p className="text-xs font-semibold text-blue-700">New / Unread</p>
-          <p className="mt-1 font-display text-2xl font-extrabold text-[#2563eb]">{metrics.newCount}</p>
+          <p className="mt-1 font-display text-2xl font-extrabold text-[#2563eb]">
+            {metrics.newCount}
+          </p>
           <p className="mt-1 text-[11px] text-blue-600/80">Requires first response</p>
         </div>
 
@@ -190,7 +213,9 @@ function AdminCustomSoftware() {
 
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4 sm:p-5 shadow-xs">
           <p className="text-xs font-semibold text-emerald-700">Closed / Won</p>
-          <p className="mt-1 font-display text-2xl font-extrabold text-emerald-800">{metrics.closedCount}</p>
+          <p className="mt-1 font-display text-2xl font-extrabold text-emerald-800">
+            {metrics.closedCount}
+          </p>
           <p className="mt-1 text-[11px] text-emerald-600/80">Delivered & converted</p>
         </div>
       </div>
@@ -309,7 +334,9 @@ function AdminCustomSoftware() {
                         </span>
                         <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
                           <Clock size={11} />
-                          {item.createdAt ? format(new Date(item.createdAt), "dd MMM yyyy, h:mm a") : "—"}
+                          {item.createdAt
+                            ? format(new Date(item.createdAt), "dd MMM yyyy, h:mm a")
+                            : "—"}
                         </span>
                       </td>
 
@@ -363,11 +390,16 @@ function AdminCustomSoftware() {
                       </td>
 
                       {/* Status Dropdown */}
-                      <td className="px-5 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <td
+                        className="px-5 py-4 whitespace-nowrap"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <select
                           value={item.status}
                           disabled={statusUpdatingId === item.id}
-                          onChange={(e) => handleStatusChange(item.id, e.target.value as CustomSoftwareStatus)}
+                          onChange={(e) =>
+                            handleStatusChange(item.id, e.target.value as CustomSoftwareStatus)
+                          }
                           className="h-8 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-700 focus:border-[#2563eb] focus:outline-none cursor-pointer"
                         >
                           <option value="new">🔵 New</option>
@@ -379,7 +411,10 @@ function AdminCustomSoftware() {
                       </td>
 
                       {/* Action buttons */}
-                      <td className="px-5 py-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <td
+                        className="px-5 py-4 text-right whitespace-nowrap"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
@@ -435,7 +470,10 @@ function AdminCustomSoftware() {
                       </h3>
                       <p className="mt-0.5 text-xs text-blue-100 flex items-center gap-1.5">
                         <Calendar size={12} />
-                        <span>Submitted on {format(new Date(selectedInquiry.createdAt), "dd MMM yyyy, h:mm a")}</span>
+                        <span>
+                          Submitted on{" "}
+                          {format(new Date(selectedInquiry.createdAt), "dd MMM yyyy, h:mm a")}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -443,14 +481,29 @@ function AdminCustomSoftware() {
                   <div className="flex items-center gap-2">
                     <select
                       value={selectedInquiry.status}
-                      onChange={(e) => handleStatusChange(selectedInquiry.id, e.target.value as CustomSoftwareStatus)}
+                      onChange={(e) =>
+                        handleStatusChange(
+                          selectedInquiry.id,
+                          e.target.value as CustomSoftwareStatus,
+                        )
+                      }
                       className="h-8 rounded-lg bg-white/20 backdrop-blur-md border border-white/30 px-2.5 text-xs font-bold text-white focus:outline-none cursor-pointer"
                     >
-                      <option value="new" className="text-slate-900">🔵 New</option>
-                      <option value="contacted" className="text-slate-900">🟡 Contacted</option>
-                      <option value="in_process" className="text-slate-900">🟣 In Process</option>
-                      <option value="closed" className="text-slate-900">🟢 Closed / Won</option>
-                      <option value="cancelled" className="text-slate-900">⚪ Cancelled</option>
+                      <option value="new" className="text-slate-900">
+                        🔵 New
+                      </option>
+                      <option value="contacted" className="text-slate-900">
+                        🟡 Contacted
+                      </option>
+                      <option value="in_process" className="text-slate-900">
+                        🟣 In Process
+                      </option>
+                      <option value="closed" className="text-slate-900">
+                        🟢 Closed / Won
+                      </option>
+                      <option value="cancelled" className="text-slate-900">
+                        ⚪ Cancelled
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -467,7 +520,9 @@ function AdminCustomSoftware() {
                     <span className="font-bold text-slate-800 text-sm block">
                       {selectedInquiry.fullName}
                     </span>
-                    <span className="text-slate-500 block mt-0.5">{selectedInquiry.companyName}</span>
+                    <span className="text-slate-500 block mt-0.5">
+                      {selectedInquiry.companyName}
+                    </span>
                   </div>
 
                   <div>
@@ -493,7 +548,8 @@ function AdminCustomSoftware() {
                       Software / Project Type
                     </span>
                     <span className="font-bold text-slate-800">
-                      {PROJECT_TYPE_LABELS[selectedInquiry.projectType] || selectedInquiry.projectType}
+                      {PROJECT_TYPE_LABELS[selectedInquiry.projectType] ||
+                        selectedInquiry.projectType}
                     </span>
                   </div>
 
@@ -501,11 +557,10 @@ function AdminCustomSoftware() {
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
                       Budget & Timeline
                     </span>
-                    <span className="font-bold text-slate-800">
-                      {selectedInquiry.budgetRange}
-                    </span>
+                    <span className="font-bold text-slate-800">{selectedInquiry.budgetRange}</span>
                     <span className="text-slate-500 block capitalize">
-                      Timeline: {selectedInquiry.timeline.replace(/_/g, " ")} · Method: {selectedInquiry.preferredContactMethod.toUpperCase()}
+                      Timeline: {selectedInquiry.timeline.replace(/_/g, " ")} · Method:{" "}
+                      {selectedInquiry.preferredContactMethod.toUpperCase()}
                     </span>
                   </div>
                 </div>
@@ -528,7 +583,9 @@ function AdminCustomSoftware() {
                       <Sparkles size={13} className="text-amber-500" />
                       Admin Internal Notes
                     </h4>
-                    <span className="text-[11px] text-slate-400">Visible to administrators only</span>
+                    <span className="text-[11px] text-slate-400">
+                      Visible to administrators only
+                    </span>
                   </div>
                   <textarea
                     rows={3}

@@ -17,7 +17,7 @@ export interface TeamMember {
   inviteToken?: string;
   invitedAt?: string;
   joinedAt?: string;
-  
+
   // Live workload metrics
   assignedTasksCount: number;
   completedTasksCount: number;
@@ -36,7 +36,9 @@ export interface TeamInvitePayload {
 // Local cache helper
 function getLocalTeam(businessId: string): TeamMember[] {
   try {
-    const raw = localStorage.getItem(`occo_team_${businessId}`) || localStorage.getItem(`futora_team_${businessId}`);
+    const raw =
+      localStorage.getItem(`occo_team_${businessId}`) ||
+      localStorage.getItem(`futora_team_${businessId}`);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -56,7 +58,7 @@ export const teamService = {
   async listMembers(
     businessId: string,
     tasks: Task[] = [],
-    leads: Lead[] = []
+    leads: Lead[] = [],
   ): Promise<TeamMember[]> {
     if (!businessId) return [];
 
@@ -168,7 +170,7 @@ export const teamService = {
   async inviteMember(
     businessId: string,
     payload: TeamInvitePayload,
-    inviterName: string
+    inviterName: string,
   ): Promise<TeamMember> {
     const id = crypto.randomUUID();
     const inviteToken = `FT-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
@@ -193,34 +195,38 @@ export const teamService = {
 
     // 1. Persist to Supabase activities (cloud synced across all sessions)
     try {
-      await supabase.from("activities").insert([{
-        id: member.id,
-        business_id: businessId,
-        type: "team_invitation",
-        title: member.name,
-        detail: JSON.stringify({
-          ...member,
-          inviterName,
-          notes: payload.notes || "",
-        }),
-      }]);
+      await supabase.from("activities").insert([
+        {
+          id: member.id,
+          business_id: businessId,
+          type: "team_invitation",
+          title: member.name,
+          detail: JSON.stringify({
+            ...member,
+            inviterName,
+            notes: payload.notes || "",
+          }),
+        },
+      ]);
     } catch (err) {
       console.warn("[TeamService] save invitation error:", err);
     }
 
     // 2. Try workspace_invitations table if it exists
     try {
-      await supabase.from("workspace_invitations").insert([{
-        id: member.id,
-        business_id: businessId,
-        invitee_name: member.name,
-        invitee_email: member.email,
-        invitee_phone: member.phone,
-        role: member.role,
-        department: member.department,
-        token: inviteToken,
-        status: "pending",
-      }]);
+      await supabase.from("workspace_invitations").insert([
+        {
+          id: member.id,
+          business_id: businessId,
+          invitee_name: member.name,
+          invitee_email: member.email,
+          invitee_phone: member.phone,
+          role: member.role,
+          department: member.department,
+          token: inviteToken,
+          status: "pending",
+        },
+      ]);
     } catch {
       // Ignored if table not created yet
     }
@@ -233,11 +239,7 @@ export const teamService = {
   },
 
   // Assign a task to team member
-  async assignTask(
-    taskId: string,
-    assignedUserId: string,
-    businessId: string
-  ): Promise<boolean> {
+  async assignTask(taskId: string, assignedUserId: string, businessId: string): Promise<boolean> {
     try {
       const { error } = await supabase
         .from("tasks")
@@ -269,22 +271,25 @@ export const teamService = {
       // ignore
     }
     try {
-      await supabase.from("memberships").delete().eq("user_id", memberId).eq("business_id", businessId);
+      await supabase
+        .from("memberships")
+        .delete()
+        .eq("user_id", memberId)
+        .eq("business_id", businessId);
     } catch {
       // ignore
     }
 
     const current = getLocalTeam(businessId);
-    setLocalTeam(businessId, current.filter((m) => m.id !== memberId));
+    setLocalTeam(
+      businessId,
+      current.filter((m) => m.id !== memberId),
+    );
     return true;
   },
 
   // Update member role
-  async updateRole(
-    businessId: string,
-    memberId: string,
-    role: TeamRole
-  ): Promise<boolean> {
+  async updateRole(businessId: string, memberId: string, role: TeamRole): Promise<boolean> {
     try {
       await supabase
         .from("memberships")
@@ -303,10 +308,11 @@ export const teamService = {
 
   // Format WhatsApp invite link
   generateWhatsAppInvite(member: TeamMember, businessName: string): string {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://flow.heyocco.com";
+    const origin =
+      typeof window !== "undefined" ? window.location.origin : "https://flow.heyocco.com";
     const inviteLink = `${origin}/auth/signup?invite=${member.inviteToken || member.id}`;
     const text = encodeURIComponent(
-      `Hello ${member.name} 👋,\n\nYou have been invited to join *${businessName}* on Occo Flow as *${member.role.toUpperCase()}* (${member.department}).\n\nClick below to access your workspace and assigned tasks:\n👉 ${inviteLink}\n\nYour Invite Code: *${member.inviteToken}*`
+      `Hello ${member.name} 👋,\n\nYou have been invited to join *${businessName}* on Occo Flow as *${member.role.toUpperCase()}* (${member.department}).\n\nClick below to access your workspace and assigned tasks:\n👉 ${inviteLink}\n\nYour Invite Code: *${member.inviteToken}*`,
     );
     const cleanPhone = member.phone.replace(/\D/g, "");
     const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
@@ -315,11 +321,12 @@ export const teamService = {
 
   // Format Email invite link
   generateEmailInvite(member: TeamMember, businessName: string): string {
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://flow.heyocco.com";
+    const origin =
+      typeof window !== "undefined" ? window.location.origin : "https://flow.heyocco.com";
     const inviteLink = `${origin}/auth/signup?invite=${member.inviteToken || member.id}`;
     const subject = encodeURIComponent(`Invitation to join ${businessName} on Occo Flow`);
     const body = encodeURIComponent(
-      `Hi ${member.name},\n\nYou have been invited by ${businessName} to collaborate on Occo Flow.\n\nRole: ${member.role.toUpperCase()}\nDepartment: ${member.department}\n\nJoin your workspace here:\n${inviteLink}\n\nInvite Code: ${member.inviteToken}\n\nBest regards,\n${businessName} Team`
+      `Hi ${member.name},\n\nYou have been invited by ${businessName} to collaborate on Occo Flow.\n\nRole: ${member.role.toUpperCase()}\nDepartment: ${member.department}\n\nJoin your workspace here:\n${inviteLink}\n\nInvite Code: ${member.inviteToken}\n\nBest regards,\n${businessName} Team`,
     );
     return `mailto:${member.email}?subject=${subject}&body=${body}`;
   },

@@ -22,9 +22,15 @@ export const Route = createFileRoute("/analytics")({
   head: () => ({
     meta: [
       { title: "Analytics | Occo Flow" },
-      { name: "description", content: "Simple insights into your leads, conversions and sales pipeline." },
+      {
+        name: "description",
+        content: "Simple insights into your leads, conversions and sales pipeline.",
+      },
       { property: "og:title", content: "Analytics | Occo Flow" },
-      { property: "og:description", content: "Simple insights into your leads, conversions and sales pipeline." },
+      {
+        property: "og:description",
+        content: "Simple insights into your leads, conversions and sales pipeline.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -89,12 +95,42 @@ function AnalyticsContent() {
         </Button>
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
-        <KpiCard label="Total leads" value={metrics.totalLeads} icon={UsersRound} tone="bg-sky-soft text-primary" />
-        <KpiCard label="New leads" value={metrics.newLeads} icon={UserRoundPlus} tone="bg-violet-soft text-violet" />
-        <KpiCard label="Converted" value={metrics.convertedLeads} icon={CircleCheck} tone="bg-success-soft text-success" />
-        <KpiCard label="Open deals" value={metrics.openDealsCount} icon={Handshake} tone="bg-warning-soft text-warning" />
-        <KpiCard label="Won deals" value={metrics.wonDealsCount} icon={Trophy} tone="bg-success-soft text-success" />
-        <KpiCard label="Won revenue" value={money(metrics.wonRevenue)} icon={CircleDollarSign} tone="bg-sky-soft text-primary" />
+        <KpiCard
+          label="Total leads"
+          value={metrics.totalLeads}
+          icon={UsersRound}
+          tone="bg-sky-soft text-primary"
+        />
+        <KpiCard
+          label="New leads"
+          value={metrics.newLeads}
+          icon={UserRoundPlus}
+          tone="bg-violet-soft text-violet"
+        />
+        <KpiCard
+          label="Converted"
+          value={metrics.convertedLeads}
+          icon={CircleCheck}
+          tone="bg-success-soft text-success"
+        />
+        <KpiCard
+          label="Open deals"
+          value={metrics.openDealsCount}
+          icon={Handshake}
+          tone="bg-warning-soft text-warning"
+        />
+        <KpiCard
+          label="Won deals"
+          value={metrics.wonDealsCount}
+          icon={Trophy}
+          tone="bg-success-soft text-success"
+        />
+        <KpiCard
+          label="Won revenue"
+          value={money(metrics.wonRevenue)}
+          icon={CircleDollarSign}
+          tone="bg-sky-soft text-primary"
+        />
       </div>
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <section>
@@ -135,9 +171,7 @@ function AnalyticsContent() {
             </div>
             <div className="mt-6 flex justify-between border-t border-border pt-4 text-xs">
               <span className="text-muted-foreground">Potential revenue</span>
-              <strong className="text-foreground">
-                {money(metrics.potentialRevenue)}
-              </strong>
+              <strong className="text-foreground">{money(metrics.potentialRevenue)}</strong>
             </div>
           </div>
         </section>

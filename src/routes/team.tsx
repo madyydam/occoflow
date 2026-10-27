@@ -31,15 +31,8 @@ import { AccessGuard } from "@/components/access-guard";
 import { PageTitle, EmptyState } from "@/components/crm-ui";
 import { useAuth } from "@/lib/auth-context";
 import { useCRM } from "@/lib/crm-context";
-import {
-  type TeamMember,
-  type TeamRole,
-  teamService,
-} from "@/lib/team-service";
-import {
-  InviteTeamMemberModal,
-  AssignTeamTaskModal,
-} from "@/components/team-ui-modals";
+import { type TeamMember, type TeamRole, teamService } from "@/lib/team-service";
+import { InviteTeamMemberModal, AssignTeamTaskModal } from "@/components/team-ui-modals";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,7 +46,10 @@ export const Route = createFileRoute("/team")({
   head: () => ({
     meta: [
       { title: "Team & Workload Delegation | Occo Flow" },
-      { name: "description", content: "Collaborate with colleagues, assign tasks, and track team sales performance." },
+      {
+        name: "description",
+        content: "Collaborate with colleagues, assign tasks, and track team sales performance.",
+      },
     ],
   }),
   component: TeamPage,
@@ -86,7 +82,7 @@ function TeamContent() {
   const [preselectedMember, setPreselectedMember] = useState<TeamMember | null>(null);
 
   // Load team data
-  const loadTeam = async () => {
+  const loadTeam = useCallback(async () => {
     if (!business?.id) return;
     setIsLoading(true);
     try {
@@ -98,13 +94,11 @@ function TeamContent() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [business?.id, tasks, leads]);
 
   useEffect(() => {
-    if (business?.id) {
-      loadTeam();
-    }
-  }, [business?.id, tasks.length, leads.length]);
+    loadTeam();
+  }, [loadTeam]);
 
   // Overall Team Metrics
   const teamMetrics = useMemo(() => {
@@ -114,7 +108,7 @@ function TeamContent() {
 
     const totalAssignedTasks = tasks.filter((t) => Boolean(t.assignedUserId)).length;
     const completedTeamTasks = tasks.filter(
-      (t) => Boolean(t.assignedUserId) && (t.status === "Completed" || Boolean(t.completed))
+      (t) => Boolean(t.assignedUserId) && (t.status === "Completed" || Boolean(t.completed)),
     ).length;
     const pendingTeamTasks = totalAssignedTasks - completedTeamTasks;
 
@@ -125,7 +119,8 @@ function TeamContent() {
       totalAssignedTasks,
       completedTeamTasks,
       pendingTeamTasks,
-      completionRate: totalAssignedTasks > 0 ? Math.round((completedTeamTasks / totalAssignedTasks) * 100) : 0,
+      completionRate:
+        totalAssignedTasks > 0 ? Math.round((completedTeamTasks / totalAssignedTasks) * 100) : 0,
     };
   }, [members, tasks]);
 
@@ -146,7 +141,7 @@ function TeamContent() {
   // Delegated Tasks list
   const delegatedTasks = useMemo(() => {
     return tasks.filter((t) => {
-      const assignedId = (t as any).assignedUserId;
+      const assignedId = t.assignedUserId;
       if (!assignedId) return false;
       if (selectedMemberForTasks !== "All" && assignedId !== selectedMemberForTasks) return false;
       return true;
@@ -265,7 +260,9 @@ function TeamContent() {
           <p className="text-xl font-extrabold text-emerald-700 leading-tight">
             {teamMetrics.completedTeamTasks}
           </p>
-          <span className="text-[10px] text-emerald-600 font-semibold">{teamMetrics.completionRate}% completion rate</span>
+          <span className="text-[10px] text-emerald-600 font-semibold">
+            {teamMetrics.completionRate}% completion rate
+          </span>
         </div>
 
         <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs">
@@ -348,12 +345,13 @@ function TeamContent() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {filteredMembers.map((m) => {
-                const initials = m.name
-                  .split(" ")
-                  .map((w) => w[0])
-                  .slice(0, 2)
-                  .join("")
-                  .toUpperCase() || "TM";
+                const initials =
+                  m.name
+                    .split(" ")
+                    .map((w) => w[0])
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase() || "TM";
 
                 return (
                   <div
@@ -376,11 +374,15 @@ function TeamContent() {
                                 </Badge>
                               )}
                             </div>
-                            <p className="text-[11px] text-slate-500">{m.department || "General"}</p>
+                            <p className="text-[11px] text-slate-500">
+                              {m.department || "General"}
+                            </p>
                           </div>
                         </div>
 
-                        <Badge className={`text-[10px] font-bold uppercase tracking-wider ${getRoleBadgeStyle(m.role)}`}>
+                        <Badge
+                          className={`text-[10px] font-bold uppercase tracking-wider ${getRoleBadgeStyle(m.role)}`}
+                        >
                           {m.role.replace("_", " ")}
                         </Badge>
                       </div>
@@ -409,7 +411,9 @@ function TeamContent() {
                         </div>
                         <div>
                           <span className="text-[10px] text-slate-400 block">Done</span>
-                          <span className="font-bold text-emerald-600">{m.completedTasksCount}</span>
+                          <span className="font-bold text-emerald-600">
+                            {m.completedTasksCount}
+                          </span>
                         </div>
                         <div>
                           <span className="text-[10px] text-slate-400 block">Leads</span>
@@ -458,7 +462,11 @@ function TeamContent() {
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="size-8 rounded-xl text-slate-400">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-8 rounded-xl text-slate-400"
+                          >
                             <MoreVertical size={14} />
                           </Button>
                         </DropdownMenuTrigger>
@@ -469,7 +477,10 @@ function TeamContent() {
                           {m.status === "invited" && (
                             <DropdownMenuItem
                               onClick={() => {
-                                const link = teamService.generateWhatsAppInvite(m, business?.name || "Business");
+                                const link = teamService.generateWhatsAppInvite(
+                                  m,
+                                  business?.name || "Business",
+                                );
                                 window.open(link, "_blank");
                               }}
                             >
@@ -556,10 +567,14 @@ function TeamContent() {
                         <tr key={t.id} className="hover:bg-slate-50/60 transition-colors">
                           <td className="py-3.5 px-4">
                             <div>
-                              <p className={`font-bold ${isDone ? "line-through text-slate-400" : "text-slate-900"}`}>
+                              <p
+                                className={`font-bold ${isDone ? "line-through text-slate-400" : "text-slate-900"}`}
+                              >
                                 {t.title}
                               </p>
-                              <p className="text-[11px] text-slate-500">{t.customer || "General"}</p>
+                              <p className="text-[11px] text-slate-500">
+                                {t.customer || "General"}
+                              </p>
                             </div>
                           </td>
                           <td className="py-3.5 px-4">
@@ -579,8 +594,8 @@ function TeamContent() {
                                 t.priority === "High"
                                   ? "bg-rose-100 text-rose-800"
                                   : t.priority === "Low"
-                                  ? "bg-slate-100 text-slate-800"
-                                  : "bg-blue-100 text-blue-800"
+                                    ? "bg-slate-100 text-slate-800"
+                                    : "bg-blue-100 text-blue-800"
                               }`}
                             >
                               {t.priority}

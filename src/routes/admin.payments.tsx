@@ -1,15 +1,31 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
-  BadgeDollarSign, Search, IndianRupee, CreditCard,
-  Download, ArrowUpRight, CheckCircle2, AlertCircle, Loader2
+  BadgeDollarSign,
+  Search,
+  IndianRupee,
+  CreditCard,
+  Download,
+  ArrowUpRight,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
 import {
-  AdminShell, AdminPageHeader, AdminBadge,
-  AdminKpiCard, AdminEmptyState, statusColor
+  AdminShell,
+  AdminPageHeader,
+  AdminBadge,
+  AdminKpiCard,
+  AdminEmptyState,
+  statusColor,
 } from "@/components/admin-shell";
-import { adminSubscriptionService, PLAN_PRICES, PLAN_LABELS, type AdminSubscription } from "@/lib/admin-service";
+import {
+  adminSubscriptionService,
+  PLAN_PRICES,
+  PLAN_LABELS,
+  type AdminSubscription,
+} from "@/lib/admin-service";
 import { format } from "date-fns";
 
 export const Route = createFileRoute("/admin/payments")({

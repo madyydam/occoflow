@@ -20,12 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,9 +38,15 @@ export const Route = createFileRoute("/deals")({
   head: () => ({
     meta: [
       { title: "Deals Pipeline | Occo Flow" },
-      { name: "description", content: "Visual sales pipeline, stage tracking, and deal conversion metrics." },
+      {
+        name: "description",
+        content: "Visual sales pipeline, stage tracking, and deal conversion metrics.",
+      },
       { property: "og:title", content: "Deals Pipeline | Occo Flow" },
-      { property: "og:description", content: "Visual sales pipeline, stage tracking, and deal conversion metrics." },
+      {
+        property: "og:description",
+        content: "Visual sales pipeline, stage tracking, and deal conversion metrics.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -151,7 +152,7 @@ function DealsContent() {
       (d) =>
         d.title.toLowerCase().includes(q) ||
         d.customer.toLowerCase().includes(q) ||
-        (d.description && d.description.toLowerCase().includes(q))
+        (d.description && d.description.toLowerCase().includes(q)),
     );
   }, [deals, searchQuery]);
 
@@ -183,7 +184,10 @@ function DealsContent() {
         title="Deals"
         description={`${metrics.totalDeals} opportunities · ${money(metrics.pipelineValue)} pipeline value`}
         action={
-          <Button onClick={() => openAddModal("New")} className="h-9 rounded-lg px-3 text-xs font-bold sm:flex lg:hidden">
+          <Button
+            onClick={() => openAddModal("New")}
+            className="h-9 rounded-lg px-3 text-xs font-bold sm:flex lg:hidden"
+          >
             <Plus size={14} /> Add deal
           </Button>
         }
@@ -193,7 +197,9 @@ function DealsContent() {
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
         <div className="rounded-xl border border-border bg-card p-3 shadow-2xs">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Active Pipeline</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider">
+              Active Pipeline
+            </span>
             <div className="grid size-6.5 place-items-center rounded-lg bg-sky-soft text-primary">
               <TrendingUp size={13} />
             </div>
@@ -201,7 +207,9 @@ function DealsContent() {
           <p className="mt-1.5 font-display text-lg font-extrabold text-foreground sm:text-xl">
             {money(metrics.pipelineValue)}
           </p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">{metrics.activeDeals} deals in progress</p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">
+            {metrics.activeDeals} deals in progress
+          </p>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-3 shadow-2xs">
@@ -214,7 +222,9 @@ function DealsContent() {
           <p className="mt-1.5 font-display text-lg font-extrabold text-foreground sm:text-xl">
             {money(metrics.wonValue)}
           </p>
-          <p className="mt-0.5 text-[10px] text-emerald-600 font-semibold">{deals.filter((d) => d.stage === "Won").length} closed won</p>
+          <p className="mt-0.5 text-[10px] text-emerald-600 font-semibold">
+            {deals.filter((d) => d.stage === "Won").length} closed won
+          </p>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-3 shadow-2xs">
@@ -232,7 +242,9 @@ function DealsContent() {
 
         <div className="rounded-xl border border-border bg-card p-3 shadow-2xs">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-semibold uppercase tracking-wider">Total Opportunities</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider">
+              Total Opportunities
+            </span>
             <div className="grid size-6.5 place-items-center rounded-lg bg-amber-50 text-amber-600">
               <Layers size={13} />
             </div>
@@ -247,7 +259,10 @@ function DealsContent() {
       {/* Toolbar: Search, View Switch, Add Button */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-border bg-card p-2.5 shadow-2xs">
         <div className="relative min-w-[220px] flex-1 sm:max-w-xs">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -283,7 +298,10 @@ function DealsContent() {
             </button>
           </div>
 
-          <Button onClick={() => openAddModal("New")} className="h-8.5 rounded-lg px-3 text-xs font-bold shadow-none">
+          <Button
+            onClick={() => openAddModal("New")}
+            className="h-8.5 rounded-lg px-3 text-xs font-bold shadow-none"
+          >
             <Plus size={14} /> <span className="hidden sm:inline">New Deal</span>
           </Button>
         </div>
@@ -334,8 +352,12 @@ function DealsContent() {
             <div className="mx-auto mb-2 grid size-10 place-items-center rounded-xl bg-slate-100 text-slate-400">
               <Sparkles size={18} />
             </div>
-            <p className="text-xs font-bold text-foreground">No {selectedMobileStage.toLowerCase()} deals</p>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">Add your first deal in this stage to start tracking.</p>
+            <p className="text-xs font-bold text-foreground">
+              No {selectedMobileStage.toLowerCase()} deals
+            </p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
+              Add your first deal in this stage to start tracking.
+            </p>
             <Button
               onClick={() => openAddModal(selectedMobileStage)}
               variant="outline"
@@ -364,7 +386,9 @@ function DealsContent() {
                   <div className="mb-2 flex items-center justify-between rounded-xl border border-border bg-card px-3 py-2 shadow-2xs">
                     <div className="flex items-center gap-2">
                       <span className={`size-2 rounded-full ${cfg.dotColor}`} />
-                      <span className="font-display text-xs font-bold text-foreground">{stage}</span>
+                      <span className="font-display text-xs font-bold text-foreground">
+                        {stage}
+                      </span>
                       <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
                         {stageDeals.length}
                       </span>
@@ -441,9 +465,7 @@ function DealsContent() {
                       const cfg = STAGE_CONFIG[deal.stage] || STAGE_CONFIG.New;
                       return (
                         <tr key={deal.id} className="hover:bg-muted/30 transition-colors">
-                          <td className="py-3 px-4 font-bold text-foreground">
-                            {deal.title}
-                          </td>
+                          <td className="py-3 px-4 font-bold text-foreground">{deal.title}</td>
                           <td className="py-3 px-4 text-muted-foreground">
                             <div className="flex items-center gap-1.5">
                               <Building2 size={13} className="text-slate-400" />
@@ -472,11 +494,15 @@ function DealsContent() {
                               <select
                                 aria-label="Change stage"
                                 value={deal.stage}
-                                onChange={(e) => updateDeal(deal.id, { stage: e.target.value as DealStage })}
+                                onChange={(e) =>
+                                  updateDeal(deal.id, { stage: e.target.value as DealStage })
+                                }
                                 className="h-7 rounded-md border border-border bg-background px-2 text-[11px] font-medium text-foreground outline-none cursor-pointer"
                               >
                                 {dealStages.map((s) => (
-                                  <option key={s} value={s}>{s}</option>
+                                  <option key={s} value={s}>
+                                    {s}
+                                  </option>
                                 ))}
                               </select>
                               <button
@@ -606,7 +632,7 @@ function AddDealModal({
   open: boolean;
   initialStage: DealStage;
   onClose: () => void;
-  onAdd: (deal: Partial<Deal>) => Promise<any>;
+  onAdd: (deal: Partial<Deal>) => Promise<unknown>;
 }) {
   const [title, setTitle] = useState("");
   const [customer, setCustomer] = useState("");
@@ -700,7 +726,9 @@ function AddDealModal({
                 className="block h-9.5 w-full rounded-lg border border-border bg-card px-2.5 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring"
               >
                 {dealStages.map((s) => (
-                  <option key={s} value={s}>{s}</option>
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
                 ))}
               </select>
             </div>

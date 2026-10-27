@@ -47,12 +47,20 @@ function SettingsPage() {
 const items = [
   { name: "Business Profile", description: "Business name and details", icon: Building2 },
   { name: "User Profile", description: "Your personal information", icon: UserRound },
-  { name: "Subscription & Billing", description: "Your active plan, trial & invoices", icon: CreditCard },
+  {
+    name: "Subscription & Billing",
+    description: "Your active plan, trial & invoices",
+    icon: CreditCard,
+  },
   { name: "Notifications", description: "Choose what reminders you receive", icon: Bell },
   { name: "CRM Preferences", description: "Pipeline settings & defaults", icon: SlidersHorizontal },
   { name: "Lead Statuses", description: "Manage customer pipeline stages", icon: Tags },
   { name: "Deal Stages", description: "Customize your deal stages", icon: Workflow },
-  { name: "Security & Privacy", description: "Keep your workspace safe & GDPR/DPDP", icon: ShieldCheck },
+  {
+    name: "Security & Privacy",
+    description: "Keep your workspace safe & GDPR/DPDP",
+    icon: ShieldCheck,
+  },
   { name: "Help & Feedback", description: "Report problems or suggest features", icon: CircleHelp },
 ];
 
@@ -66,11 +74,11 @@ function SettingsContent() {
       ? subscription?.plan?.includes("lifetime") || subscription?.billingCycle === "lifetime"
         ? "Lifetime Access (₹14,999)"
         : subscription?.billingCycle === "yearly"
-        ? "Annual Plan (₹9,999/yr)"
-        : "Monthly Plan (₹999/mo)"
+          ? "Annual Plan (₹9,999/yr)"
+          : "Monthly Plan (₹999/mo)"
       : accessState === "trial_active"
-      ? "3-Day Free Trial"
-      : "Free / Expired";
+        ? "3-Day Free Trial"
+        : "Free / Expired";
 
   return (
     <>
@@ -114,7 +122,9 @@ function SettingsContent() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Owner</span>
-                  <strong className="text-foreground">{profile?.fullName || "Business Owner"}</strong>
+                  <strong className="text-foreground">
+                    {profile?.fullName || "Business Owner"}
+                  </strong>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Phone</span>
@@ -177,14 +187,14 @@ function SettingsContent() {
                 {active === "User Profile"
                   ? `${profile?.fullName || "Owner"} · ${profile?.phone || ""}`
                   : active === "Business Profile"
-                  ? `${business?.name || "Workspace"} · Industry: ${business?.industry || "General"}`
-                  : active === "Lead Statuses"
-                  ? "New · Contacted · Qualified · Follow-up · Won · Lost"
-                  : active === "Deal Stages"
-                  ? "New · Qualified · Proposal · Negotiation · Won · Lost"
-                  : active === "Help & Feedback"
-                  ? "Report bugs or request new features directly via the Problems & Suggestions tab in your sidebar."
-                  : `${active} settings are configured for your workspace.`}
+                    ? `${business?.name || "Workspace"} · Industry: ${business?.industry || "General"}`
+                    : active === "Lead Statuses"
+                      ? "New · Contacted · Qualified · Follow-up · Won · Lost"
+                      : active === "Deal Stages"
+                        ? "New · Qualified · Proposal · Negotiation · Won · Lost"
+                        : active === "Help & Feedback"
+                          ? "Report bugs or request new features directly via the Problems & Suggestions tab in your sidebar."
+                          : `${active} settings are configured for your workspace.`}
               </div>
             </>
           )}

@@ -1,8 +1,21 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Users, CreditCard, LayoutGrid,
-  BadgeDollarSign, BarChart3, Bell, HeadphonesIcon, ScrollText,
-  Settings, LogOut, Menu, X, MessageSquarePlus, Activity, Code2,
+  LayoutDashboard,
+  Users,
+  CreditCard,
+  LayoutGrid,
+  BadgeDollarSign,
+  BarChart3,
+  Bell,
+  HeadphonesIcon,
+  ScrollText,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  MessageSquarePlus,
+  Activity,
+  Code2,
   type LucideIcon,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
@@ -18,29 +31,25 @@ const navGroups: {
 }[] = [
   {
     label: "Overview",
-    items: [
-      { label: "Dashboard",   to: "/admin",              icon: LayoutDashboard },
-    ],
+    items: [{ label: "Dashboard", to: "/admin", icon: LayoutDashboard }],
   },
   {
     label: "Customers",
-    items: [
-      { label: "Users", to: "/admin/users", icon: Users },
-    ],
+    items: [{ label: "Users", to: "/admin/users", icon: Users }],
   },
   {
     label: "Revenue",
     items: [
       { label: "Subscriptions", to: "/admin/subscriptions", icon: CreditCard },
-      { label: "Plans",         to: "/admin/plans",         icon: LayoutGrid },
-      { label: "Payments",      to: "/admin/payments",      icon: BadgeDollarSign },
-      { label: "Revenue",       to: "/admin/revenue",       icon: BarChart3 },
+      { label: "Plans", to: "/admin/plans", icon: LayoutGrid },
+      { label: "Payments", to: "/admin/payments", icon: BadgeDollarSign },
+      { label: "Revenue", to: "/admin/revenue", icon: BarChart3 },
     ],
   },
   {
     label: "Insights",
     items: [
-      { label: "Analytics",         to: "/admin/analytics",         icon: BarChart3 },
+      { label: "Analytics", to: "/admin/analytics", icon: BarChart3 },
       { label: "System Operations", to: "/admin/system-operations", icon: Activity },
     ],
   },
@@ -49,8 +58,8 @@ const navGroups: {
     items: [
       { label: "Notifications", to: "/admin/notifications", icon: Bell },
       { label: "Problems & Suggestions", to: "/admin/support", icon: MessageSquarePlus },
-      { label: "Audit Logs",   to: "/admin/audit-logs",    icon: ScrollText },
-      { label: "Settings",     to: "/admin/settings",      icon: Settings },
+      { label: "Audit Logs", to: "/admin/audit-logs", icon: ScrollText },
+      { label: "Settings", to: "/admin/settings", icon: Settings },
     ],
   },
 ];
@@ -79,7 +88,9 @@ function AdminSidebar({ onClose }: { onClose?: () => void }) {
           <img src="/logo.png" alt={BRAND} className="size-7 rounded-lg object-contain shadow-xs" />
           <div>
             <p className="text-[13px] font-extrabold text-[#0f172a] leading-tight">{BRAND}</p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-[#2563eb] leading-tight">Admin Portal</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-[#2563eb] leading-tight">
+              Admin Portal
+            </p>
           </div>
         </Link>
         {onClose && (
@@ -114,7 +125,11 @@ function AdminSidebar({ onClose }: { onClose?: () => void }) {
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
-                    <Icon size={16} className={active ? "text-[#2563eb]" : "text-slate-400"} strokeWidth={active ? 2.4 : 2} />
+                    <Icon
+                      size={16}
+                      className={active ? "text-[#2563eb]" : "text-slate-400"}
+                      strokeWidth={active ? 2.4 : 2}
+                    />
                     {label}
                   </Link>
                 );
@@ -160,25 +175,43 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
   // Page title from pathname
   const pageTitle =
-    pathname === "/admin" || pathname === "/admin/" ? "Dashboard"
-    : pathname.startsWith("/admin/businesses") ? "Businesses"
-    : pathname.startsWith("/admin/custom-software") ? "Custom Software Inquiries"
-    : pathname.startsWith("/admin/users") ? "Users"
-    : pathname.startsWith("/admin/trials") ? "Trial Management"
-    : pathname.startsWith("/admin/subscriptions") ? "Subscriptions"
-    : pathname.startsWith("/admin/plans") ? "Plans & Pricing"
-    : pathname.startsWith("/admin/payments") ? "Payments"
-    : pathname.startsWith("/admin/revenue") ? "Revenue"
-    : pathname.startsWith("/admin/system-operations") ? "System Operations"
-    : pathname.startsWith("/admin/analytics") ? "Analytics"
-    : pathname.startsWith("/admin/notifications") ? "Notifications"
-    : pathname.startsWith("/admin/support") ? "Problems & Suggestions"
-    : pathname.startsWith("/admin/audit-logs") ? "Audit Logs"
-    : pathname.startsWith("/admin/settings") ? "Settings"
-    : "Admin Panel";
+    pathname === "/admin" || pathname === "/admin/"
+      ? "Dashboard"
+      : pathname.startsWith("/admin/businesses")
+        ? "Businesses"
+        : pathname.startsWith("/admin/custom-software")
+          ? "Custom Software Inquiries"
+          : pathname.startsWith("/admin/users")
+            ? "Users"
+            : pathname.startsWith("/admin/trials")
+              ? "Trial Management"
+              : pathname.startsWith("/admin/subscriptions")
+                ? "Subscriptions"
+                : pathname.startsWith("/admin/plans")
+                  ? "Plans & Pricing"
+                  : pathname.startsWith("/admin/payments")
+                    ? "Payments"
+                    : pathname.startsWith("/admin/revenue")
+                      ? "Revenue"
+                      : pathname.startsWith("/admin/system-operations")
+                        ? "System Operations"
+                        : pathname.startsWith("/admin/analytics")
+                          ? "Analytics"
+                          : pathname.startsWith("/admin/notifications")
+                            ? "Notifications"
+                            : pathname.startsWith("/admin/support")
+                              ? "Problems & Suggestions"
+                              : pathname.startsWith("/admin/audit-logs")
+                                ? "Audit Logs"
+                                : pathname.startsWith("/admin/settings")
+                                  ? "Settings"
+                                  : "Admin Panel";
 
   const today = new Date().toLocaleDateString("en-IN", {
-    weekday: "short", day: "numeric", month: "short", year: "numeric",
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
   });
 
   return (
@@ -191,7 +224,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
       {/* Mobile sidebar drawer */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs" onClick={() => setMobileOpen(false)} />
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-xs"
+            onClick={() => setMobileOpen(false)}
+          />
           <div className="absolute left-0 top-0 h-full shadow-2xl">
             <AdminSidebar onClose={() => setMobileOpen(false)} />
           </div>
@@ -219,9 +255,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-7">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-7">{children}</main>
       </div>
 
       <Toaster position="top-center" richColors />
@@ -231,7 +265,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
 
 // ── Shared Admin UI Components ────────────────────────────────────
 export function AdminKpiCard({
-  label, value, sub, icon: Icon, tone, trend,
+  label,
+  value,
+  sub,
+  icon: Icon,
+  tone,
+  trend,
 }: {
   label: string;
   value: string | number;
@@ -244,14 +283,18 @@ export function AdminKpiCard({
     <div className="rounded-xl border border-slate-200/90 bg-white p-3.5 sm:p-4 shadow-2xs transition-all hover:border-slate-300">
       <div className="flex items-center justify-between">
         <p className="text-[11px] sm:text-xs font-semibold text-slate-500 truncate mr-2">{label}</p>
-        <div className={`grid size-7 sm:size-8 shrink-0 place-items-center rounded-lg text-xs ${tone}`}>
+        <div
+          className={`grid size-7 sm:size-8 shrink-0 place-items-center rounded-lg text-xs ${tone}`}
+        >
           <Icon size={15} />
         </div>
       </div>
       <p className="mt-1.5 font-display text-xl sm:text-2xl font-extrabold leading-none text-[#0f172a]">
         {value}
       </p>
-      {trend && <p className="mt-1 text-[10px] sm:text-[11px] font-bold text-emerald-600">{trend}</p>}
+      {trend && (
+        <p className="mt-1 text-[10px] sm:text-[11px] font-bold text-emerald-600">{trend}</p>
+      )}
       {sub && <p className="mt-1 text-[10px] sm:text-[11px] text-slate-400 truncate">{sub}</p>}
     </div>
   );
@@ -259,7 +302,11 @@ export function AdminKpiCard({
 
 export function AdminPageHeader({
   action,
-}: { title?: string; description?: string; action?: ReactNode }) {
+}: {
+  title?: string;
+  description?: string;
+  action?: ReactNode;
+}) {
   if (!action) return null;
   return (
     <div className="mb-4 flex items-center justify-end gap-2">
@@ -269,8 +316,12 @@ export function AdminPageHeader({
 }
 
 export function AdminBadge({
-  label, color,
-}: { label: string; color: "blue" | "green" | "red" | "amber" | "slate" | "violet" | "orange" }) {
+  label,
+  color,
+}: {
+  label: string;
+  color: "blue" | "green" | "red" | "amber" | "slate" | "violet" | "orange";
+}) {
   const colors = {
     blue: "bg-blue-50 text-blue-700 ring-blue-200",
     green: "bg-emerald-50 text-emerald-700 ring-emerald-200",
@@ -281,7 +332,9 @@ export function AdminBadge({
     orange: "bg-orange-50 text-orange-800 ring-orange-200",
   };
   return (
-    <span className={`inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${colors[color]}`}>
+    <span
+      className={`inline-flex items-center rounded-md px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset ${colors[color]}`}
+    >
       {label}
     </span>
   );
@@ -292,8 +345,10 @@ export function statusColor(
 ): "blue" | "green" | "red" | "amber" | "slate" | "violet" | "orange" {
   if (!status) return "slate";
   const s = status.toLowerCase();
-  if (s.includes("active") || s.includes("subscribed") || s === "resolved" || s === "closed") return "green";
-  if (s.includes("expired") || s.includes("cancelled") || s === "failed" || s === "suspended") return "red";
+  if (s.includes("active") || s.includes("subscribed") || s === "resolved" || s === "closed")
+    return "green";
+  if (s.includes("expired") || s.includes("cancelled") || s === "failed" || s === "suspended")
+    return "red";
   if (s.includes("trial")) return "blue";
   if (s === "pending" || s === "in_progress" || s === "waiting") return "amber";
   if (s === "draft") return "slate";
@@ -305,7 +360,7 @@ export function statusColor(
 export function AdminEmptyState({
   title,
   description,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   icon: _Icon,
 }: {
   title: string;
@@ -332,7 +387,10 @@ export function AdminLoadingRows({ cols = 5, rows = 6 }: { cols?: number; rows?:
         <tr key={i} className="animate-pulse">
           {Array.from({ length: cols }).map((_, j) => (
             <td key={j} className="px-4 py-3.5">
-              <div className="h-3.5 rounded bg-slate-100" style={{ width: `${60 + (j * 10) % 30}%` }} />
+              <div
+                className="h-3.5 rounded bg-slate-100"
+                style={{ width: `${60 + ((j * 10) % 30)}%` }}
+              />
             </td>
           ))}
         </tr>
@@ -342,14 +400,31 @@ export function AdminLoadingRows({ cols = 5, rows = 6 }: { cols?: number; rows?:
 }
 
 export function ConfirmDialog({
-  open, onClose, onConfirm, title, description, confirmLabel = "Confirm", danger = false, children,
+  open,
+  onClose,
+  onConfirm,
+  title,
+  description,
+  confirmLabel = "Confirm",
+  danger = false,
+  children,
 }: {
-  open: boolean; onClose: () => void; onConfirm: () => void;
-  title: string; description?: string; confirmLabel?: string; danger?: boolean;
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  description?: string;
+  confirmLabel?: string;
+  danger?: boolean;
   children?: React.ReactNode;
 }) {
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) onClose();
+      }}
+    >
       <DialogContent className="max-w-sm rounded-2xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
@@ -364,7 +439,10 @@ export function ConfirmDialog({
             Cancel
           </button>
           <button
-            onClick={() => { onConfirm(); onClose(); }}
+            onClick={() => {
+              onConfirm();
+              onClose();
+            }}
             className={`flex-1 rounded-xl py-2.5 text-sm font-bold text-white cursor-pointer ${
               danger ? "bg-red-500 hover:bg-red-600" : "bg-[#2563eb] hover:bg-[#1d4ed8]"
             }`}

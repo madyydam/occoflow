@@ -45,7 +45,11 @@ export interface InquiriesFilterParams {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const mapCustomInquiry = (r: any): CustomSoftwareInquiry => ({
   id: r.id,
-  inquiryNumber: r.inquiry_number || `CS-${String(r.id || "").substring(0, 6).toUpperCase()}`,
+  inquiryNumber:
+    r.inquiry_number ||
+    `CS-${String(r.id || "")
+      .substring(0, 6)
+      .toUpperCase()}`,
   fullName: r.full_name ?? "",
   companyName: r.company_name ?? "",
   email: r.email ?? "",
@@ -71,7 +75,10 @@ export const PROJECT_TYPE_LABELS: Record<string, string> = {
   other: "Other Bespoke Software",
 };
 
-export const STATUS_LABELS: Record<CustomSoftwareStatus, { label: string; color: "blue" | "green" | "amber" | "violet" | "slate" }> = {
+export const STATUS_LABELS: Record<
+  CustomSoftwareStatus,
+  { label: string; color: "blue" | "green" | "amber" | "violet" | "slate" }
+> = {
   new: { label: "New", color: "blue" },
   contacted: { label: "Contacted", color: "amber" },
   in_process: { label: "In Process", color: "violet" },
@@ -114,7 +121,10 @@ export const customSoftwareService = {
       return { success: false, error: "Please enter a valid phone number (minimum 7 digits)." };
     }
     if (!requirements || requirements.length < 15) {
-      return { success: false, error: "Please provide a detailed requirement description (at least 15 characters)." };
+      return {
+        success: false,
+        error: "Please provide a detailed requirement description (at least 15 characters).",
+      };
     }
 
     const sanitizedPayload = {
@@ -161,7 +171,9 @@ export const customSoftwareService = {
         console.error("[customSoftwareService] Direct DB insert failed:", error);
         return {
           success: false,
-          error: error?.message || "Failed to submit your inquiry. Please try again or contact us directly.",
+          error:
+            error?.message ||
+            "Failed to submit your inquiry. Please try again or contact us directly.",
         };
       }
 
@@ -187,9 +199,7 @@ export const customSoftwareService = {
     };
   }> {
     try {
-      let query = supabase
-        .from("custom_software_inquiries")
-        .select("*", { count: "exact" });
+      let query = supabase.from("custom_software_inquiries").select("*", { count: "exact" });
 
       // Status filter
       if (params.status && params.status !== "all") {
@@ -205,7 +215,7 @@ export const customSoftwareService = {
       if (params.search?.trim()) {
         const s = params.search.trim();
         query = query.or(
-          `full_name.ilike.%${s}%,company_name.ilike.%${s}%,email.ilike.%${s}%,phone.ilike.%${s}%,inquiry_number.ilike.%${s}%,requirements.ilike.%${s}%`
+          `full_name.ilike.%${s}%,company_name.ilike.%${s}%,email.ilike.%${s}%,phone.ilike.%${s}%,inquiry_number.ilike.%${s}%,requirements.ilike.%${s}%`,
         );
       }
 
@@ -234,9 +244,7 @@ export const customSoftwareService = {
       const inquiries = (data ?? []).map(mapCustomInquiry);
 
       // Compute status counts from all records
-      const { data: allRows } = await supabase
-        .from("custom_software_inquiries")
-        .select("status");
+      const { data: allRows } = await supabase.from("custom_software_inquiries").select("status");
 
       const rows = allRows ?? [];
       const metrics = {
@@ -286,7 +294,7 @@ export const customSoftwareService = {
   async adminUpdateStatus(
     id: string,
     status: CustomSoftwareStatus,
-    adminNotes?: string
+    adminNotes?: string,
   ): Promise<boolean> {
     try {
       const updates: Record<string, any> = {
@@ -334,10 +342,7 @@ export const customSoftwareService = {
    */
   async adminDelete(id: string): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from("custom_software_inquiries")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from("custom_software_inquiries").delete().eq("id", id);
 
       return !error;
     } catch (err) {

@@ -1,14 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
-  BarChart3, IndianRupee, TrendingUp, CreditCard,
-  PieChart, ArrowUpRight, ShieldCheck, Loader2
+  BarChart3,
+  IndianRupee,
+  TrendingUp,
+  CreditCard,
+  PieChart,
+  ArrowUpRight,
+  ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
 import {
-  AdminShell, AdminPageHeader, AdminKpiCard, AdminEmptyState
+  AdminShell,
+  AdminPageHeader,
+  AdminKpiCard,
+  AdminEmptyState,
 } from "@/components/admin-shell";
-import { adminSubscriptionService, PLAN_PRICES, PLAN_MRR, PLAN_LABELS, type AdminSubscription } from "@/lib/admin-service";
+import {
+  adminSubscriptionService,
+  PLAN_PRICES,
+  PLAN_MRR,
+  PLAN_LABELS,
+  type AdminSubscription,
+} from "@/lib/admin-service";
 
 export const Route = createFileRoute("/admin/revenue")({
   head: () => ({ meta: [{ title: "Revenue | Admin | Occo Flow" }] }),
@@ -54,21 +69,30 @@ function AdminRevenue() {
         name: "Monthly Plan",
         price: 999,
         mrrShare: 999,
-        count: subs.filter((s) => s.plan === "crm_monthly" || s.plan === "standard_monthly" || s.plan === "premium_monthly").length,
+        count: subs.filter(
+          (s) =>
+            s.plan === "crm_monthly" ||
+            s.plan === "standard_monthly" ||
+            s.plan === "premium_monthly",
+        ).length,
       },
       {
         id: "crm_yearly",
         name: "Yearly Plan",
         price: 9999,
         mrrShare: Math.round(9999 / 12),
-        count: subs.filter((s) => s.plan === "crm_yearly" || s.plan === "standard_yearly" || s.plan === "premium_yearly").length,
+        count: subs.filter(
+          (s) =>
+            s.plan === "crm_yearly" || s.plan === "standard_yearly" || s.plan === "premium_yearly",
+        ).length,
       },
       {
         id: "crm_lifetime",
         name: "Lifetime Access",
         price: 14999,
         mrrShare: Math.round(14999 / 12),
-        count: subs.filter((s) => s.plan.includes("lifetime") || s.billingCycle === "lifetime").length,
+        count: subs.filter((s) => s.plan.includes("lifetime") || s.billingCycle === "lifetime")
+          .length,
       },
     ];
 
@@ -149,7 +173,9 @@ function AdminRevenue() {
                       <p className="text-[10px] text-slate-400">Subscribers</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-emerald-600">₹{tierMrr.toLocaleString("en-IN")}/mo</p>
+                      <p className="text-sm font-bold text-emerald-600">
+                        ₹{tierMrr.toLocaleString("en-IN")}/mo
+                      </p>
                       <p className="text-[10px] text-slate-400">MRR contribution</p>
                     </div>
                   </div>

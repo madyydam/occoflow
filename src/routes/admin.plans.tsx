@@ -1,13 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
-  LayoutGrid, Check, Sparkles, Shield, Zap,
-  Edit2, IndianRupee, Users, HelpCircle, Loader2
+  LayoutGrid,
+  Check,
+  Sparkles,
+  Shield,
+  Zap,
+  Edit2,
+  IndianRupee,
+  Users,
+  HelpCircle,
+  Loader2,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
-import {
-  AdminShell, AdminPageHeader, AdminBadge
-} from "@/components/admin-shell";
+import { AdminShell, AdminPageHeader, AdminBadge } from "@/components/admin-shell";
 import { supabase } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
@@ -125,9 +131,19 @@ function AdminPlans() {
         const bc = row.billing_cycle ?? "";
         if (p.includes("lifetime") || bc === "lifetime") {
           counts.crm_lifetime = (counts.crm_lifetime || 0) + 1;
-        } else if (p === "crm_yearly" || p === "standard_yearly" || p === "premium_yearly" || bc === "yearly") {
+        } else if (
+          p === "crm_yearly" ||
+          p === "standard_yearly" ||
+          p === "premium_yearly" ||
+          bc === "yearly"
+        ) {
           counts.crm_yearly = (counts.crm_yearly || 0) + 1;
-        } else if (p === "crm_monthly" || p === "standard_monthly" || p === "premium_monthly" || bc === "monthly") {
+        } else if (
+          p === "crm_monthly" ||
+          p === "standard_monthly" ||
+          p === "premium_monthly" ||
+          bc === "monthly"
+        ) {
           counts.crm_monthly = (counts.crm_monthly || 0) + 1;
         }
       });
@@ -136,7 +152,7 @@ function AdminPlans() {
         prev.map((p) => ({
           ...p,
           activeSubscribers: (counts as Record<string, number>)[p.id] ?? 0,
-        }))
+        })),
       );
     } catch {
       // defaults to 0
@@ -161,7 +177,7 @@ function AdminPlans() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "subscriptions" },
-        debouncedReload
+        debouncedReload,
       )
       .subscribe();
 
@@ -178,9 +194,7 @@ function AdminPlans() {
 
   const handleSavePrice = () => {
     if (!editingPlan) return;
-    setPlans((prev) =>
-      prev.map((p) => (p.id === editingPlan.id ? { ...p, price: newPrice } : p)),
-    );
+    setPlans((prev) => prev.map((p) => (p.id === editingPlan.id ? { ...p, price: newPrice } : p)));
     toast.success(`Price updated for "${editingPlan.name}" to ₹${newPrice}.`);
     setEditingPlan(null);
   };
@@ -202,9 +216,7 @@ function AdminPlans() {
             <div
               key={p.id}
               className={`relative flex flex-col justify-between rounded-2xl border p-6 bg-white shadow-xs transition-all ${
-                p.highlight
-                  ? "border-blue-300 ring-2 ring-blue-100"
-                  : "border-slate-200"
+                p.highlight ? "border-blue-300 ring-2 ring-blue-100" : "border-slate-200"
               }`}
             >
               {p.highlight && (
@@ -232,7 +244,11 @@ function AdminPlans() {
                         ₹{p.price.toLocaleString("en-IN")}
                       </span>
                       <span className="text-xs font-semibold text-slate-400">
-                        {p.cycle === "lifetime" ? "/ lifetime (one-time)" : p.cycle === "yearly" ? "/ year" : "/ month"}
+                        {p.cycle === "lifetime"
+                          ? "/ lifetime (one-time)"
+                          : p.cycle === "yearly"
+                            ? "/ year"
+                            : "/ month"}
                       </span>
                     </>
                   )}
@@ -240,12 +256,16 @@ function AdminPlans() {
 
                 <div className="mt-2 flex items-center gap-1.5 text-xs text-slate-500">
                   <Users size={13} className="text-[#2563eb]" />
-                  <span className="font-semibold text-slate-800">{p.activeSubscribers}</span> active {p.activeSubscribers === 1 ? "workspace" : "workspaces"}
+                  <span className="font-semibold text-slate-800">
+                    {p.activeSubscribers}
+                  </span> active {p.activeSubscribers === 1 ? "workspace" : "workspaces"}
                 </div>
 
                 <hr className="my-5 border-slate-100" />
 
-                <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">Included Features:</p>
+                <p className="mb-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  Included Features:
+                </p>
                 <ul className="space-y-2 text-xs text-slate-600">
                   {p.features.map((feat, i) => (
                     <li key={i} className="flex items-start gap-2">
@@ -281,7 +301,12 @@ function AdminPlans() {
       )}
 
       {/* Edit Price Modal */}
-      <Dialog open={!!editingPlan} onOpenChange={(v) => { if (!v) setEditingPlan(null); }}>
+      <Dialog
+        open={!!editingPlan}
+        onOpenChange={(v) => {
+          if (!v) setEditingPlan(null);
+        }}
+      >
         <DialogContent className="max-w-sm rounded-2xl p-6">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base font-bold text-[#0f172a]">

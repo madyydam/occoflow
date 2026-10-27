@@ -117,7 +117,8 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 export default function SubscriptionPage() {
-  const { subscription, signOut, accessState, business, profile, user, refreshSubscription } = useAuth();
+  const { subscription, signOut, accessState, business, profile, user, refreshSubscription } =
+    useAuth();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [customBuildModalOpen, setCustomBuildModalOpen] = useState(false);
@@ -214,7 +215,9 @@ export default function SubscriptionPage() {
 
             const verifyData = await verifyRes.json();
             if (verifyData.success) {
-              toast.success(`🎉 Subscription activated! Welcome to ${verifyData.planLabel ?? planId}.`);
+              toast.success(
+                `🎉 Subscription activated! Welcome to ${verifyData.planLabel ?? planId}.`,
+              );
               await refreshSubscription();
               navigate({ to: "/dashboard" });
             } else {
@@ -243,9 +246,15 @@ export default function SubscriptionPage() {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt={BRAND} className="size-9 rounded-xl object-contain shadow-xs" />
+            <img
+              src="/logo.png"
+              alt={BRAND}
+              className="size-9 rounded-xl object-contain shadow-xs"
+            />
             <div>
-              <span className="font-display text-[17px] font-extrabold text-[#0f172a] block leading-none">{BRAND}</span>
+              <span className="font-display text-[17px] font-extrabold text-[#0f172a] block leading-none">
+                {BRAND}
+              </span>
               <span className="text-[10px] text-slate-400 font-semibold">Pricing & Plans</span>
             </div>
           </div>
@@ -268,7 +277,8 @@ export default function SubscriptionPage() {
                 Your free trial has completed
               </h1>
               <p className="mt-2 text-sm text-slate-500">
-                Choose a plan below to unlock your workspace, team delegation, automated reminders, and sales pipeline.
+                Choose a plan below to unlock your workspace, team delegation, automated reminders,
+                and sales pipeline.
               </p>
             </>
           ) : (
@@ -295,8 +305,8 @@ export default function SubscriptionPage() {
                   tier.isLifetime
                     ? "border-2 border-amber-300 bg-gradient-to-b from-amber-50/40 via-white to-white shadow-sm hover:border-amber-400 hover:shadow-md"
                     : tier.highlight
-                    ? "border-2 border-[#2563eb] bg-[#f0f6ff]/70 shadow-md ring-1 ring-blue-200"
-                    : "border-2 border-slate-200 bg-white shadow-xs hover:border-slate-300 hover:shadow-sm"
+                      ? "border-2 border-[#2563eb] bg-[#f0f6ff]/70 shadow-md ring-1 ring-blue-200"
+                      : "border-2 border-slate-200 bg-white shadow-xs hover:border-slate-300 hover:shadow-sm"
                 }`}
               >
                 {/* Badge */}
@@ -324,8 +334,8 @@ export default function SubscriptionPage() {
                         tier.isLifetime
                           ? "text-amber-700"
                           : tier.highlight
-                          ? "text-[#2563eb]"
-                          : "text-slate-500"
+                            ? "text-[#2563eb]"
+                            : "text-slate-500"
                       }`}
                     >
                       {tier.name}
@@ -353,8 +363,8 @@ export default function SubscriptionPage() {
                       tier.isLifetime
                         ? "bg-slate-900 text-white hover:bg-slate-800 shadow-sm"
                         : tier.highlight
-                        ? "bg-[#2563eb] text-white hover:bg-[#1d4ed8] shadow-sm"
-                        : "border-2 border-[#2563eb] text-[#2563eb] hover:bg-blue-50"
+                          ? "bg-[#2563eb] text-white hover:bg-[#1d4ed8] shadow-sm"
+                          : "border-2 border-[#2563eb] text-[#2563eb] hover:bg-blue-50"
                     }`}
                   >
                     {isLoading ? (
@@ -380,8 +390,8 @@ export default function SubscriptionPage() {
                             tier.isLifetime
                               ? "text-amber-600"
                               : tier.highlight
-                              ? "text-blue-600"
-                              : "text-green-500"
+                                ? "text-blue-600"
+                                : "text-green-500"
                           }`}
                         />
                         <span>{f}</span>
@@ -406,17 +416,22 @@ export default function SubscriptionPage() {
                 Need a Custom-Built CRM or Bespoke Software Solution?
               </h2>
               <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Have unique workflows, custom fields, ERP/Tally syncing, private cloud hosting, or specialized business requirements? Our engineering team builds tailor-made CRM modules, WhatsApp bots, and enterprise platforms tailored for your company.
+                Have unique workflows, custom fields, ERP/Tally syncing, private cloud hosting, or
+                specialized business requirements? Our engineering team builds tailor-made CRM
+                modules, WhatsApp bots, and enterprise platforms tailored for your company.
               </p>
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-300">
                 <span className="flex items-center gap-1.5">
-                  <Check size={13} className="text-emerald-400" /> Tailored CRM &amp; ERP Architecture
+                  <Check size={13} className="text-emerald-400" /> Tailored CRM &amp; ERP
+                  Architecture
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Check size={13} className="text-emerald-400" /> Custom API &amp; Tally / Payment Integrations
+                  <Check size={13} className="text-emerald-400" /> Custom API &amp; Tally / Payment
+                  Integrations
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <Check size={13} className="text-emerald-400" /> Dedicated Solutions Engineer &amp; SLA
+                  <Check size={13} className="text-emerald-400" /> Dedicated Solutions Engineer
+                  &amp; SLA
                 </span>
               </div>
             </div>
@@ -446,10 +461,7 @@ export default function SubscriptionPage() {
       </div>
 
       {/* Custom Build Modal */}
-      <CustomSoftwareModal
-        open={customBuildModalOpen}
-        onOpenChange={setCustomBuildModalOpen}
-      />
+      <CustomSoftwareModal open={customBuildModalOpen} onOpenChange={setCustomBuildModalOpen} />
     </div>
   );
 }

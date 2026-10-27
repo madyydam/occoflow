@@ -25,7 +25,7 @@ export const broadcastService = {
    */
   async getUnreadAnnouncement(
     userId?: string,
-    isSubscribed: boolean = false
+    isSubscribed: boolean = false,
   ): Promise<BroadcastAnnouncement | null> {
     try {
       const { data, error } = await supabase
@@ -47,7 +47,10 @@ export const broadcastService = {
         const legacyKey = `futora_seen_broadcast_${item.id}`;
 
         // 1. Strict localStorage check (prevents re-popup on page refresh or repeat visits)
-        if (typeof window !== "undefined" && (localStorage.getItem(localKey) === "true" || localStorage.getItem(legacyKey) === "true")) {
+        if (
+          typeof window !== "undefined" &&
+          (localStorage.getItem(localKey) === "true" || localStorage.getItem(legacyKey) === "true")
+        ) {
           continue;
         }
 
@@ -77,10 +80,7 @@ export const broadcastService = {
    * Strictly records that the user has viewed and acknowledged the announcement.
    * Synchronously marks localStorage so the modal NEVER pops up again.
    */
-  async markAsViewed(
-    notificationId: string,
-    userId?: string
-  ): Promise<void> {
+  async markAsViewed(notificationId: string, userId?: string): Promise<void> {
     if (!notificationId) return;
 
     // 1. Mark localStorage immediately

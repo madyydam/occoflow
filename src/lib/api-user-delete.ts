@@ -10,25 +10,21 @@ const env = (import.meta as unknown as { env?: Record<string, string | undefined
 
 function getSupabaseAdmin(cfEnv: CfEnv = {}) {
   const supabaseUrl =
-    cfEnv["SUPABASE_URL"] ||
-    process.env["SUPABASE_URL"] ||
-    env["VITE_SUPABASE_URL"] ||
-    "";
+    cfEnv["SUPABASE_URL"] || process.env["SUPABASE_URL"] || env["VITE_SUPABASE_URL"] || "";
 
   const supabaseSecretKey =
-    cfEnv["SUPABASE_SECRET_KEY"] ||
-    process.env["SUPABASE_SECRET_KEY"] ||
-    "";
+    cfEnv["SUPABASE_SECRET_KEY"] || process.env["SUPABASE_SECRET_KEY"] || "";
 
-  return createClient(supabaseUrl || "https://placeholder.supabase.co", supabaseSecretKey || "dummy_secret_key", {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  return createClient(
+    supabaseUrl || "https://placeholder.supabase.co",
+    supabaseSecretKey || "dummy_secret_key",
+    {
+      auth: { persistSession: false, autoRefreshToken: false },
+    },
+  );
 }
 
-export async function handleUserDeleteApi(
-  request: Request,
-  cfEnv: CfEnv = {}
-): Promise<Response> {
+export async function handleUserDeleteApi(request: Request, cfEnv: CfEnv = {}): Promise<Response> {
   const headers = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
@@ -43,27 +39,27 @@ export async function handleUserDeleteApi(
   if (request.method !== "POST") {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed. Use POST." }),
-      { status: 405, headers }
+      { status: 405, headers },
     );
   }
 
   try {
     const body = await request.json().catch(() => null);
     if (!body || typeof body !== "object") {
-      return new Response(
-        JSON.stringify({ success: false, error: "Invalid JSON request body." }),
-        { status: 400, headers }
-      );
+      return new Response(JSON.stringify({ success: false, error: "Invalid JSON request body." }), {
+        status: 400,
+        headers,
+      });
     }
 
     const userId = String(body.userId || body.user_id || "").trim();
     const businessId = String(body.businessId || body.business_id || "").trim();
 
     if (!userId) {
-      return new Response(
-        JSON.stringify({ success: false, error: "userId is required." }),
-        { status: 400, headers }
-      );
+      return new Response(JSON.stringify({ success: false, error: "userId is required." }), {
+        status: 400,
+        headers,
+      });
     }
 
     const supabaseAdmin = getSupabaseAdmin(cfEnv);
@@ -81,16 +77,10 @@ export async function handleUserDeleteApi(
     }
 
     // 2. Delete any memberships for this user
-    await supabaseAdmin
-      .from("memberships")
-      .delete()
-      .eq("user_id", userId);
+    await supabaseAdmin.from("memberships").delete().eq("user_id", userId);
 
     // 3. Delete user profile
-    await supabaseAdmin
-      .from("profiles")
-      .delete()
-      .eq("id", userId);
+    await supabaseAdmin.from("profiles").delete().eq("id", userId);
 
     // 4. Delete user from auth.users via Supabase Auth Admin
     const { error: authErr } = await supabaseAdmin.auth.admin.deleteUser(userId);
@@ -103,14 +93,14 @@ export async function handleUserDeleteApi(
         success: true,
         message: "User and associated workspace successfully deleted from database.",
       }),
-      { status: 200, headers }
+      { status: 200, headers },
     );
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Internal Server Error";
     console.error("[UserDeleteApi] Uncaught error:", err);
-    return new Response(
-      JSON.stringify({ success: false, error: errorMsg }),
-      { status: 500, headers }
-    );
+    return new Response(JSON.stringify({ success: false, error: errorMsg }), {
+      status: 500,
+      headers,
+    });
   }
 }

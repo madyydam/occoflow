@@ -1,13 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useCallback } from "react";
 import {
-  Settings, Save, Globe, Shield, HelpCircle,
-  CheckCircle2, AlertTriangle, Loader2
+  Settings,
+  Save,
+  Globe,
+  Shield,
+  HelpCircle,
+  CheckCircle2,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
-import {
-  AdminShell, AdminPageHeader
-} from "@/components/admin-shell";
+import { AdminShell, AdminPageHeader } from "@/components/admin-shell";
 import { useAdminAuth } from "@/lib/admin-context";
 import { adminSettingsService, type PlatformSetting } from "@/lib/admin-service";
 import { toast } from "sonner";
@@ -18,10 +22,30 @@ export const Route = createFileRoute("/admin/settings")({
 });
 
 const DEFAULT_SETTINGS: PlatformSetting[] = [
-  { key: "platform_name", label: "Platform Name", value: "Occo Flow", description: "Display name shown in page headers, emails, and browser titles." },
-  { key: "support_email", label: "Support Contact Email", value: "support@heyocco.com", description: "Inquiry address shown to customers in their help widget." },
-  { key: "trial_duration_days", label: "Default Trial Duration (Days)", value: "3", description: "Number of free trial days granted upon customer signup." },
-  { key: "currency_symbol", label: "Default Currency Symbol", value: "₹", description: "Currency symbol formatted across subscription tiers and pipeline deals." },
+  {
+    key: "platform_name",
+    label: "Platform Name",
+    value: "Occo Flow",
+    description: "Display name shown in page headers, emails, and browser titles.",
+  },
+  {
+    key: "support_email",
+    label: "Support Contact Email",
+    value: "support@heyocco.com",
+    description: "Inquiry address shown to customers in their help widget.",
+  },
+  {
+    key: "trial_duration_days",
+    label: "Default Trial Duration (Days)",
+    value: "3",
+    description: "Number of free trial days granted upon customer signup.",
+  },
+  {
+    key: "currency_symbol",
+    label: "Default Currency Symbol",
+    value: "₹",
+    description: "Currency symbol formatted across subscription tiers and pipeline deals.",
+  },
 ];
 
 function AdminSettingsPage() {
@@ -48,7 +72,9 @@ function AdminSettings() {
       const list = data.length > 0 ? data : DEFAULT_SETTINGS;
       setSettings(list);
       const valMap: Record<string, string> = {};
-      list.forEach((s) => { valMap[s.key] = s.value; });
+      list.forEach((s) => {
+        valMap[s.key] = s.value;
+      });
       setValues(valMap);
     } catch {
       setSettings(DEFAULT_SETTINGS);
@@ -91,7 +117,10 @@ function AdminSettings() {
         ) : (
           <div className="divide-y divide-slate-100">
             {settings.map((s) => (
-              <div key={s.key} className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div
+                key={s.key}
+                className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              >
                 <div className="max-w-md">
                   <p className="text-xs font-bold text-[#0f172a]">{s.label || s.key}</p>
                   <p className="text-[11px] text-slate-400 mt-0.5">{s.description}</p>

@@ -46,15 +46,15 @@ export function exportLeadsToExcel(leads: Lead[], filenamePrefix = "Occo_Flow_Le
     const data = leads.map((l, index) => ({
       "Sr No": index + 1,
       "Customer Name": l.name || "",
-      "Phone": l.phone || "",
-      "Email": l.email || "",
-      "Company": l.company || "",
+      Phone: l.phone || "",
+      Email: l.email || "",
+      Company: l.company || "",
       "Lead Source": l.source || "Website",
-      "Status": l.status || "New",
-      "Priority": l.priority || "Medium",
+      Status: l.status || "New",
+      Priority: l.priority || "Medium",
       "Potential Value (INR)": l.value || 0,
       "Next Follow-up": l.followUp || "",
-      "Notes": l.notes || "",
+      Notes: l.notes || "",
       "Created Date": l.createdAt ? new Date(l.createdAt).toLocaleDateString("en-IN") : "",
     }));
 
@@ -62,7 +62,7 @@ export function exportLeadsToExcel(leads: Lead[], filenamePrefix = "Occo_Flow_Le
 
     // Auto-fit column widths
     const columnWidths = [
-      { wch: 8 },  // Sr No
+      { wch: 8 }, // Sr No
       { wch: 24 }, // Customer Name
       { wch: 18 }, // Phone
       { wch: 26 }, // Email
@@ -84,7 +84,9 @@ export function exportLeadsToExcel(leads: Lead[], filenamePrefix = "Occo_Flow_Le
     const filename = `${filenamePrefix}_${today}.xlsx`;
 
     XLSX.writeFile(workbook, filename);
-    toast.success(`Exported ${leads.length} ${leads.length === 1 ? "lead" : "leads"} to Excel (${filename})!`);
+    toast.success(
+      `Exported ${leads.length} ${leads.length === 1 ? "lead" : "leads"} to Excel (${filename})!`,
+    );
   } catch (err) {
     console.error("[Export Excel] Failed:", err);
     toast.error("Failed to generate Excel report. Please try again.");
@@ -97,36 +99,36 @@ export function downloadSampleTemplate() {
     const sampleRows = [
       {
         "Customer Name": "Rajesh Sharma",
-        "Phone": "+91 9876543210",
-        "Email": "rajesh@example.com",
-        "Company": "Sharma Logistics Ltd",
+        Phone: "+91 9876543210",
+        Email: "rajesh@example.com",
+        Company: "Sharma Logistics Ltd",
         "Lead Source": "Referral",
-        "Status": "New",
-        "Priority": "High",
+        Status: "New",
+        Priority: "High",
         "Potential Value (INR)": 85000,
-        "Notes": "Interested in corporate annual fleet contract. Call after 2 PM.",
+        Notes: "Interested in corporate annual fleet contract. Call after 2 PM.",
       },
       {
         "Customer Name": "Pooja Mehta",
-        "Phone": "+91 9822012345",
-        "Email": "pooja.mehta@techbiz.in",
-        "Company": "TechBiz Solutions",
+        Phone: "+91 9822012345",
+        Email: "pooja.mehta@techbiz.in",
+        Company: "TechBiz Solutions",
         "Lead Source": "Google",
-        "Status": "Contacted",
-        "Priority": "Medium",
+        Status: "Contacted",
+        Priority: "Medium",
         "Potential Value (INR)": 45000,
-        "Notes": "Requested product demo presentation on Thursday.",
+        Notes: "Requested product demo presentation on Thursday.",
       },
       {
         "Customer Name": "Amit Deshmukh",
-        "Phone": "+91 9765432109",
-        "Email": "amit@deshmukhindustries.com",
-        "Company": "Deshmukh Industries",
+        Phone: "+91 9765432109",
+        Email: "amit@deshmukhindustries.com",
+        Company: "Deshmukh Industries",
         "Lead Source": "Website",
-        "Status": "Qualified",
-        "Priority": "Low",
+        Status: "Qualified",
+        Priority: "Low",
         "Potential Value (INR)": 25000,
-        "Notes": "Exploring CRM integration for manufacturing unit.",
+        Notes: "Exploring CRM integration for manufacturing unit.",
       },
     ];
 
@@ -158,14 +160,25 @@ export function downloadSampleTemplate() {
 function normalizeColumnKey(rawKey: string): string {
   const k = rawKey.toLowerCase().replace(/[^a-z0-9]/g, "");
   if (k.includes("name") || k === "customer" || k === "client" || k === "person") return "name";
-  if (k.includes("phone") || k.includes("mobile") || k.includes("contact") || k.includes("cell")) return "phone";
+  if (k.includes("phone") || k.includes("mobile") || k.includes("contact") || k.includes("cell"))
+    return "phone";
   if (k.includes("email") || k.includes("mail")) return "email";
-  if (k.includes("comp") || k.includes("org") || k.includes("firm") || k.includes("business")) return "company";
+  if (k.includes("comp") || k.includes("org") || k.includes("firm") || k.includes("business"))
+    return "company";
   if (k.includes("source") || k.includes("channel") || k.includes("origin")) return "source";
   if (k.includes("status") || k.includes("stage")) return "status";
   if (k.includes("priority")) return "priority";
-  if (k.includes("val") || k.includes("amount") || k.includes("deal") || k.includes("price") || k.includes("budget") || k.includes("cost")) return "value";
-  if (k.includes("note") || k.includes("remark") || k.includes("comment") || k.includes("desc")) return "notes";
+  if (
+    k.includes("val") ||
+    k.includes("amount") ||
+    k.includes("deal") ||
+    k.includes("price") ||
+    k.includes("budget") ||
+    k.includes("cost")
+  )
+    return "value";
+  if (k.includes("note") || k.includes("remark") || k.includes("comment") || k.includes("desc"))
+    return "notes";
   return k;
 }
 
@@ -187,13 +200,7 @@ function normalizePriority(p: string): LeadPriority {
 }
 
 // ── Bulk Import Modal Component ────────────────────────────────────
-export function LeadsImportModal({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+export function LeadsImportModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { business } = useAuth();
   const { refresh } = useCRM();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -345,7 +352,12 @@ export function LeadsImportModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        if (!v) handleClose();
+      }}
+    >
       <DialogContent className="max-h-[92dvh] w-[95vw] max-w-2xl overflow-y-auto rounded-2xl p-0 shadow-2xl">
         <DialogHeader className="sticky top-0 z-10 border-b border-border bg-card px-6 py-4.5">
           <div className="flex items-center justify-between">
@@ -381,7 +393,12 @@ export function LeadsImportModal({
               <div className="space-y-1.5 text-xs text-slate-700">
                 <p className="font-bold text-slate-900">Supported Column Headers:</p>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-3">
-                  <span className="font-medium text-emerald-700">✓ Customer Name <span className="text-[10px] uppercase font-bold text-emerald-800">(Required)</span></span>
+                  <span className="font-medium text-emerald-700">
+                    ✓ Customer Name{" "}
+                    <span className="text-[10px] uppercase font-bold text-emerald-800">
+                      (Required)
+                    </span>
+                  </span>
                   <span>• Phone / Mobile</span>
                   <span>• Email Address</span>
                   <span>• Company / Business</span>
@@ -392,7 +409,15 @@ export function LeadsImportModal({
                   <span>• Notes / Remarks</span>
                 </div>
                 <p className="pt-1 text-[11px] text-slate-500">
-                  Tip: Column order doesn't matter. Click <button type="button" onClick={downloadSampleTemplate} className="font-bold text-primary underline cursor-pointer">Download Sample Format</button> for a ready-made template.
+                  Tip: Column order doesn't matter. Click{" "}
+                  <button
+                    type="button"
+                    onClick={downloadSampleTemplate}
+                    className="font-bold text-primary underline cursor-pointer"
+                  >
+                    Download Sample Format
+                  </button>{" "}
+                  for a ready-made template.
                 </p>
               </div>
             </div>
@@ -401,7 +426,10 @@ export function LeadsImportModal({
           {/* File Upload Drop Zone */}
           {!fileName ? (
             <div
-              onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDragOver(true);
+              }}
               onDragLeave={() => setIsDragOver(false)}
               onDrop={(e) => {
                 e.preventDefault();
@@ -448,7 +476,10 @@ export function LeadsImportModal({
                     {parsedRows.length} total rows detected •{" "}
                     <span className="font-semibold text-emerald-600">{validRows.length} valid</span>
                     {invalidRows.length > 0 && (
-                      <span className="font-semibold text-amber-600"> • {invalidRows.length} skipped (no name)</span>
+                      <span className="font-semibold text-amber-600">
+                        {" "}
+                        • {invalidRows.length} skipped (no name)
+                      </span>
                     )}
                   </p>
                 </div>
@@ -476,11 +507,17 @@ export function LeadsImportModal({
                   Data Preview (First {Math.min(parsedRows.length, 5)} of {parsedRows.length} rows)
                 </p>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-[10px] font-bold text-emerald-700">
+                  <Badge
+                    variant="outline"
+                    className="border-emerald-200 bg-emerald-50 text-[10px] font-bold text-emerald-700"
+                  >
                     <CheckCircle2 size={11} className="mr-1" /> {validRows.length} Ready
                   </Badge>
                   {invalidRows.length > 0 && (
-                    <Badge variant="outline" className="border-amber-200 bg-amber-50 text-[10px] font-bold text-amber-700">
+                    <Badge
+                      variant="outline"
+                      className="border-amber-200 bg-amber-50 text-[10px] font-bold text-amber-700"
+                    >
                       <AlertTriangle size={11} className="mr-1" /> {invalidRows.length} Skipped
                     </Badge>
                   )}
@@ -501,9 +538,16 @@ export function LeadsImportModal({
                   </thead>
                   <tbody className="divide-y divide-border">
                     {parsedRows.slice(0, 5).map((row, idx) => (
-                      <tr key={idx} className={row.isValid ? "hover:bg-muted/40" : "bg-amber-50/40 text-muted-foreground"}>
+                      <tr
+                        key={idx}
+                        className={
+                          row.isValid ? "hover:bg-muted/40" : "bg-amber-50/40 text-muted-foreground"
+                        }
+                      >
                         <td className="px-3 py-2 font-medium">
-                          {row.name || <span className="italic text-amber-600">(Missing name)</span>}
+                          {row.name || (
+                            <span className="italic text-amber-600">(Missing name)</span>
+                          )}
                         </td>
                         <td className="px-3 py-2 text-muted-foreground">{row.phone || "—"}</td>
                         <td className="px-3 py-2 text-muted-foreground">{row.company || "—"}</td>

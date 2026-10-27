@@ -5,4 +5,3 @@ export const Route = createFileRoute("/admin/trials")({
     throw redirect({ to: "/admin/users", search: { tab: "trials" } });
   },
 });
-

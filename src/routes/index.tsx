@@ -13,7 +13,11 @@ function IndexRedirect() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <img src="/logo.png" alt="Occo Flow" className="size-14 rounded-2xl object-contain shadow-md animate-pulse" />
+          <img
+            src="/logo.png"
+            alt="Occo Flow"
+            className="size-14 rounded-2xl object-contain shadow-md animate-pulse"
+          />
           <p className="text-sm text-muted-foreground">Loading…</p>
         </div>
       </div>
@@ -21,6 +25,7 @@ function IndexRedirect() {
   }
 
   if (accessState === "unauthenticated") return <Navigate to="/landing" />;
-  if (accessState === "trial_expired" || accessState === "sub_expired") return <Navigate to="/subscription" />;
+  if (accessState === "trial_expired" || accessState === "sub_expired")
+    return <Navigate to="/subscription" />;
   return <Navigate to="/dashboard" />;
 }

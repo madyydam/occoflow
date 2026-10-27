@@ -15,7 +15,13 @@ import {
   Clock,
   Sparkles,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -72,7 +78,7 @@ export function InviteTeamMemberModal({
           department,
           notes,
         },
-        profile?.fullName || "Admin"
+        profile?.fullName || "Admin",
       );
 
       toast.success(`Invitation created for ${member.name}!`);
@@ -88,7 +94,8 @@ export function InviteTeamMemberModal({
 
   const handleCopyLink = () => {
     if (!createdMember) return;
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://flow.heyocco.com";
+    const origin =
+      typeof window !== "undefined" ? window.location.origin : "https://flow.heyocco.com";
     const link = `${origin}/auth/signup?invite=${createdMember.inviteToken || createdMember.id}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
@@ -98,7 +105,10 @@ export function InviteTeamMemberModal({
 
   const handleSendWhatsApp = () => {
     if (!createdMember) return;
-    const link = teamService.generateWhatsAppInvite(createdMember, business?.name || "Our Business");
+    const link = teamService.generateWhatsAppInvite(
+      createdMember,
+      business?.name || "Our Business",
+    );
     window.open(link, "_blank");
   };
 
@@ -155,7 +165,9 @@ export function InviteTeamMemberModal({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">WhatsApp / Phone *</label>
+                <label className="font-semibold text-slate-700 block mb-1">
+                  WhatsApp / Phone *
+                </label>
                 <Input
                   required
                   placeholder="e.g. 9820011223"
@@ -191,7 +203,9 @@ export function InviteTeamMemberModal({
                 </select>
               </div>
               <div>
-                <label className="font-semibold text-slate-700 block mb-1">Department / Designation</label>
+                <label className="font-semibold text-slate-700 block mb-1">
+                  Department / Designation
+                </label>
                 <Input
                   placeholder="e.g. Senior BDE"
                   value={department}
@@ -202,7 +216,9 @@ export function InviteTeamMemberModal({
             </div>
 
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Welcome Note / Instructions</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                Welcome Note / Instructions
+              </label>
               <Input
                 placeholder="e.g. Welcome to the sales team! Please review incoming leads."
                 value={notes}
@@ -212,7 +228,12 @@ export function InviteTeamMemberModal({
             </div>
 
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-              <Button type="button" variant="outline" onClick={handleClose} className="rounded-xl h-9 text-xs">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                className="rounded-xl h-9 text-xs"
+              >
                 Cancel
               </Button>
               <Button
@@ -229,16 +250,24 @@ export function InviteTeamMemberModal({
             <div className="rounded-xl bg-emerald-50 border border-emerald-200/90 p-3.5 flex items-start gap-3">
               <CheckCircle2 size={18} className="text-emerald-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-emerald-900">Invitation Ready for {createdMember.name}</p>
-                <p className="text-[11px] text-emerald-700 mt-0.5">
-                  Assigned Role: <span className="font-semibold uppercase">{createdMember.role}</span> ({createdMember.department})
+                <p className="font-bold text-emerald-900">
+                  Invitation Ready for {createdMember.name}
                 </p>
-                <p className="text-[11px] font-mono text-emerald-800 mt-1">Invite Code: {createdMember.inviteToken}</p>
+                <p className="text-[11px] text-emerald-700 mt-0.5">
+                  Assigned Role:{" "}
+                  <span className="font-semibold uppercase">{createdMember.role}</span> (
+                  {createdMember.department})
+                </p>
+                <p className="text-[11px] font-mono text-emerald-800 mt-1">
+                  Invite Code: {createdMember.inviteToken}
+                </p>
               </div>
             </div>
 
             <div className="space-y-2">
-              <span className="text-[11px] font-bold text-slate-700 block">Instant Invitation Delivery:</span>
+              <span className="text-[11px] font-bold text-slate-700 block">
+                Instant Invitation Delivery:
+              </span>
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   onClick={handleSendWhatsApp}
@@ -265,7 +294,10 @@ export function InviteTeamMemberModal({
             </div>
 
             <div className="flex justify-end pt-2 border-t border-slate-100">
-              <Button onClick={handleClose} className="rounded-xl h-9 text-xs bg-slate-900 text-white font-semibold">
+              <Button
+                onClick={handleClose}
+                className="rounded-xl h-9 text-xs bg-slate-900 text-white font-semibold"
+              >
                 Done
               </Button>
             </div>
@@ -293,7 +325,9 @@ export function AssignTeamTaskModal({
   const { addTask, leads, deals } = useCRM();
 
   const [title, setTitle] = useState("");
-  const [assignedMemberId, setAssignedMemberId] = useState(preselectedMember?.id || members[0]?.id || "");
+  const [assignedMemberId, setAssignedMemberId] = useState(
+    preselectedMember?.id || members[0]?.id || "",
+  );
   const [customer, setCustomer] = useState("");
   const [dueDate, setDueDate] = useState(() => new Date().toISOString().split("T")[0] || "");
   const [dueTime, setDueTime] = useState("11:00 AM");
@@ -346,7 +380,9 @@ export function AssignTeamTaskModal({
               <Calendar size={18} />
             </div>
             <div>
-              <DialogTitle className="text-base font-bold text-slate-900">Assign Task to Team</DialogTitle>
+              <DialogTitle className="text-base font-bold text-slate-900">
+                Assign Task to Team
+              </DialogTitle>
               <DialogDescription className="text-xs text-slate-500">
                 Delegate customer follow-ups and action items to team members.
               </DialogDescription>
@@ -357,7 +393,9 @@ export function AssignTeamTaskModal({
         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5 text-xs">
           {/* Member Selector */}
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Assign To Team Member *</label>
+            <label className="font-semibold text-slate-700 block mb-1">
+              Assign To Team Member *
+            </label>
             <select
               required
               value={assignedMemberId}
@@ -373,7 +411,9 @@ export function AssignTeamTaskModal({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Task Title / Action Item *</label>
+            <label className="font-semibold text-slate-700 block mb-1">
+              Task Title / Action Item *
+            </label>
             <Input
               required
               placeholder="e.g. Call client regarding quotation review"
@@ -384,7 +424,9 @@ export function AssignTeamTaskModal({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Customer / Lead Name (Optional)</label>
+            <label className="font-semibold text-slate-700 block mb-1">
+              Customer / Lead Name (Optional)
+            </label>
             <Input
               placeholder="e.g. Ramesh Patel / Acme Corp"
               value={customer}
@@ -438,7 +480,12 @@ export function AssignTeamTaskModal({
           </div>
 
           <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-            <Button type="button" variant="outline" onClick={onClose} className="rounded-xl h-9 text-xs">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="rounded-xl h-9 text-xs"
+            >
               Cancel
             </Button>
             <Button

@@ -28,9 +28,17 @@ import { money, type LeadPriority, type LeadStatus, type DealStage } from "@/lib
 /**
  * 3D Robot Face Avatar for Occo
  */
-function OccoRobot3DAvatar({ className = "size-8", priority = false }: { className?: string; priority?: boolean }) {
+function OccoRobot3DAvatar({
+  className = "size-8",
+  priority = false,
+}: {
+  className?: string;
+  priority?: boolean;
+}) {
   return (
-    <div className={`relative overflow-hidden rounded-xl bg-sky-100 shadow-2xs select-none ${className}`}>
+    <div
+      className={`relative overflow-hidden rounded-xl bg-sky-100 shadow-2xs select-none ${className}`}
+    >
       <img
         src="/occo-robot-3d.png"
         alt="Occo 3D Robot Face"
@@ -45,18 +53,23 @@ interface ChatMessage {
   id: string;
   sender: "occo" | "user";
   text: string;
-  actionCard?: {
-    type: "lead_created" | "deal_created" | "task_created" | "summary" | "bulk_leads" | "data_list";
-    title: string;
-    details?: Record<string, string | number> | undefined;
-    items?: Array<{
-      title: string;
-      subtitle?: string | undefined;
-      badge?: string | undefined;
-      badgeColor?: string | undefined;
-      value?: string | undefined;
-    }> | undefined;
-  } | undefined;
+  actionCard?:
+    | {
+        type:
+          "lead_created" | "deal_created" | "task_created" | "summary" | "bulk_leads" | "data_list";
+        title: string;
+        details?: Record<string, string | number> | undefined;
+        items?:
+          | Array<{
+              title: string;
+              subtitle?: string | undefined;
+              badge?: string | undefined;
+              badgeColor?: string | undefined;
+              value?: string | undefined;
+            }>
+          | undefined;
+      }
+    | undefined;
   options?: string[] | undefined;
   timestamp: string;
 }
@@ -96,7 +109,7 @@ function parseBulkLeadsText(rawText: string): ParsedBulkLead[] {
     }
 
     // Strip leading number / bullet: "1.", "1)", "-", "•", "*"
-    let clean = line.replace(/^\s*(?:\d+[\.\)]|[-•*])\s*/, "").trim();
+    let clean = line.replace(/^\s*(?:\d+[.)]|[-•*])\s*/, "").trim();
     if (!clean) continue;
 
     // 1. Phone extraction (10-12 digits)
@@ -110,7 +123,9 @@ function parseBulkLeadsText(rawText: string): ParsedBulkLead[] {
     if (emailMatch?.[0]) clean = clean.replace(emailMatch[0], " ");
 
     // 3. Value extraction (₹, k, lakh, numbers)
-    const valMatch = clean.match(/(?:value|val|₹|rs\.?|inr)?\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*(?:k|lakh|lakhs)?\b/i);
+    const valMatch = clean.match(
+      /(?:value|val|₹|rs\.?|inr)?\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*(?:k|lakh|lakhs)?\b/i,
+    );
     let value = 0;
     const rawValStr = valMatch?.[1];
     const matchValFull = valMatch?.[0];
@@ -180,7 +195,18 @@ function parseBulkLeadsText(rawText: string): ParsedBulkLead[] {
 }
 
 export function OccoRobotAssistant() {
-  const { leads, deals, tasks, contacts, followUps, addLead, addLeadsBulk, addDeal, addTask, refresh } = useCRM();
+  const {
+    leads,
+    deals,
+    tasks,
+    contacts,
+    followUps,
+    addLead,
+    addLeadsBulk,
+    addDeal,
+    addTask,
+    refresh,
+  } = useCRM();
   const { profile, business } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -344,11 +370,7 @@ export function OccoRobotAssistant() {
           id: crypto.randomUUID(),
           sender: "occo",
           text: `*Bleep-blop!* ( ^ ‿ ^ ) Ready to bulk import leads into **${business?.name || "your CRM"}**!\n\nYou can paste multiple leads right here in this format:\n\n\`\`\`text\nAdd bulk leads:\n1. Rahul Sharma, 9876543210, Acme Corp, 50000\n2. Priya Singh, 9811223344, TechSoft, 75000\n3. Amit Verma, 9922334455, 30000\n\`\`\`\n\n*(You can format with comma, name, phone, company, and amount. I will parse and add all of them into your workspace database at once!)*`,
-          options: [
-            "➕ Add a new lead",
-            "🔥 High priority leads",
-            "📊 Pipeline summary",
-          ],
+          options: ["➕ Add a new lead", "🔥 High priority leads", "📊 Pipeline summary"],
           timestamp: now,
         };
       }
@@ -394,15 +416,16 @@ export function OccoRobotAssistant() {
           details: {
             "Total Imported": `${created.length} leads`,
             "Combined Value": money(totalVal),
-            "Status": "New",
-            "Workspace": business?.name || "Your Workspace",
+            Status: "New",
+            Workspace: business?.name || "Your Workspace",
           },
           items: created.slice(0, 10).map((l) => ({
             title: l.name,
             subtitle: [l.phone, l.company].filter(Boolean).join(" · ") || "No contact info",
             value: l.value ? money(l.value) : undefined,
             badge: l.priority,
-            badgeColor: l.priority === "High" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700",
+            badgeColor:
+              l.priority === "High" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700",
           })),
         },
         options: ["🔥 High priority leads", "📊 Pipeline summary", "⏰ Pending tasks"],
@@ -431,7 +454,7 @@ export function OccoRobotAssistant() {
             l.name.toLowerCase().includes(term) ||
             l.phone.includes(term) ||
             l.company.toLowerCase().includes(term) ||
-            l.email.toLowerCase().includes(term)
+            l.email.toLowerCase().includes(term),
         );
 
         const matchedContact = !matchedLead
@@ -440,7 +463,7 @@ export function OccoRobotAssistant() {
                 c.name.toLowerCase().includes(term) ||
                 c.phone.includes(term) ||
                 c.company.toLowerCase().includes(term) ||
-                c.email.toLowerCase().includes(term)
+                c.email.toLowerCase().includes(term),
             )
           : null;
 
@@ -453,14 +476,14 @@ export function OccoRobotAssistant() {
               type: "data_list",
               title: matchedLead.name,
               details: {
-                "Phone": matchedLead.phone || "Not set",
-                "Email": matchedLead.email || "Not set",
-                "Company": matchedLead.company || "Not set",
-                "Status": matchedLead.status,
-                "Priority": matchedLead.priority,
+                Phone: matchedLead.phone || "Not set",
+                Email: matchedLead.email || "Not set",
+                Company: matchedLead.company || "Not set",
+                Status: matchedLead.status,
+                Priority: matchedLead.priority,
                 "Potential Value": money(matchedLead.value),
-                "Source": matchedLead.source,
-                "Notes": matchedLead.notes || "None",
+                Source: matchedLead.source,
+                Notes: matchedLead.notes || "None",
               },
             },
             options: [
@@ -481,10 +504,10 @@ export function OccoRobotAssistant() {
               type: "data_list",
               title: matchedContact.name,
               details: {
-                "Phone": matchedContact.phone || "Not set",
-                "Email": matchedContact.email || "Not set",
-                "Company": matchedContact.company || "Not set",
-                "Tags": matchedContact.tags?.join(", ") || "None",
+                Phone: matchedContact.phone || "Not set",
+                Email: matchedContact.email || "Not set",
+                Company: matchedContact.company || "Not set",
+                Tags: matchedContact.tags?.join(", ") || "None",
               },
             },
             options: ["➕ Add a new lead", "📊 Pipeline summary"],
@@ -509,7 +532,9 @@ export function OccoRobotAssistant() {
       lower.includes("hot lead") ||
       lower === "🔥 high priority leads"
     ) {
-      const highLeads = leads.filter((l) => l.priority === "High" && l.status !== "Won" && l.status !== "Lost");
+      const highLeads = leads.filter(
+        (l) => l.priority === "High" && l.status !== "Won" && l.status !== "Lost",
+      );
       const totalVal = highLeads.reduce((s, l) => s + (Number(l.value) || 0), 0);
 
       if (highLeads.length === 0) {
@@ -555,7 +580,10 @@ export function OccoRobotAssistant() {
       lower.includes("high ticket") ||
       lower === "🏆 top value leads"
     ) {
-      const sorted = [...leads].filter(l => l.status !== "Lost").sort((a, b) => (Number(b.value) || 0) - (Number(a.value) || 0)).slice(0, 5);
+      const sorted = [...leads]
+        .filter((l) => l.status !== "Lost")
+        .sort((a, b) => (Number(b.value) || 0) - (Number(a.value) || 0))
+        .slice(0, 5);
       const totalVal = sorted.reduce((s, l) => s + (Number(l.value) || 0), 0);
 
       if (sorted.length === 0) {
@@ -577,14 +605,17 @@ export function OccoRobotAssistant() {
           title: "Top Value Leads",
           details: {
             "Top Leads Combined": money(totalVal),
-            "Highest Single Lead": sorted[0] ? `${sorted[0].name} (${money(sorted[0].value)})` : "N/A",
+            "Highest Single Lead": sorted[0]
+              ? `${sorted[0].name} (${money(sorted[0].value)})`
+              : "N/A",
           },
           items: sorted.map((l, i) => ({
             title: `#${i + 1} ${l.name}`,
             subtitle: [l.phone, l.company].filter(Boolean).join(" · ") || "No phone",
             value: money(l.value),
             badge: l.priority,
-            badgeColor: l.priority === "High" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700",
+            badgeColor:
+              l.priority === "High" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700",
           })),
         },
         options: ["🔥 High priority leads", "📊 Pipeline summary", "➕ Add a new lead"],
@@ -593,7 +624,9 @@ export function OccoRobotAssistant() {
     }
 
     // ── 5. Value Threshold Query (e.g., "leads above 50000") ───────
-    const valThresholdMatch = lower.match(/(?:leads|deals)\s+(?:above|greater than|more than|over|>=|>)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*(?:k|lakh|lakhs)?/i);
+    const valThresholdMatch = lower.match(
+      /(?:leads|deals)\s+(?:above|greater than|more than|over|>=|>)\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*(?:k|lakh|lakhs)?/i,
+    );
     const rawThreshStr = valThresholdMatch?.[1];
     if (valThresholdMatch && rawThreshStr) {
       let threshold = Number(rawThreshStr.replace(/,/g, ""));
@@ -653,7 +686,8 @@ export function OccoRobotAssistant() {
             subtitle: [l.phone, l.company].filter(Boolean).join(" · ") || "No phone",
             value: money(l.value),
             badge: l.priority,
-            badgeColor: l.priority === "High" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700",
+            badgeColor:
+              l.priority === "High" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700",
           })),
         },
         options: ["🔥 High priority leads", "📊 Pipeline summary", "➕ Add a new lead"],
@@ -676,7 +710,9 @@ export function OccoRobotAssistant() {
       else if (lower.includes("website")) specificSource = "Website";
 
       if (specificSource) {
-        const filtered = leads.filter((l) => l.source.toLowerCase().includes(specificSource.toLowerCase()));
+        const filtered = leads.filter((l) =>
+          l.source.toLowerCase().includes(specificSource.toLowerCase()),
+        );
         return {
           id: crypto.randomUUID(),
           sender: "occo",
@@ -714,7 +750,7 @@ export function OccoRobotAssistant() {
             Object.entries(sourceCounts).map(([k, v]) => [
               k,
               `${v} leads (${Math.round((v / (leads.length || 1)) * 100)}%)`,
-            ])
+            ]),
           ),
         },
         options: ["🔥 High priority leads", "📊 Pipeline summary"],
@@ -754,7 +790,8 @@ export function OccoRobotAssistant() {
             title: t.title,
             subtitle: [t.dueDate, t.dueTime].filter(Boolean).join(" at ") || "No due date",
             badge: t.priority,
-            badgeColor: t.priority === "High" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700",
+            badgeColor:
+              t.priority === "High" ? "bg-rose-100 text-rose-700" : "bg-sky-100 text-sky-700",
           })),
         },
         options: ["⏰ Schedule a task", "🔥 High priority leads", "📊 Pipeline summary"],
@@ -795,7 +832,8 @@ export function OccoRobotAssistant() {
             subtitle: d.customer,
             value: money(d.value),
             badge: d.stage,
-            badgeColor: d.stage === "Won" ? "bg-emerald-100 text-emerald-800" : "bg-blue-100 text-blue-800",
+            badgeColor:
+              d.stage === "Won" ? "bg-emerald-100 text-emerald-800" : "bg-blue-100 text-blue-800",
           })),
         },
         options: ["💼 Create a deal", "📊 Pipeline summary"],
@@ -806,7 +844,10 @@ export function OccoRobotAssistant() {
     // ── 10. Contacts Directory Query ───────────────────────────────
     if (
       lower.includes("contact") &&
-      (lower.includes("show") || lower.includes("list") || lower.includes("how many") || lower.includes("my"))
+      (lower.includes("show") ||
+        lower.includes("list") ||
+        lower.includes("how many") ||
+        lower.includes("my"))
     ) {
       return {
         id: crypto.randomUUID(),
@@ -817,7 +858,8 @@ export function OccoRobotAssistant() {
           title: `Contacts Directory (${contacts.length})`,
           items: contacts.slice(0, 8).map((c) => ({
             title: c.name,
-            subtitle: [c.phone, c.company].filter(Boolean).join(" · ") || c.email || "No contact info",
+            subtitle:
+              [c.phone, c.company].filter(Boolean).join(" · ") || c.email || "No contact info",
             badge: c.tags?.[0] || "Customer",
           })),
         },
@@ -856,7 +898,12 @@ export function OccoRobotAssistant() {
             "Tasks Pending": pendingTasks,
           },
         },
-        options: ["📋 Bulk Add Leads", "➕ Add a new lead", "🔥 High priority leads", "⏰ Pending tasks"],
+        options: [
+          "📋 Bulk Add Leads",
+          "➕ Add a new lead",
+          "🔥 High priority leads",
+          "⏰ Pending tasks",
+        ],
         timestamp: now,
       };
     }
@@ -869,10 +916,13 @@ export function OccoRobotAssistant() {
       lower.includes("recommend") ||
       lower.includes("what should i do")
     ) {
-      const highPriorityLeads = leads.filter((l) => l.priority === "High" && l.status !== "Won" && l.status !== "Lost");
+      const highPriorityLeads = leads.filter(
+        (l) => l.priority === "High" && l.status !== "Won" && l.status !== "Lost",
+      );
       const highDeals = deals.filter((d) => d.stage === "Proposal" || d.stage === "Negotiation");
 
-      let tipText = "🌟 *Antenna glowing!* ( ˶• ֊ •˶ ) **Occo's High-Impact Focus Tips for Today:**\n\n";
+      let tipText =
+        "🌟 *Antenna glowing!* ( ˶• ֊ •˶ ) **Occo's High-Impact Focus Tips for Today:**\n\n";
 
       if (highPriorityLeads.length > 0) {
         tipText += `1. **Reach Out to High Priority Leads:** You have **${highPriorityLeads.length}** hot leads waiting (including *${highPriorityLeads[0]?.name}*). Let's give them a call!\n`;
@@ -898,8 +948,18 @@ export function OccoRobotAssistant() {
     }
 
     // ── 13. Single Add Lead Intent ─────────────────────────────────
-    if (lower.startsWith("add lead") || lower.startsWith("new lead") || lower.startsWith("create lead") || lower === "➕ add a new lead") {
-      if (lower === "add lead" || lower === "new lead" || lower === "create lead" || lower === "➕ add a new lead") {
+    if (
+      lower.startsWith("add lead") ||
+      lower.startsWith("new lead") ||
+      lower.startsWith("create lead") ||
+      lower === "➕ add a new lead"
+    ) {
+      if (
+        lower === "add lead" ||
+        lower === "new lead" ||
+        lower === "create lead" ||
+        lower === "➕ add a new lead"
+      ) {
         return {
           id: crypto.randomUUID(),
           sender: "occo",
@@ -913,7 +973,9 @@ export function OccoRobotAssistant() {
       const phoneMatch = cleaned.match(/(?:\+91[\s-]?)?[6789]\d{9}/);
       const phone = phoneMatch ? phoneMatch[0] : "";
 
-      const valMatch = cleaned.match(/(?:value|val|₹|rs\.?|inr)?\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*(?:k|lakh|lakhs)?/i);
+      const valMatch = cleaned.match(
+        /(?:value|val|₹|rs\.?|inr)?\s*(\d+(?:,\d+)*(?:\.\d+)?)\s*(?:k|lakh|lakhs)?/i,
+      );
       let value = 0;
       if (valMatch && valMatch[1]) {
         const rawNum = Number(valMatch[1].replace(/,/g, ""));
@@ -932,11 +994,20 @@ export function OccoRobotAssistant() {
       namePart = namePart.replace(/(?:from|at|company|with|value|val|rs|inr)\b.*/i, "").trim();
 
       const name = namePart.trim() || "New Lead";
-      const companyMatch = cleaned.match(/(?:at|company|firm|of)\s+([A-Za-z0-9\s&.-]+?)(?:\s+(?:with|value|phone|email|$))/i);
+      const companyMatch = cleaned.match(
+        /(?:at|company|firm|of)\s+([A-Za-z0-9\s&.-]+?)(?:\s+(?:with|value|phone|email|$))/i,
+      );
       const company = (companyMatch && companyMatch[1]?.trim()) || "";
 
-      const priority: LeadPriority = lower.includes("urgent") || lower.includes("high") ? "High" : "Medium";
-      const source = lower.includes("instagram") ? "Instagram" : lower.includes("google") ? "Google" : lower.includes("referral") ? "Referral" : "Direct / Occo";
+      const priority: LeadPriority =
+        lower.includes("urgent") || lower.includes("high") ? "High" : "Medium";
+      const source = lower.includes("instagram")
+        ? "Instagram"
+        : lower.includes("google")
+          ? "Google"
+          : lower.includes("referral")
+            ? "Referral"
+            : "Direct / Occo";
 
       const created = await addLead({
         name,
@@ -962,10 +1033,10 @@ export function OccoRobotAssistant() {
             type: "lead_created",
             title: created.name,
             details: {
-              "Phone": created.phone || "Not specified",
-              "Company": created.company || "Not specified",
-              "Status": created.status,
-              "Priority": created.priority,
+              Phone: created.phone || "Not specified",
+              Company: created.company || "Not specified",
+              Status: created.status,
+              Priority: created.priority,
               "Potential Value": money(created.value),
             },
           },
@@ -976,8 +1047,18 @@ export function OccoRobotAssistant() {
     }
 
     // ── 14. Add Deal Intent ────────────────────────────────────────
-    if (lower.startsWith("add deal") || lower.startsWith("new deal") || lower.startsWith("create deal") || lower === "💼 create a deal") {
-      if (lower === "add deal" || lower === "new deal" || lower === "create deal" || lower === "💼 create a deal") {
+    if (
+      lower.startsWith("add deal") ||
+      lower.startsWith("new deal") ||
+      lower.startsWith("create deal") ||
+      lower === "💼 create a deal"
+    ) {
+      if (
+        lower === "add deal" ||
+        lower === "new deal" ||
+        lower === "create deal" ||
+        lower === "💼 create a deal"
+      ) {
         return {
           id: crypto.randomUUID(),
           sender: "occo",
@@ -990,7 +1071,9 @@ export function OccoRobotAssistant() {
       const valMatch = cleaned.match(/\b(\d+(?:,\d+)*(?:\.\d+)?)\b/);
       const value = valMatch && valMatch[1] ? Number(valMatch[1].replace(/,/g, "")) : 0;
 
-      const customerMatch = cleaned.match(/(?:for|with|client|customer)\s+([A-Za-z0-9\s&.-]+?)(?:\s+(?:value|val|\d|$))/i);
+      const customerMatch = cleaned.match(
+        /(?:for|with|client|customer)\s+([A-Za-z0-9\s&.-]+?)(?:\s+(?:value|val|\d|$))/i,
+      );
       const customer = (customerMatch && customerMatch[1]?.trim()) || "Valued Customer";
 
       let title = cleaned;
@@ -1018,9 +1101,9 @@ export function OccoRobotAssistant() {
             type: "deal_created",
             title: created.title,
             details: {
-              "Customer": created.customer,
-              "Value": money(created.value),
-              "Stage": created.stage,
+              Customer: created.customer,
+              Value: money(created.value),
+              Stage: created.stage,
             },
           },
           options: ["💼 Create another deal", "📊 Pipeline summary"],
@@ -1038,7 +1121,12 @@ export function OccoRobotAssistant() {
       lower === "📅 schedule a task" ||
       lower === "⏰ schedule a task"
     ) {
-      if (lower === "add task" || lower === "create task" || lower === "📅 schedule a task" || lower === "⏰ schedule a task") {
+      if (
+        lower === "add task" ||
+        lower === "create task" ||
+        lower === "📅 schedule a task" ||
+        lower === "⏰ schedule a task"
+      ) {
         return {
           id: crypto.randomUUID(),
           sender: "occo",
@@ -1047,7 +1135,9 @@ export function OccoRobotAssistant() {
         };
       }
 
-      const cleaned = query.replace(/^(add task|create task|schedule task|remind me to|remind me)\s+/i, "").trim();
+      const cleaned = query
+        .replace(/^(add task|create task|schedule task|remind me to|remind me)\s+/i, "")
+        .trim();
       const timeMatch = cleaned.match(/\b(?:at\s+)?(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\b/i);
       const dueTime = timeMatch ? timeMatch[1]?.trim() : "";
 
@@ -1058,7 +1148,10 @@ export function OccoRobotAssistant() {
         targetDate = d.toISOString().split("T")[0] || "";
       }
 
-      const taskTitle = cleaned.replace(/\b(?:tomorrow|today|at\s+\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\b/gi, "").trim() || "Follow up";
+      const taskTitle =
+        cleaned
+          .replace(/\b(?:tomorrow|today|at\s+\d{1,2}(?::\d{2})?\s*(?:am|pm)?)\b/gi, "")
+          .trim() || "Follow up";
 
       const created = await addTask({
         id: crypto.randomUUID(),
@@ -1082,9 +1175,9 @@ export function OccoRobotAssistant() {
             type: "task_created",
             title: created.title,
             details: {
-              "Date": targetDate,
-              "Time": dueTime || "11:00 AM",
-              "Priority": "High",
+              Date: targetDate,
+              Time: dueTime || "11:00 AM",
+              Priority: "High",
             },
           },
           options: ["⏰ Add another task", "📊 Pipeline summary"],
@@ -1197,11 +1290,7 @@ export function OccoRobotAssistant() {
           <div className="flex h-14 shrink-0 items-center justify-between border-b border-sky-100 bg-gradient-to-r from-blue-600 via-sky-600 to-sky-500 px-4 text-white">
             <div className="flex items-center gap-2.5">
               <div className="relative size-9.5 shrink-0 overflow-hidden rounded-xl ring-2 ring-white/40 shadow-sm bg-sky-100">
-                <img
-                  src="/occo-robot-3d.png"
-                  alt="Occo"
-                  className="size-full object-cover"
-                />
+                <img src="/occo-robot-3d.png" alt="Occo" className="size-full object-cover" />
                 <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full bg-emerald-400 ring-2 ring-sky-600" />
               </div>
               <div>
@@ -1235,13 +1324,9 @@ export function OccoRobotAssistant() {
                 key={m.id}
                 className={`flex gap-2.5 ${m.sender === "user" ? "justify-end" : "justify-start"}`}
               >
-                {(m.sender === "occo" || (m as any).sender === "max") && (
+                {(m.sender === "occo" || (m.sender as string) === "max") && (
                   <div className="size-8 shrink-0 overflow-hidden rounded-xl ring-1 ring-sky-200/90 shadow-2xs bg-sky-100 mt-0.5">
-                    <img
-                      src="/occo-robot-3d.png"
-                      alt="Occo"
-                      className="size-full object-cover"
-                    />
+                    <img src="/occo-robot-3d.png" alt="Occo" className="size-full object-cover" />
                   </div>
                 )}
 
@@ -1261,7 +1346,10 @@ export function OccoRobotAssistant() {
                     <div className="rounded-xl border border-sky-100 bg-white/95 p-3 text-xs shadow-xs space-y-2">
                       {/* Card Header */}
                       <div className="flex items-center gap-1.5 font-bold text-slate-800">
-                        {m.actionCard.type === "bulk_leads" || m.actionCard.type === "lead_created" || m.actionCard.type === "deal_created" || m.actionCard.type === "task_created" ? (
+                        {m.actionCard.type === "bulk_leads" ||
+                        m.actionCard.type === "lead_created" ||
+                        m.actionCard.type === "deal_created" ||
+                        m.actionCard.type === "task_created" ? (
                           <CheckCircle2 size={15} className="text-emerald-600 shrink-0" />
                         ) : (
                           <Database size={15} className="text-sky-600 shrink-0" />
@@ -1275,7 +1363,9 @@ export function OccoRobotAssistant() {
                           {Object.entries(m.actionCard.details).map(([k, v]) => (
                             <div key={k} className="flex justify-between items-center gap-2">
                               <span className="text-slate-500">{k}:</span>
-                              <span className="font-semibold text-slate-800 text-right truncate">{v}</span>
+                              <span className="font-semibold text-slate-800 text-right truncate">
+                                {v}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -1290,14 +1380,20 @@ export function OccoRobotAssistant() {
                               className="flex items-center justify-between gap-2 rounded-lg bg-slate-50/80 hover:bg-sky-50/60 p-2 border border-slate-100 transition-colors text-[11px]"
                             >
                               <div className="min-w-0 flex-1">
-                                <div className="font-semibold text-slate-800 truncate">{item.title}</div>
+                                <div className="font-semibold text-slate-800 truncate">
+                                  {item.title}
+                                </div>
                                 {item.subtitle && (
-                                  <div className="text-[10px] text-slate-500 truncate">{item.subtitle}</div>
+                                  <div className="text-[10px] text-slate-500 truncate">
+                                    {item.subtitle}
+                                  </div>
                                 )}
                               </div>
                               <div className="flex items-center gap-1.5 shrink-0">
                                 {item.value && (
-                                  <span className="font-bold text-slate-900 text-[11px]">{item.value}</span>
+                                  <span className="font-bold text-slate-900 text-[11px]">
+                                    {item.value}
+                                  </span>
                                 )}
                                 {item.badge && (
                                   <span
@@ -1331,7 +1427,9 @@ export function OccoRobotAssistant() {
                     </div>
                   )}
 
-                  <span className={`block text-[9px] text-slate-400 ${m.sender === "user" ? "text-right" : "text-left"}`}>
+                  <span
+                    className={`block text-[9px] text-slate-400 ${m.sender === "user" ? "text-right" : "text-left"}`}
+                  >
                     {m.timestamp}
                   </span>
                 </div>
@@ -1347,11 +1445,7 @@ export function OccoRobotAssistant() {
             {isTyping && (
               <div className="flex items-center gap-2 text-slate-400 text-xs">
                 <div className="size-7.5 shrink-0 overflow-hidden rounded-xl ring-1 ring-sky-200/90 shadow-2xs bg-sky-100">
-                  <img
-                    src="/occo-robot-3d.png"
-                    alt="Occo"
-                    className="size-full object-cover"
-                  />
+                  <img src="/occo-robot-3d.png" alt="Occo" className="size-full object-cover" />
                 </div>
                 <div className="flex items-center gap-1 rounded-xl bg-white border border-slate-200 px-3 py-2">
                   <span className="size-1.5 animate-bounce rounded-full bg-sky-500" />

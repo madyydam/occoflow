@@ -43,29 +43,29 @@ export interface PaymentRecord {
   paymentMode: PaymentMode;
   notes: string;
   upiId: string; // e.g. merchant@upi
-  
+
   // Recurring
   recurringInterval: RecurringInterval;
   nextRecurringDate?: string | null | undefined;
-  
+
   // Promise to pay
   promiseToPayDate?: string | null | undefined;
   promiseToPayAmount?: number | null | undefined;
   promiseToPayNote?: string | null | undefined;
-  
+
   // Late fee
   lateFeeEnabled?: boolean | undefined;
   lateFeeType?: "percentage" | "flat" | undefined;
   lateFeeRate?: number | undefined;
   calculatedLateFee?: number | undefined;
-  
+
   // History
   installments: Installment[];
   reminderLogs: ReminderLog[];
-  
+
   lastRemindedAt?: string | null | undefined;
   autoRemindEnabled: boolean;
-  
+
   createdById?: string | null | undefined;
   createdByName?: string | null | undefined;
   createdAt: string;
@@ -145,9 +145,16 @@ export function generateReminderMessage(params: {
   customUpiUrl?: string;
 }): string {
   const { tone, record, businessName, businessPhone, customUpiUrl } = params;
-  const balance = record.balanceAmount.toLocaleString("en-IN", { style: "currency", currency: "INR" });
+  const balance = record.balanceAmount.toLocaleString("en-IN", {
+    style: "currency",
+    currency: "INR",
+  });
   const invoice = record.invoiceNumber;
-  const due = new Date(record.dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  const due = new Date(record.dueDate).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
   const upiLink = customUpiUrl || (record.upiId ? `UPI: ${record.upiId}` : "");
 
   switch (tone) {
@@ -165,7 +172,9 @@ export function generateReminderMessage(params: {
 // ── Local Storage Cache Fallback ───────────────────────────────────
 function getLocalPayments(businessId: string): PaymentRecord[] {
   try {
-    const raw = localStorage.getItem(`occo_payment_records_${businessId}`) || localStorage.getItem(`futora_payment_records_${businessId}`);
+    const raw =
+      localStorage.getItem(`occo_payment_records_${businessId}`) ||
+      localStorage.getItem(`futora_payment_records_${businessId}`);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -331,7 +340,9 @@ export const paymentReminderService = {
   },
 
   // Create a new invoice / payment record
-  async create(record: Omit<PaymentRecord, "id" | "createdAt" | "updatedAt">): Promise<PaymentRecord> {
+  async create(
+    record: Omit<PaymentRecord, "id" | "createdAt" | "updatedAt">,
+  ): Promise<PaymentRecord> {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
     const balance = Math.max(0, record.totalAmount - record.paidAmount);
@@ -354,54 +365,58 @@ export const paymentReminderService = {
 
     // 1. Try dedicated table in Supabase
     try {
-      await supabase.from("payment_records").insert([{
-        id: newRecord.id,
-        business_id: newRecord.businessId,
-        customer_name: newRecord.customerName,
-        customer_phone: newRecord.customerPhone,
-        customer_email: newRecord.customerEmail,
-        invoice_number: newRecord.invoiceNumber,
-        deal_id: newRecord.dealId || null,
-        lead_id: newRecord.leadId || null,
-        total_amount: newRecord.totalAmount,
-        paid_amount: newRecord.paidAmount,
-        balance_amount: newRecord.balanceAmount,
-        due_date: newRecord.dueDate,
-        status: newRecord.status,
-        payment_mode: newRecord.paymentMode,
-        notes: newRecord.notes,
-        upi_id: newRecord.upiId,
-        recurring_interval: newRecord.recurringInterval,
-        next_recurring_date: newRecord.nextRecurringDate || null,
-        promise_to_pay_date: newRecord.promiseToPayDate || null,
-        promise_to_pay_amount: newRecord.promiseToPayAmount || null,
-        promise_to_pay_note: newRecord.promiseToPayNote || "",
-        late_fee_enabled: newRecord.lateFeeEnabled || false,
-        late_fee_type: newRecord.lateFeeType || "percentage",
-        late_fee_rate: newRecord.lateFeeRate || 0,
-        calculated_late_fee: newRecord.calculatedLateFee || 0,
-        installments: newRecord.installments,
-        reminder_logs: newRecord.reminderLogs,
-        last_reminded_at: newRecord.lastRemindedAt || null,
-        auto_remind_enabled: newRecord.autoRemindEnabled,
-        created_by_id: newRecord.createdById || null,
-        created_by_name: newRecord.createdByName || "",
-      }]);
+      await supabase.from("payment_records").insert([
+        {
+          id: newRecord.id,
+          business_id: newRecord.businessId,
+          customer_name: newRecord.customerName,
+          customer_phone: newRecord.customerPhone,
+          customer_email: newRecord.customerEmail,
+          invoice_number: newRecord.invoiceNumber,
+          deal_id: newRecord.dealId || null,
+          lead_id: newRecord.leadId || null,
+          total_amount: newRecord.totalAmount,
+          paid_amount: newRecord.paidAmount,
+          balance_amount: newRecord.balanceAmount,
+          due_date: newRecord.dueDate,
+          status: newRecord.status,
+          payment_mode: newRecord.paymentMode,
+          notes: newRecord.notes,
+          upi_id: newRecord.upiId,
+          recurring_interval: newRecord.recurringInterval,
+          next_recurring_date: newRecord.nextRecurringDate || null,
+          promise_to_pay_date: newRecord.promiseToPayDate || null,
+          promise_to_pay_amount: newRecord.promiseToPayAmount || null,
+          promise_to_pay_note: newRecord.promiseToPayNote || "",
+          late_fee_enabled: newRecord.lateFeeEnabled || false,
+          late_fee_type: newRecord.lateFeeType || "percentage",
+          late_fee_rate: newRecord.lateFeeRate || 0,
+          calculated_late_fee: newRecord.calculatedLateFee || 0,
+          installments: newRecord.installments,
+          reminder_logs: newRecord.reminderLogs,
+          last_reminded_at: newRecord.lastRemindedAt || null,
+          auto_remind_enabled: newRecord.autoRemindEnabled,
+          created_by_id: newRecord.createdById || null,
+          created_by_name: newRecord.createdByName || "",
+        },
+      ]);
     } catch {
       // Ignored if table not created
     }
 
     // 2. Persist to Supabase `activities` table (guaranteed cloud storage)
     try {
-      await supabase.from("activities").insert([{
-        id: newRecord.id,
-        business_id: newRecord.businessId,
-        lead_id: newRecord.leadId || null,
-        deal_id: newRecord.dealId || null,
-        type: "payment_record",
-        title: newRecord.invoiceNumber,
-        detail: JSON.stringify(newRecord),
-      }]);
+      await supabase.from("activities").insert([
+        {
+          id: newRecord.id,
+          business_id: newRecord.businessId,
+          lead_id: newRecord.leadId || null,
+          deal_id: newRecord.dealId || null,
+          type: "payment_record",
+          title: newRecord.invoiceNumber,
+          detail: JSON.stringify(newRecord),
+        },
+      ]);
     } catch (e) {
       console.warn("[PaymentService] failed to save to activities:", e);
     }
@@ -417,7 +432,7 @@ export const paymentReminderService = {
   async recordInstallment(
     paymentId: string,
     installment: Omit<Installment, "id">,
-    businessId: string
+    businessId: string,
   ): Promise<PaymentRecord | null> {
     const list = await this.list(businessId);
     const target = list.find((r) => r.id === paymentId);
@@ -447,21 +462,27 @@ export const paymentReminderService = {
 
     // Update in Supabase
     try {
-      await supabase.from("payment_records").update({
-        paid_amount: updated.paidAmount,
-        balance_amount: updated.balanceAmount,
-        status: updated.status,
-        installments: updated.installments,
-        updated_at: updated.updatedAt,
-      }).eq("id", paymentId);
+      await supabase
+        .from("payment_records")
+        .update({
+          paid_amount: updated.paidAmount,
+          balance_amount: updated.balanceAmount,
+          status: updated.status,
+          installments: updated.installments,
+          updated_at: updated.updatedAt,
+        })
+        .eq("id", paymentId);
     } catch {
       // ignore
     }
 
     try {
-      await supabase.from("activities").update({
-        detail: JSON.stringify(updated),
-      }).eq("id", paymentId);
+      await supabase
+        .from("activities")
+        .update({
+          detail: JSON.stringify(updated),
+        })
+        .eq("id", paymentId);
     } catch {
       // ignore
     }
@@ -477,7 +498,7 @@ export const paymentReminderService = {
   async logReminder(
     paymentId: string,
     log: Omit<ReminderLog, "id" | "sentAt">,
-    businessId: string
+    businessId: string,
   ): Promise<PaymentRecord | null> {
     const list = await this.list(businessId);
     const target = list.find((r) => r.id === paymentId);
@@ -498,19 +519,25 @@ export const paymentReminderService = {
     };
 
     try {
-      await supabase.from("payment_records").update({
-        last_reminded_at: now,
-        reminder_logs: updated.reminderLogs,
-        updated_at: now,
-      }).eq("id", paymentId);
+      await supabase
+        .from("payment_records")
+        .update({
+          last_reminded_at: now,
+          reminder_logs: updated.reminderLogs,
+          updated_at: now,
+        })
+        .eq("id", paymentId);
     } catch {
       // ignore
     }
 
     try {
-      await supabase.from("activities").update({
-        detail: JSON.stringify(updated),
-      }).eq("id", paymentId);
+      await supabase
+        .from("activities")
+        .update({
+          detail: JSON.stringify(updated),
+        })
+        .eq("id", paymentId);
     } catch {
       // ignore
     }
@@ -527,7 +554,7 @@ export const paymentReminderService = {
     ptpDate: string,
     ptpAmount: number,
     ptpNote: string,
-    businessId: string
+    businessId: string,
   ): Promise<PaymentRecord | null> {
     const list = await this.list(businessId);
     const target = list.find((r) => r.id === paymentId);
@@ -543,20 +570,26 @@ export const paymentReminderService = {
     };
 
     try {
-      await supabase.from("payment_records").update({
-        promise_to_pay_date: ptpDate,
-        promise_to_pay_amount: ptpAmount,
-        promise_to_pay_note: ptpNote,
-        updated_at: now,
-      }).eq("id", paymentId);
+      await supabase
+        .from("payment_records")
+        .update({
+          promise_to_pay_date: ptpDate,
+          promise_to_pay_amount: ptpAmount,
+          promise_to_pay_note: ptpNote,
+          updated_at: now,
+        })
+        .eq("id", paymentId);
     } catch {
       // ignore
     }
 
     try {
-      await supabase.from("activities").update({
-        detail: JSON.stringify(updated),
-      }).eq("id", paymentId);
+      await supabase
+        .from("activities")
+        .update({
+          detail: JSON.stringify(updated),
+        })
+        .eq("id", paymentId);
     } catch {
       // ignore
     }
@@ -581,17 +614,50 @@ export const paymentReminderService = {
     }
 
     const list = getLocalPayments(businessId);
-    setLocalPayments(businessId, list.filter((r) => r.id !== paymentId));
+    setLocalPayments(
+      businessId,
+      list.filter((r) => r.id !== paymentId),
+    );
     return true;
   },
 
   // Calculate Aging Buckets (0-30, 31-60, 61-90, 90+ days)
   calculateAging(records: PaymentRecord[]): AgingReport {
-    const notDue: AgingBucketSummary = { bucket: "not_due", label: "Not Due (Current)", count: 0, amount: 0, records: [] };
-    const days1To30: AgingBucketSummary = { bucket: "1_30", label: "1 - 30 Days Overdue", count: 0, amount: 0, records: [] };
-    const days31To60: AgingBucketSummary = { bucket: "31_60", label: "31 - 60 Days Overdue", count: 0, amount: 0, records: [] };
-    const days61To90: AgingBucketSummary = { bucket: "61_90", label: "61 - 90 Days Overdue", count: 0, amount: 0, records: [] };
-    const days90Plus: AgingBucketSummary = { bucket: "90_plus", label: "90+ Days Overdue (High Risk)", count: 0, amount: 0, records: [] };
+    const notDue: AgingBucketSummary = {
+      bucket: "not_due",
+      label: "Not Due (Current)",
+      count: 0,
+      amount: 0,
+      records: [],
+    };
+    const days1To30: AgingBucketSummary = {
+      bucket: "1_30",
+      label: "1 - 30 Days Overdue",
+      count: 0,
+      amount: 0,
+      records: [],
+    };
+    const days31To60: AgingBucketSummary = {
+      bucket: "31_60",
+      label: "31 - 60 Days Overdue",
+      count: 0,
+      amount: 0,
+      records: [],
+    };
+    const days61To90: AgingBucketSummary = {
+      bucket: "61_90",
+      label: "61 - 90 Days Overdue",
+      count: 0,
+      amount: 0,
+      records: [],
+    };
+    const days90Plus: AgingBucketSummary = {
+      bucket: "90_plus",
+      label: "90+ Days Overdue (High Risk)",
+      count: 0,
+      amount: 0,
+      records: [],
+    };
 
     let totalOutstanding = 0;
 
@@ -642,14 +708,14 @@ export const paymentReminderService = {
         r.status === "Paid"
           ? "Paid"
           : days <= 0
-          ? "Current (Not Due)"
-          : days <= 30
-          ? "1-30 Days"
-          : days <= 60
-          ? "31-60 Days"
-          : days <= 90
-          ? "61-90 Days"
-          : "90+ Days Overdue";
+            ? "Current (Not Due)"
+            : days <= 30
+              ? "1-30 Days"
+              : days <= 60
+                ? "31-60 Days"
+                : days <= 90
+                  ? "61-90 Days"
+                  : "90+ Days Overdue";
 
       return {
         "Invoice No.": r.invoiceNumber,
@@ -660,14 +726,16 @@ export const paymentReminderService = {
         "Paid Amount (INR)": r.paidAmount,
         "Balance Outstanding (INR)": r.balanceAmount,
         "Due Date": r.dueDate,
-        "Status": r.status,
+        Status: r.status,
         "Aging Bucket": agingTag,
         "Payment Mode": r.paymentMode,
         "Promise-to-Pay Date": r.promiseToPayDate || "",
         "PTP Amount": r.promiseToPayAmount || "",
-        "Last Reminded": r.lastRemindedAt ? new Date(r.lastRemindedAt).toLocaleDateString() : "Never",
+        "Last Reminded": r.lastRemindedAt
+          ? new Date(r.lastRemindedAt).toLocaleDateString()
+          : "Never",
         "Total Installments": r.installments.length,
-        "Notes": r.notes || "",
+        Notes: r.notes || "",
         "Created Date": new Date(r.createdAt).toLocaleDateString(),
       };
     });

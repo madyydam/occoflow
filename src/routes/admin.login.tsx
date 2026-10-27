@@ -38,8 +38,8 @@ function AdminLoginForm() {
         err.includes("Invalid login credentials")
           ? "Incorrect email or password."
           : err.includes("not_admin") || err.includes("administrator privileges")
-          ? "Access Denied: This account is not registered with administrator privileges."
-          : err,
+            ? "Access Denied: This account is not registered with administrator privileges."
+            : err,
       );
       return;
     }
@@ -52,7 +52,11 @@ function AdminLoginForm() {
         {/* Brand */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-2.5">
-            <img src="/logo.png" alt={BRAND} className="size-11 rounded-xl object-contain shadow-sm" />
+            <img
+              src="/logo.png"
+              alt={BRAND}
+              className="size-11 rounded-xl object-contain shadow-sm"
+            />
             <div className="text-left">
               <h1 className="font-display text-xl font-extrabold text-[#0f172a]">{BRAND}</h1>
               <p className="text-[11px] font-semibold text-slate-500">Super Admin Portal</p>
@@ -63,7 +67,9 @@ function AdminLoginForm() {
             <ShieldCheck size={13} className="text-[#2563eb]" /> Restricted Super Admin Portal
           </div>
           <h2 className="mt-4 text-2xl font-bold text-[#0f172a]">Admin Sign In</h2>
-          <p className="mt-1 text-xs text-slate-500">Confidential platform administration access only</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Confidential platform administration access only
+          </p>
         </div>
 
         {/* Card */}
@@ -77,11 +83,17 @@ function AdminLoginForm() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="admin-email" className="mb-1.5 block text-xs font-semibold text-slate-700">
+              <label
+                htmlFor="admin-email"
+                className="mb-1.5 block text-xs font-semibold text-slate-700"
+              >
                 Admin Email Address
               </label>
               <div className="relative">
-                <Mail size={16} className="pointer-events-none absolute left-3 top-3.5 text-slate-400" />
+                <Mail
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-3.5 text-slate-400"
+                />
                 <input
                   id="admin-email"
                   type="email"
@@ -97,11 +109,17 @@ function AdminLoginForm() {
             </div>
 
             <div>
-              <label htmlFor="admin-password" className="mb-1.5 block text-xs font-semibold text-slate-700">
+              <label
+                htmlFor="admin-password"
+                className="mb-1.5 block text-xs font-semibold text-slate-700"
+              >
                 Password
               </label>
               <div className="relative">
-                <Lock size={16} className="pointer-events-none absolute left-3 top-3.5 text-slate-400" />
+                <Lock
+                  size={16}
+                  className="pointer-events-none absolute left-3 top-3.5 text-slate-400"
+                />
                 <input
                   id="admin-password"
                   type={showPw ? "text" : "password"}

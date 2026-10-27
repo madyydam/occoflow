@@ -91,10 +91,7 @@ function TasksContent() {
         title="Tasks"
         description="A little progress, every day."
         action={
-          <Button
-            onClick={() => setForm("task")}
-            className="hidden sm:flex lg:hidden"
-          >
+          <Button onClick={() => setForm("task")} className="hidden sm:flex lg:hidden">
             <Plus size={16} /> Add task
           </Button>
         }
@@ -111,10 +108,7 @@ function TasksContent() {
                 : "border-transparent text-muted-foreground"
             }`}
           >
-            {x}{" "}
-            <span className="ml-1 text-xs opacity-60">
-              {counts[x]}
-            </span>
+            {x} <span className="ml-1 text-xs opacity-60">{counts[x]}</span>
           </Button>
         ))}
       </div>
@@ -130,8 +124,8 @@ function TasksContent() {
             tab === "Completed"
               ? "Nothing completed yet"
               : tab === "Today"
-              ? "All clear for today"
-              : "No upcoming tasks"
+                ? "All clear for today"
+                : "No upcoming tasks"
           }
           description={
             tab === "Completed"

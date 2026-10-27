@@ -1,8 +1,24 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import {
-  LayoutDashboard, UsersRound, ContactRound, Handshake, ListTodo,
-  CalendarDays, ChartNoAxesCombined, Settings2, Grid2X2, Bell,
-  Search, Plus, ChevronDown, UserRound, LogOut, MessageSquarePlus, IndianRupee, Users, type LucideIcon,
+  LayoutDashboard,
+  UsersRound,
+  ContactRound,
+  Handshake,
+  ListTodo,
+  CalendarDays,
+  ChartNoAxesCombined,
+  Settings2,
+  Grid2X2,
+  Bell,
+  Search,
+  Plus,
+  ChevronDown,
+  UserRound,
+  LogOut,
+  MessageSquarePlus,
+  IndianRupee,
+  Users,
+  type LucideIcon,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { BRAND, initials } from "@/lib/crm-data";
@@ -10,7 +26,13 @@ import { useCRM } from "@/lib/crm-context";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Toaster } from "@/components/ui/sonner";
 import { QuickForm } from "./crm-ui";
@@ -119,7 +141,11 @@ const desktopNav = [
     activeIconBg: "bg-teal-600 text-white shadow-xs",
   },
 ];
-const mobileNav: { label: string; to: "/dashboard" | "/leads" | "/deals" | "/tasks" | "/more"; icon: LucideIcon }[] = [
+const mobileNav: {
+  label: string;
+  to: "/dashboard" | "/leads" | "/deals" | "/tasks" | "/more";
+  icon: LucideIcon;
+}[] = [
   { label: "Home", to: "/dashboard", icon: LayoutDashboard },
   { label: "Leads", to: "/leads", icon: UsersRound },
   { label: "Deals", to: "/deals", icon: Handshake },
@@ -130,8 +156,14 @@ const mobileNav: { label: string; to: "/dashboard" | "/leads" | "/deals" | "/tas
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link to="/dashboard" className="flex items-center gap-2 no-underline text-foreground">
-      <img src="/logo.png" alt="Occo Flow" className="size-8 shrink-0 rounded-[9px] object-contain shadow-2xs" />
-      {!compact && <span className="font-display text-[15px] font-extrabold tracking-tight">{BRAND}</span>}
+      <img
+        src="/logo.png"
+        alt="Occo Flow"
+        className="size-8 shrink-0 rounded-[9px] object-contain shadow-2xs"
+      />
+      {!compact && (
+        <span className="font-display text-[15px] font-extrabold tracking-tight">{BRAND}</span>
+      )}
     </Link>
   );
 }
@@ -149,36 +181,78 @@ export function AppShell({ children }: { children: ReactNode }) {
   const businessName = business?.name || "My Business";
   const userInitials = initials(userName);
   const subStatus = subscription?.status ?? "trial_active";
-  const planLabel = subStatus === "subscribed" ? "Active" : subStatus === "trial_active" ? "Free Trial" : "Expired";
+  const planLabel =
+    subStatus === "subscribed" ? "Active" : subStatus === "trial_active" ? "Free Trial" : "Expired";
 
-  const section = pathname.startsWith("/leads") ? "Leads"
-    : pathname.startsWith("/deals") ? "Deals"
-    : pathname.startsWith("/payments") ? "Payment Reminders"
-    : pathname.startsWith("/team") ? "Team & Delegation"
-    : pathname.startsWith("/tasks") ? "Tasks"
-    : pathname.startsWith("/contacts") ? "Contacts"
-    : pathname.startsWith("/calendar") ? "Calendar"
-    : pathname.startsWith("/analytics") ? "Analytics"
-    : pathname.startsWith("/feedback") ? "Problems & Suggestions"
-    : pathname.startsWith("/settings") ? "Settings"
-    : pathname.startsWith("/more") ? "More"
-    : "Dashboard";
+  const section = pathname.startsWith("/leads")
+    ? "Leads"
+    : pathname.startsWith("/deals")
+      ? "Deals"
+      : pathname.startsWith("/payments")
+        ? "Payment Reminders"
+        : pathname.startsWith("/team")
+          ? "Team & Delegation"
+          : pathname.startsWith("/tasks")
+            ? "Tasks"
+            : pathname.startsWith("/contacts")
+              ? "Contacts"
+              : pathname.startsWith("/calendar")
+                ? "Calendar"
+                : pathname.startsWith("/analytics")
+                  ? "Analytics"
+                  : pathname.startsWith("/feedback")
+                    ? "Problems & Suggestions"
+                    : pathname.startsWith("/settings")
+                      ? "Settings"
+                      : pathname.startsWith("/more")
+                        ? "More"
+                        : "Dashboard";
 
-  const action = section === "Leads" ? "lead"
-    : section === "Deals" ? "deal"
-    : section === "Tasks" ? "task"
-    : section === "Contacts" ? "contact"
-    : "lead";
+  const action =
+    section === "Leads"
+      ? "lead"
+      : section === "Deals"
+        ? "deal"
+        : section === "Tasks"
+          ? "task"
+          : section === "Contacts"
+            ? "contact"
+            : "lead";
 
   const results = [
-    ...leads.filter((x) => `${x.name} ${x.company} ${x.phone}`.toLowerCase().includes(query.toLowerCase()))
-      .slice(0, 4).map((x) => ({ label: x.name, detail: `Lead · ${x.company}`, to: "/leads/$leadId" as const, params: { leadId: x.id } })),
-    ...contacts.filter((x) => `${x.name} ${x.company}`.toLowerCase().includes(query.toLowerCase()))
-      .slice(0, 2).map((x) => ({ label: x.name, detail: `Contact · ${x.company}`, to: "/contacts" as const, params: undefined })),
-    ...deals.filter((x) => x.title.toLowerCase().includes(query.toLowerCase()))
-      .slice(0, 2).map((x) => ({ label: x.title, detail: `Deal · ${x.customer}`, to: "/deals" as const, params: undefined })),
-    ...tasks.filter((x) => x.title.toLowerCase().includes(query.toLowerCase()))
-      .slice(0, 2).map((x) => ({ label: x.title, detail: `Task`, to: "/tasks" as const, params: undefined })),
+    ...leads
+      .filter((x) =>
+        `${x.name} ${x.company} ${x.phone}`.toLowerCase().includes(query.toLowerCase()),
+      )
+      .slice(0, 4)
+      .map((x) => ({
+        label: x.name,
+        detail: `Lead · ${x.company}`,
+        to: "/leads/$leadId" as const,
+        params: { leadId: x.id },
+      })),
+    ...contacts
+      .filter((x) => `${x.name} ${x.company}`.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 2)
+      .map((x) => ({
+        label: x.name,
+        detail: `Contact · ${x.company}`,
+        to: "/contacts" as const,
+        params: undefined,
+      })),
+    ...deals
+      .filter((x) => x.title.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 2)
+      .map((x) => ({
+        label: x.title,
+        detail: `Deal · ${x.customer}`,
+        to: "/deals" as const,
+        params: undefined,
+      })),
+    ...tasks
+      .filter((x) => x.title.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 2)
+      .map((x) => ({ label: x.title, detail: `Task`, to: "/tasks" as const, params: undefined })),
   ];
 
   const handleLogout = async () => {
@@ -190,11 +264,16 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background font-sans text-[13px]">
       {/* Sidebar (Generous 236px width, prominent items, colorful icons, rounded selection, hover animations) */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[236px] flex-col border-r border-border bg-sidebar px-3 py-5 lg:flex">
-        <div className="px-2.5"><Brand /></div>
-        <div className="mt-7 px-3 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">Workspace</div>
+        <div className="px-2.5">
+          <Brand />
+        </div>
+        <div className="mt-7 px-3 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-400">
+          Workspace
+        </div>
         <nav className="mt-2.5 flex flex-col gap-1.5" aria-label="Main navigation">
           {desktopNav.map(({ label, to, icon: Icon, bgColor, activeContainer, activeIconBg }) => {
-            const isActive = pathname === to || (to !== "/dashboard" && pathname.startsWith(to + "/"));
+            const isActive =
+              pathname === to || (to !== "/dashboard" && pathname.startsWith(to + "/"));
             return (
               <Link
                 key={to}
@@ -214,9 +293,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <Icon size={16} strokeWidth={2.2} />
                 </div>
                 <span className="truncate">{label}</span>
-                {isActive && (
-                  <span className="ml-auto size-2 rounded-full bg-primary" />
-                )}
+                {isActive && <span className="ml-auto size-2 rounded-full bg-primary" />}
               </Link>
             );
           })}
@@ -236,7 +313,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <ChevronDown size={14} className="text-muted-foreground" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 rounded-xl border border-slate-200/90 bg-white p-1.5 shadow-xl text-slate-800 z-50">
+            <DropdownMenuContent
+              align="start"
+              className="w-56 rounded-xl border border-slate-200/90 bg-white p-1.5 shadow-xl text-slate-800 z-50"
+            >
               <div className="px-2.5 py-2">
                 <p className="text-xs font-bold text-slate-900">{businessName}</p>
                 <p className="text-[11px] font-medium text-slate-500">{profile?.phone || ""}</p>
@@ -246,7 +326,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <UserRound size={14} className="mr-2" /> Profile & Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-destructive focus:text-destructive"
+              >
                 <LogOut size={14} className="mr-2" /> Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -262,21 +345,42 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-20 hidden h-[60px] items-center justify-between border-b border-border bg-card/95 px-6 backdrop-blur-sm lg:flex xl:px-8">
           <div>
             <p className="text-[10px] font-medium text-muted-foreground">Workspace / {section}</p>
-            <h1 className="font-display text-lg font-bold text-foreground leading-tight">{section}</h1>
+            <h1 className="font-display text-lg font-bold text-foreground leading-tight">
+              {section}
+            </h1>
           </div>
           <div className="flex items-center gap-2.5">
-            <Button variant="outline" onClick={() => setSearchOpen(true)} className="h-8.5 w-[220px] justify-start border-border text-muted-foreground text-xs shadow-none">
+            <Button
+              variant="outline"
+              onClick={() => setSearchOpen(true)}
+              className="h-8.5 w-[220px] justify-start border-border text-muted-foreground text-xs shadow-none"
+            >
               <Search size={14} /> Search anything...
             </Button>
-            <Button variant="outline" size="icon" className="size-8.5 border-border shadow-none" title="Notifications">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8.5 border-border shadow-none"
+              title="Notifications"
+            >
               <Bell size={15} />
             </Button>
             <span className="mx-0.5 h-6 border-l border-border" />
             <div className="grid size-8 place-items-center rounded-full bg-violet-soft text-xs font-bold text-violet">
               {userInitials}
             </div>
-            <Button onClick={() => setForm(action)} className="ml-1.5 h-8.5 rounded-lg px-3.5 text-xs font-bold">
-              <Plus size={15} /> Add {action === "lead" ? "Lead" : action === "deal" ? "Deal" : action === "task" ? "Task" : "Contact"}
+            <Button
+              onClick={() => setForm(action)}
+              className="ml-1.5 h-8.5 rounded-lg px-3.5 text-xs font-bold"
+            >
+              <Plus size={15} /> Add{" "}
+              {action === "lead"
+                ? "Lead"
+                : action === "deal"
+                  ? "Deal"
+                  : action === "task"
+                    ? "Task"
+                    : "Contact"}
             </Button>
           </div>
         </header>
@@ -284,7 +388,12 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-20 flex h-[58px] items-center justify-between border-b border-border bg-card/95 px-4 backdrop-blur-sm lg:hidden">
           <Brand />
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" aria-label="Search" onClick={() => setSearchOpen(true)}>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Search"
+              onClick={() => setSearchOpen(true)}
+            >
               <Search size={18} />
             </Button>
             <div className="grid size-8 place-items-center rounded-full bg-violet-soft text-xs font-bold text-violet">
@@ -294,7 +403,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
 
         {/* Page Content with smooth page transition */}
-        <main key={pathname} className="min-h-[calc(100vh-60px)] px-5 py-5 sm:px-6 xl:px-8 page-transition">
+        <main
+          key={pathname}
+          className="min-h-[calc(100vh-60px)] px-5 py-5 sm:px-6 xl:px-8 page-transition"
+        >
           {children}
         </main>
       </div>
@@ -306,10 +418,13 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         {mobileNav.map(({ label, to, icon: Icon }) => (
           <Link
-            key={to} to={to} activeOptions={{ exact: true }}
+            key={to}
+            to={to}
+            activeOptions={{ exact: true }}
             className={`flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl text-[10px] font-semibold transition-colors ${
               pathname === to || (to !== "/dashboard" && pathname.startsWith(to + "/"))
-                ? "text-primary" : "text-muted-foreground"
+                ? "text-primary"
+                : "text-muted-foreground"
             }`}
           >
             <Icon size={21} strokeWidth={pathname === to ? 2.5 : 1.9} />
@@ -340,25 +455,36 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="relative">
             <Search className="absolute left-3 top-3.5 size-4 text-muted-foreground" />
             <Input
-              autoFocus placeholder="Search leads, contacts, deals, tasks..."
-              value={query} onChange={(e) => setQuery(e.target.value)}
+              autoFocus
+              placeholder="Search leads, contacts, deals, tasks..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
               className="h-11 pl-10"
             />
           </div>
           <div className="max-h-72 overflow-y-auto">
-            {query && (results.length ? results.map((item, i) => (
-              <Link
-                key={i}
-                to={item.to as "/leads/$leadId"}
-                params={item.params as { leadId: string }}
-                onClick={() => setSearchOpen(false)}
-                className="block rounded-lg px-3 py-3 hover:bg-muted"
-              >
-                <span className="block text-sm font-semibold">{item.label}</span>
-                <span className="text-xs text-muted-foreground">{item.detail}</span>
-              </Link>
-            )) : <p className="py-8 text-center text-sm text-muted-foreground">No results found</p>)}
-            {!query && <p className="py-8 text-center text-sm text-muted-foreground">Start typing to search…</p>}
+            {query &&
+              (results.length ? (
+                results.map((item, i) => (
+                  <Link
+                    key={i}
+                    to={item.to as "/leads/$leadId"}
+                    params={item.params as { leadId: string }}
+                    onClick={() => setSearchOpen(false)}
+                    className="block rounded-lg px-3 py-3 hover:bg-muted"
+                  >
+                    <span className="block text-sm font-semibold">{item.label}</span>
+                    <span className="text-xs text-muted-foreground">{item.detail}</span>
+                  </Link>
+                ))
+              ) : (
+                <p className="py-8 text-center text-sm text-muted-foreground">No results found</p>
+              ))}
+            {!query && (
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                Start typing to search…
+              </p>
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -88,7 +88,10 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     const { error: err } = await updatePassword(newPassword);
     setLoading(false);
-    if (err) { setError(err); return; }
+    if (err) {
+      setError(err);
+      return;
+    }
     setStep("done");
   };
 
@@ -127,15 +130,15 @@ export default function ForgotPasswordPage() {
               <div key={s.id} className="flex items-center gap-2">
                 <div
                   className={`flex size-7 items-center justify-center rounded-full text-xs font-bold transition-colors ${
-                    i <= activeStepIndex
-                      ? "bg-[#2563eb] text-white"
-                      : "bg-slate-200 text-slate-500"
+                    i <= activeStepIndex ? "bg-[#2563eb] text-white" : "bg-slate-200 text-slate-500"
                   }`}
                 >
                   {i < activeStepIndex ? "✓" : i + 1}
                 </div>
                 {i < steps.length - 1 && (
-                  <div className={`h-px w-8 ${i < activeStepIndex ? "bg-[#2563eb]" : "bg-slate-200"}`} />
+                  <div
+                    className={`h-px w-8 ${i < activeStepIndex ? "bg-[#2563eb]" : "bg-slate-200"}`}
+                  />
                 )}
               </div>
             ))}
@@ -153,11 +156,17 @@ export default function ForgotPasswordPage() {
           {step === "email" && (
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div>
-                <label htmlFor="email" className="mb-1.5 block text-xs font-semibold text-slate-700">
+                <label
+                  htmlFor="email"
+                  className="mb-1.5 block text-xs font-semibold text-slate-700"
+                >
                   Email address
                 </label>
                 <div className="relative">
-                  <Mail size={16} className="pointer-events-none absolute left-3 top-3.5 text-slate-400" />
+                  <Mail
+                    size={16}
+                    className="pointer-events-none absolute left-3 top-3.5 text-slate-400"
+                  />
                   <input
                     id="email"
                     type="email"
@@ -188,7 +197,10 @@ export default function ForgotPasswordPage() {
                   6-digit OTP
                 </label>
                 <div className="relative">
-                  <KeyRound size={16} className="pointer-events-none absolute left-3 top-3.5 text-slate-400" />
+                  <KeyRound
+                    size={16}
+                    className="pointer-events-none absolute left-3 top-3.5 text-slate-400"
+                  />
                   <input
                     id="otp"
                     type="text"
@@ -203,8 +215,7 @@ export default function ForgotPasswordPage() {
                   />
                 </div>
                 <p className="mt-2 text-center text-xs text-slate-500">
-                  Check your inbox at{" "}
-                  <span className="font-semibold text-slate-700">{email}</span>
+                  Check your inbox at <span className="font-semibold text-slate-700">{email}</span>
                 </p>
               </div>
               <button
@@ -216,7 +227,11 @@ export default function ForgotPasswordPage() {
               </button>
               <button
                 type="button"
-                onClick={() => { setError(null); setOtp(""); setStep("email"); }}
+                onClick={() => {
+                  setError(null);
+                  setOtp("");
+                  setStep("email");
+                }}
                 className="w-full text-center text-xs text-slate-500 hover:text-slate-700 underline"
               >
                 Resend code or change email
@@ -228,7 +243,10 @@ export default function ForgotPasswordPage() {
           {step === "password" && (
             <form onSubmit={handleSetPassword} className="space-y-4">
               <div>
-                <label htmlFor="new-password" className="mb-1.5 block text-xs font-semibold text-slate-700">
+                <label
+                  htmlFor="new-password"
+                  className="mb-1.5 block text-xs font-semibold text-slate-700"
+                >
                   New Password
                 </label>
                 <div className="relative">
@@ -253,7 +271,10 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
               <div>
-                <label htmlFor="confirm-password" className="mb-1.5 block text-xs font-semibold text-slate-700">
+                <label
+                  htmlFor="confirm-password"
+                  className="mb-1.5 block text-xs font-semibold text-slate-700"
+                >
                   Confirm Password
                 </label>
                 <input

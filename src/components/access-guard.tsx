@@ -84,13 +84,15 @@ export function TrialBanner() {
 
   const days = trialDaysLeft(subscription.trialEndsAt);
 
-  const urgency = days === 0 ? "today" : days === 1 ? "tomorrow" : `${days} day${days === 1 ? "" : "s"}`;
+  const urgency =
+    days === 0 ? "today" : days === 1 ? "tomorrow" : `${days} day${days === 1 ? "" : "s"}`;
   const isUrgent = days <= 1;
-  const text = days === 0
-    ? "Your free trial ends today."
-    : days === 1
-      ? "Your free trial ends tomorrow."
-      : `Free Trial — ${days} days remaining`;
+  const text =
+    days === 0
+      ? "Your free trial ends today."
+      : days === 1
+        ? "Your free trial ends tomorrow."
+        : `Free Trial — ${days} days remaining`;
 
   return (
     <div

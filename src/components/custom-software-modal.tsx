@@ -1,15 +1,27 @@
 import { useState } from "react";
 import {
-  Code2, CheckCircle2, AlertCircle, Loader2, Sparkles,
-  Send, Phone, Mail, Building, User, Clock,
-  DollarSign, Layers, MessageSquare, ArrowRight
+  Code2,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Sparkles,
+  Send,
+  Phone,
+  Mail,
+  Building,
+  User,
+  Clock,
+  DollarSign,
+  Layers,
+  MessageSquare,
+  ArrowRight,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
   customSoftwareService,
   PROJECT_TYPE_LABELS,
-  type CustomSoftwareInquiry
+  type CustomSoftwareInquiry,
 } from "@/lib/custom-software-service";
 
 interface CustomSoftwareModalProps {
@@ -23,7 +35,9 @@ export function CustomSoftwareModal({ open, onOpenChange }: CustomSoftwareModalP
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [preferredContactMethod, setPreferredContactMethod] = useState<"email" | "phone" | "whatsapp">("email");
+  const [preferredContactMethod, setPreferredContactMethod] = useState<
+    "email" | "phone" | "whatsapp"
+  >("email");
   const [projectType, setProjectType] = useState("crm_erp");
   const [budgetRange, setBudgetRange] = useState("");
   const [timeline, setTimeline] = useState("1_month");
@@ -106,8 +120,10 @@ export function CustomSoftwareModal({ open, onOpenChange }: CustomSoftwareModalP
       } else {
         setErrorMessage(res.error || "Failed to submit inquiry. Please try again.");
       }
-    } catch (err: any) {
-      setErrorMessage(err?.message || "Something went wrong. Please check your connection.");
+    } catch (err) {
+      setErrorMessage(
+        err instanceof Error ? err.message : "Something went wrong. Please check your connection.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -134,7 +150,8 @@ export function CustomSoftwareModal({ open, onOpenChange }: CustomSoftwareModalP
                 Request Custom Software
               </h2>
               <p className="mt-1 text-xs sm:text-sm text-blue-100/90 leading-relaxed">
-                Tell us your vision. We build high-performance CRMs, ERPs, mobile apps, and custom platforms tailored to your business.
+                Tell us your vision. We build high-performance CRMs, ERPs, mobile apps, and custom
+                platforms tailored to your business.
               </p>
             </div>
           </div>
@@ -157,7 +174,9 @@ export function CustomSoftwareModal({ open, onOpenChange }: CustomSoftwareModalP
                   Thank You, {submittedInquiry.fullName}!
                 </h3>
                 <p className="mt-2 text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-                  Your custom software requirements for <strong className="text-slate-900">{submittedInquiry.companyName}</strong> have been received and logged into our engineering queue.
+                  Your custom software requirements for{" "}
+                  <strong className="text-slate-900">{submittedInquiry.companyName}</strong> have
+                  been received and logged into our engineering queue.
                 </p>
               </div>
 
@@ -168,16 +187,32 @@ export function CustomSoftwareModal({ open, onOpenChange }: CustomSoftwareModalP
                 </p>
                 <div className="space-y-2.5 text-xs text-slate-600">
                   <div className="flex items-start gap-2.5">
-                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-blue-100 text-[#2563eb] font-bold text-[10px]">1</span>
-                    <span>A dedicated solution architect will review your project requirements within <strong>24 business hours</strong>.</span>
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-blue-100 text-[#2563eb] font-bold text-[10px]">
+                      1
+                    </span>
+                    <span>
+                      A dedicated solution architect will review your project requirements within{" "}
+                      <strong>24 business hours</strong>.
+                    </span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-blue-100 text-[#2563eb] font-bold text-[10px]">2</span>
-                    <span>We will contact you via <strong>{submittedInquiry.preferredContactMethod.toUpperCase()}</strong> ({submittedInquiry.email}) with initial estimates & timeline.</span>
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-blue-100 text-[#2563eb] font-bold text-[10px]">
+                      2
+                    </span>
+                    <span>
+                      We will contact you via{" "}
+                      <strong>{submittedInquiry.preferredContactMethod.toUpperCase()}</strong> (
+                      {submittedInquiry.email}) with initial estimates & timeline.
+                    </span>
                   </div>
                   <div className="flex items-start gap-2.5">
-                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-blue-100 text-[#2563eb] font-bold text-[10px]">3</span>
-                    <span>We schedule a direct discovery call to finalize wireframes and milestone deliverables.</span>
+                    <span className="grid size-5 shrink-0 place-items-center rounded-full bg-blue-100 text-[#2563eb] font-bold text-[10px]">
+                      3
+                    </span>
+                    <span>
+                      We schedule a direct discovery call to finalize wireframes and milestone
+                      deliverables.
+                    </span>
                   </div>
                 </div>
               </div>
@@ -273,7 +308,9 @@ export function CustomSoftwareModal({ open, onOpenChange }: CustomSoftwareModalP
                   </label>
                   <select
                     value={preferredContactMethod}
-                    onChange={(e) => setPreferredContactMethod(e.target.value as typeof preferredContactMethod)}
+                    onChange={(e) =>
+                      setPreferredContactMethod(e.target.value as typeof preferredContactMethod)
+                    }
                     className="h-10 w-full rounded-xl border border-slate-200 px-3 text-xs text-slate-900 bg-white focus:border-[#2563eb] focus:outline-none"
                   >
                     <option value="email">Email</option>

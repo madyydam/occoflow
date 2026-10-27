@@ -1,14 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import {
-  BarChart3, Users, Target, CheckCircle2, TrendingUp,
-  Clock, IndianRupee, Activity, Loader2, Calendar,
-  Mail, Send, AlertTriangle, Search, Building2, Phone,
-  Check, ArrowDownRight, RefreshCw,
+  BarChart3,
+  Users,
+  Target,
+  CheckCircle2,
+  TrendingUp,
+  Clock,
+  IndianRupee,
+  Activity,
+  Loader2,
+  Calendar,
+  Mail,
+  Send,
+  AlertTriangle,
+  Search,
+  Building2,
+  Phone,
+  Check,
+  ArrowDownRight,
+  RefreshCw,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
 import {
-  AdminShell, AdminPageHeader, AdminKpiCard, AdminBadge, AdminEmptyState,
+  AdminShell,
+  AdminPageHeader,
+  AdminKpiCard,
+  AdminBadge,
+  AdminEmptyState,
 } from "@/components/admin-shell";
 import { supabase } from "@/lib/supabase";
 import { PLAN_LABELS, PLAN_MRR } from "@/lib/admin-service";
@@ -94,7 +113,10 @@ function AdminAnalytics() {
         supabase.from("contacts").select("id", { count: "exact", head: true }),
         supabase.from("deals").select("id", { count: "exact", head: true }),
         supabase.from("tasks").select("id", { count: "exact", head: true }),
-        supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "Completed"),
+        supabase
+          .from("tasks")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "Completed"),
       ]);
 
       setSystemStats({
@@ -115,7 +137,8 @@ function AdminAnalytics() {
     try {
       const { data, error } = await supabase
         .from("subscriptions")
-        .select(`
+        .select(
+          `
           id,
           business_id,
           status,
@@ -137,7 +160,8 @@ function AdminAnalytics() {
               phone
             )
           )
-        `)
+        `,
+        )
         .in("status", ["subscription_cancelled", "subscription_expired"])
         .order("subscription_ends_at", { ascending: false, nullsFirst: false });
 
@@ -183,7 +207,10 @@ function AdminAnalytics() {
       });
 
       // Sort most recent quit user on top
-      records.sort((a, b) => new Date(b.subscriptionEndsAt).getTime() - new Date(a.subscriptionEndsAt).getTime());
+      records.sort(
+        (a, b) =>
+          new Date(b.subscriptionEndsAt).getTime() - new Date(a.subscriptionEndsAt).getTime(),
+      );
       setChurnedUsers(records);
     } catch {
       setChurnedUsers([]);
@@ -215,7 +242,11 @@ function AdminAnalytics() {
     // Supabase Realtime synchronization: Listen to subscriptions, leads, deals, tasks
     const channel = supabase
       .channel("admin-analytics-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "subscriptions" }, debouncedChurn)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "subscriptions" },
+        debouncedChurn,
+      )
       .on("postgres_changes", { event: "*", schema: "public", table: "leads" }, debouncedStats)
       .on("postgres_changes", { event: "*", schema: "public", table: "deals" }, debouncedStats)
       .on("postgres_changes", { event: "*", schema: "public", table: "tasks" }, debouncedStats)
@@ -349,7 +380,9 @@ function AdminAnalytics() {
           {/* Month Filter Dropdown (1 to 12 Months) & Search */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-500 whitespace-nowrap">Lifespan Filter:</span>
+              <span className="text-xs font-bold text-slate-500 whitespace-nowrap">
+                Lifespan Filter:
+              </span>
               <select
                 value={monthFilter}
                 onChange={(e) => setMonthFilter(e.target.value)}
@@ -377,7 +410,6 @@ function AdminAnalytics() {
               />
             </div>
           </div>
-
 
           {/* Churned Users Table */}
           <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xs">
@@ -416,7 +448,9 @@ function AdminAnalytics() {
                         <td className="px-4 py-3 font-semibold text-slate-900">
                           <div>
                             <p className="font-bold text-[#0f172a]">{u.userName}</p>
-                            <p className="text-[11px] font-medium text-slate-400">{u.userPhone || u.userEmail}</p>
+                            <p className="text-[11px] font-medium text-slate-400">
+                              {u.userPhone || u.userEmail}
+                            </p>
                           </div>
                         </td>
                         <td className="px-4 py-3">
@@ -430,7 +464,8 @@ function AdminAnalytics() {
                         </td>
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 font-bold text-amber-800 border border-amber-200 text-[11px]">
-                            {u.completedMonths} {u.completedMonths === 1 ? "Month" : "Months"} ({u.activeDays}d)
+                            {u.completedMonths} {u.completedMonths === 1 ? "Month" : "Months"} (
+                            {u.activeDays}d)
                           </span>
                         </td>
                         <td className="px-4 py-3 text-slate-600">

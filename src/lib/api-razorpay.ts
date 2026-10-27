@@ -11,14 +11,8 @@ interface CfEnv {
 
 // ── Supabase admin client factory (created per-request with CF env) ─
 function makeSupabaseAdmin(cfEnv: CfEnv) {
-  const url =
-    cfEnv["SUPABASE_URL"] ||
-    process.env["SUPABASE_URL"] ||
-    "";
-  const secret =
-    cfEnv["SUPABASE_SECRET_KEY"] ||
-    process.env["SUPABASE_SECRET_KEY"] ||
-    "";
+  const url = cfEnv["SUPABASE_URL"] || process.env["SUPABASE_URL"] || "";
+  const secret = cfEnv["SUPABASE_SECRET_KEY"] || process.env["SUPABASE_SECRET_KEY"] || "";
   return createClient(url || "https://placeholder.supabase.co", secret || "dummy_secret_key", {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -38,15 +32,15 @@ function json(body: unknown, status = 200) {
 
 // ── Plan amounts (paise) ──────────────────────────────────────────
 const PLAN_AMOUNT: Record<string, number> = {
-  crm_monthly: 99900,       // ₹999
-  crm_yearly: 999900,       // ₹9,999
-  crm_lifetime: 1499900,    // ₹14,999
-  standard_monthly: 99900,  // ₹999
-  standard_yearly: 999900,  // ₹9,999
-  premium_monthly: 99900,   // ₹999
-  premium_yearly: 999900,   // ₹9,999
-  lifetime: 1499900,        // ₹14,999
-  lifetime_deal: 1499900,   // ₹14,999
+  crm_monthly: 99900, // ₹999
+  crm_yearly: 999900, // ₹9,999
+  crm_lifetime: 1499900, // ₹14,999
+  standard_monthly: 99900, // ₹999
+  standard_yearly: 999900, // ₹9,999
+  premium_monthly: 99900, // ₹999
+  premium_yearly: 999900, // ₹9,999
+  lifetime: 1499900, // ₹14,999
+  lifetime_deal: 1499900, // ₹14,999
 };
 
 const PLAN_LABELS: Record<string, string> = {
@@ -78,10 +72,7 @@ async function hmacSha256Hex(secret: string, message: string): Promise<string> {
 }
 
 // ── Main handler (receives CF env object from server.ts) ───────────
-export async function handleRazorpayApi(
-  request: Request,
-  cfEnv: CfEnv = {},
-): Promise<Response> {
+export async function handleRazorpayApi(request: Request, cfEnv: CfEnv = {}): Promise<Response> {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS });
   }
@@ -93,13 +84,13 @@ export async function handleRazorpayApi(
   const RAZORPAY_KEY_ID =
     cfEnv["RAZORPAY_KEY_ID"] ||
     process.env["RAZORPAY_KEY_ID"] ||
-    (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.["VITE_RAZORPAY_KEY_ID"] ||
+    (import.meta as unknown as { env?: Record<string, string | undefined> }).env?.[
+      "VITE_RAZORPAY_KEY_ID"
+    ] ||
     "";
 
   const RAZORPAY_KEY_SECRET =
-    cfEnv["RAZORPAY_KEY_SECRET"] ||
-    process.env["RAZORPAY_KEY_SECRET"] ||
-    "";
+    cfEnv["RAZORPAY_KEY_SECRET"] || process.env["RAZORPAY_KEY_SECRET"] || "";
 
   const url = new URL(request.url);
 
@@ -165,7 +156,9 @@ async function handleCreateOrder(
       try {
         const parsed = JSON.parse(responseText) as { error?: { description?: string } };
         if (parsed?.error?.description) errMsg = parsed.error.description;
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
       return json({ success: false, error: errMsg }, 502);
     }
 
@@ -189,13 +182,8 @@ async function handleVerifyPayment(
       return json({ success: false, error: "Invalid JSON body" }, 400);
     }
 
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      businessId,
-      planId,
-    } = body as Record<string, string>;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, businessId, planId } =
+      body as Record<string, string>;
 
     if (
       !razorpay_order_id ||
@@ -256,9 +244,8 @@ async function handleVerifyPayment(
 
     // ── 4. Audit log (silently ignored if table missing) ─────────
     try {
-      await supabaseAdmin
-        .from("payment_logs")
-        .insert([{
+      await supabaseAdmin.from("payment_logs").insert([
+        {
           business_id: businessId,
           plan_id: planId,
           billing_cycle: billingCycle,
@@ -267,7 +254,8 @@ async function handleVerifyPayment(
           razorpay_payment_id,
           status: "paid",
           paid_at: now,
-        }]);
+        },
+      ]);
     } catch {
       // Ignore if payment_logs table is absent
     }

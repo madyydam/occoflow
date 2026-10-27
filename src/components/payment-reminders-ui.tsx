@@ -23,7 +23,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   type PaymentRecord,
   type PaymentMode,
@@ -55,7 +61,9 @@ export function NewPaymentModal({
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
-  const [invoiceNumber, setInvoiceNumber] = useState(`INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`);
+  const [invoiceNumber, setInvoiceNumber] = useState(
+    `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+  );
   const [totalAmount, setTotalAmount] = useState("");
   const [initialPaid, setInitialPaid] = useState("");
   const [dueDate, setDueDate] = useState(() => {
@@ -107,15 +115,20 @@ export function NewPaymentModal({
 
     setIsSubmitting(true);
     try {
-      const installments = paid > 0 ? [{
-        id: crypto.randomUUID(),
-        amount: paid,
-        date: new Date().toISOString().split("T")[0] || "",
-        paymentMode,
-        referenceNo: "Initial Advance",
-        notes: "Advance payment during bill creation",
-        recordedBy: profile?.fullName || "Staff",
-      }] : [];
+      const installments =
+        paid > 0
+          ? [
+              {
+                id: crypto.randomUUID(),
+                amount: paid,
+                date: new Date().toISOString().split("T")[0] || "",
+                paymentMode,
+                referenceNo: "Initial Advance",
+                notes: "Advance payment during bill creation",
+                recordedBy: profile?.fullName || "Staff",
+              },
+            ]
+          : [];
 
       const created = await paymentReminderService.create({
         businessId: business?.id || "",
@@ -163,7 +176,9 @@ export function NewPaymentModal({
               <IndianRupee size={18} />
             </div>
             <div>
-              <DialogTitle className="text-base font-bold text-slate-900">Create Invoice / Payment Due</DialogTitle>
+              <DialogTitle className="text-base font-bold text-slate-900">
+                Create Invoice / Payment Due
+              </DialogTitle>
               <DialogDescription className="text-xs text-slate-500">
                 Log an invoice or client receivable to track payments and automated reminders.
               </DialogDescription>
@@ -175,7 +190,9 @@ export function NewPaymentModal({
           {/* Quick autofill from Leads / Deals */}
           {(leads.length > 0 || deals.length > 0) && (
             <div className="rounded-xl border border-slate-200/90 bg-slate-50/70 p-3">
-              <span className="text-[11px] font-semibold text-slate-600 block mb-1.5">⚡ Autofill from CRM (Optional):</span>
+              <span className="text-[11px] font-semibold text-slate-600 block mb-1.5">
+                ⚡ Autofill from CRM (Optional):
+              </span>
               <div className="flex flex-wrap gap-2">
                 {leads.slice(0, 3).map((l) => (
                   <button
@@ -204,7 +221,9 @@ export function NewPaymentModal({
           {/* Customer Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Customer / Client Name *</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                Customer / Client Name *
+              </label>
               <Input
                 required
                 placeholder="e.g. Ramesh Patel"
@@ -214,7 +233,9 @@ export function NewPaymentModal({
               />
             </div>
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">WhatsApp / Phone Number *</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                WhatsApp / Phone Number *
+              </label>
               <Input
                 required
                 placeholder="e.g. 9820011223"
@@ -237,7 +258,9 @@ export function NewPaymentModal({
               />
             </div>
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Invoice / Bill Number *</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                Invoice / Bill Number *
+              </label>
               <Input
                 required
                 value={invoiceNumber}
@@ -250,7 +273,9 @@ export function NewPaymentModal({
           {/* Amount & Due Date */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Total Bill Amount (₹) *</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                Total Bill Amount (₹) *
+              </label>
               <div className="relative">
                 <span className="absolute left-2.5 top-2.5 text-slate-400 text-xs">₹</span>
                 <Input
@@ -266,7 +291,9 @@ export function NewPaymentModal({
               </div>
             </div>
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Advance Received (₹)</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                Advance Received (₹)
+              </label>
               <div className="relative">
                 <span className="absolute left-2.5 top-2.5 text-slate-400 text-xs">₹</span>
                 <Input
@@ -295,7 +322,9 @@ export function NewPaymentModal({
           {/* Payment Mode & UPI ID */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Preferred Payment Mode</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                Preferred Payment Mode
+              </label>
               <select
                 value={paymentMode}
                 onChange={(e) => setPaymentMode(e.target.value as PaymentMode)}
@@ -310,7 +339,9 @@ export function NewPaymentModal({
               </select>
             </div>
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Your Business UPI ID (for QR code)</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                Your Business UPI ID (for QR code)
+              </label>
               <Input
                 placeholder="e.g. business@okhdfcbank"
                 value={upiId}
@@ -323,7 +354,9 @@ export function NewPaymentModal({
           {/* Recurring & Late Fee Options */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-slate-100">
             <div>
-              <label className="font-semibold text-slate-700 block mb-1">Recurring Billing Schedule</label>
+              <label className="font-semibold text-slate-700 block mb-1">
+                Recurring Billing Schedule
+              </label>
               <select
                 value={recurringInterval}
                 onChange={(e) => setRecurringInterval(e.target.value as RecurringInterval)}
@@ -344,7 +377,10 @@ export function NewPaymentModal({
                   onChange={(e) => setLateFeeEnabled(e.target.checked)}
                   className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
-                <label htmlFor="lateFeeCheck" className="text-xs font-semibold text-slate-700 cursor-pointer">
+                <label
+                  htmlFor="lateFeeCheck"
+                  className="text-xs font-semibold text-slate-700 cursor-pointer"
+                >
                   Enable Overdue Late Fee
                 </label>
               </div>
@@ -365,7 +401,9 @@ export function NewPaymentModal({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Notes / Terms (Optional)</label>
+            <label className="font-semibold text-slate-700 block mb-1">
+              Notes / Terms (Optional)
+            </label>
             <Input
               placeholder="e.g. 50% milestone payment for Phase 1 delivery"
               value={notes}
@@ -375,7 +413,12 @@ export function NewPaymentModal({
           </div>
 
           <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
-            <Button type="button" variant="outline" onClick={onClose} className="rounded-xl h-9 text-xs">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="rounded-xl h-9 text-xs"
+            >
               Cancel
             </Button>
             <Button
@@ -423,7 +466,9 @@ export function RecordInstallmentModal({
     }
 
     if (payAmt > record.balanceAmount) {
-      const confirmOverpay = window.confirm(`Entered amount ₹${payAmt} is greater than remaining balance ₹${record.balanceAmount}. Proceed?`);
+      const confirmOverpay = window.confirm(
+        `Entered amount ₹${payAmt} is greater than remaining balance ₹${record.balanceAmount}. Proceed?`,
+      );
       if (!confirmOverpay) return;
     }
 
@@ -439,7 +484,7 @@ export function RecordInstallmentModal({
           notes: notes.trim() || undefined,
           recordedBy: profile?.fullName || "Staff",
         },
-        business?.id || ""
+        business?.id || "",
       );
 
       if (updated) {
@@ -459,9 +504,13 @@ export function RecordInstallmentModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md rounded-2xl p-6">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold text-slate-900">Record Payment Received</DialogTitle>
+          <DialogTitle className="text-base font-bold text-slate-900">
+            Record Payment Received
+          </DialogTitle>
           <DialogDescription className="text-xs text-slate-500">
-            Invoice: <span className="font-mono font-semibold text-slate-800">{record.invoiceNumber}</span> · {record.customerName}
+            Invoice:{" "}
+            <span className="font-mono font-semibold text-slate-800">{record.invoiceNumber}</span> ·{" "}
+            {record.customerName}
           </DialogDescription>
         </DialogHeader>
 
@@ -469,15 +518,21 @@ export function RecordInstallmentModal({
         <div className="mt-2 rounded-xl bg-slate-50 border border-slate-200/80 p-3 text-xs flex justify-between items-center">
           <div>
             <span className="text-slate-500 block text-[11px]">Total Invoice</span>
-            <span className="font-bold text-slate-800">₹{record.totalAmount.toLocaleString("en-IN")}</span>
+            <span className="font-bold text-slate-800">
+              ₹{record.totalAmount.toLocaleString("en-IN")}
+            </span>
           </div>
           <div>
             <span className="text-slate-500 block text-[11px]">Paid so far</span>
-            <span className="font-bold text-emerald-600">₹{record.paidAmount.toLocaleString("en-IN")}</span>
+            <span className="font-bold text-emerald-600">
+              ₹{record.paidAmount.toLocaleString("en-IN")}
+            </span>
           </div>
           <div className="text-right">
             <span className="text-slate-500 block text-[11px]">Outstanding Due</span>
-            <span className="font-bold text-rose-600 text-sm">₹{record.balanceAmount.toLocaleString("en-IN")}</span>
+            <span className="font-bold text-rose-600 text-sm">
+              ₹{record.balanceAmount.toLocaleString("en-IN")}
+            </span>
           </div>
         </div>
 
@@ -536,7 +591,9 @@ export function RecordInstallmentModal({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">UTR / Ref No. / Cheque No. (Optional)</label>
+            <label className="font-semibold text-slate-700 block mb-1">
+              UTR / Ref No. / Cheque No. (Optional)
+            </label>
             <Input
               placeholder="e.g. UPI Ref: 312349887712"
               value={referenceNo}
@@ -546,7 +603,9 @@ export function RecordInstallmentModal({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Remarks / Note (Optional)</label>
+            <label className="font-semibold text-slate-700 block mb-1">
+              Remarks / Note (Optional)
+            </label>
             <Input
               placeholder="e.g. Received via PhonePe QR scanner"
               value={notes}
@@ -556,7 +615,12 @@ export function RecordInstallmentModal({
           </div>
 
           <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-            <Button type="button" variant="outline" onClick={onClose} className="rounded-xl h-9 text-xs">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="rounded-xl h-9 text-xs"
+            >
               Cancel
             </Button>
             <Button
@@ -588,7 +652,7 @@ export function UpiQrModal({
   const { business } = useAuth();
   const [copied, setCopied] = useState(false);
   const [customUpi, setCustomUpi] = useState(
-    record?.upiId || (business && business.phone ? `${business.phone}@upi` : "")
+    record?.upiId || (business && business.phone ? `${business.phone}@upi` : ""),
   );
 
   if (!record) return null;
@@ -614,7 +678,7 @@ export function UpiQrModal({
 
   const handleShareWhatsApp = () => {
     const text = encodeURIComponent(
-      `Hello ${record.customerName},\n\nPlease find the instant UPI Payment link for Invoice #${record.invoiceNumber} of ₹${record.balanceAmount.toLocaleString("en-IN")}:\n\n${upiUrl}\n\nYou can pay via Google Pay, PhonePe, Paytm, or BHIM. Thank you!\n— ${business?.name || "Accounts"}`
+      `Hello ${record.customerName},\n\nPlease find the instant UPI Payment link for Invoice #${record.invoiceNumber} of ₹${record.balanceAmount.toLocaleString("en-IN")}:\n\n${upiUrl}\n\nYou can pay via Google Pay, PhonePe, Paytm, or BHIM. Thank you!\n— ${business?.name || "Accounts"}`,
     );
     const cleanPhone = record.customerPhone.replace(/\D/g, "");
     const formattedPhone = cleanPhone.length === 10 ? `91${cleanPhone}` : cleanPhone;
@@ -625,7 +689,9 @@ export function UpiQrModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-sm rounded-2xl p-6 text-center">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold text-slate-900">Instant UPI Payment QR</DialogTitle>
+          <DialogTitle className="text-base font-bold text-slate-900">
+            Instant UPI Payment QR
+          </DialogTitle>
           <DialogDescription className="text-xs text-slate-500">
             Scan with any UPI App (GPay, PhonePe, Paytm, BHIM)
           </DialogDescription>
@@ -712,7 +778,8 @@ export function SendReminderModal({
   if (!record) return null;
 
   const daysOverdue = getDaysDifference(record.dueDate);
-  const suggestedTone: ReminderTone = daysOverdue > 14 ? "final" : daysOverdue > 1 ? "firm" : "friendly";
+  const suggestedTone: ReminderTone =
+    daysOverdue > 14 ? "final" : daysOverdue > 1 ? "firm" : "friendly";
 
   // Regenerate message on tone change
   const currentMessage =
@@ -732,7 +799,7 @@ export function SendReminderModal({
         record,
         businessName: business?.name || "Our Company",
         businessPhone: business?.phone || "",
-      })
+      }),
     );
   };
 
@@ -747,7 +814,9 @@ export function SendReminderModal({
       window.open(`sms:${record.customerPhone}?body=${encodedText}`, "_blank");
     } else if (channel === "email") {
       const email = record.customerEmail || "";
-      const subject = encodeURIComponent(`Payment Reminder: Invoice #${record.invoiceNumber} - ${business?.name || "Occo Flow"}`);
+      const subject = encodeURIComponent(
+        `Payment Reminder: Invoice #${record.invoiceNumber} - ${business?.name || "Occo Flow"}`,
+      );
       window.open(`mailto:${email}?subject=${subject}&body=${encodedText}`, "_blank");
     }
 
@@ -759,7 +828,7 @@ export function SendReminderModal({
         tone,
         sentBy: profile?.fullName || "Staff",
       },
-      business?.id || ""
+      business?.id || "",
     );
 
     if (updated) {
@@ -773,9 +842,12 @@ export function SendReminderModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-lg rounded-2xl p-6">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold text-slate-900">Send Payment Reminder</DialogTitle>
+          <DialogTitle className="text-base font-bold text-slate-900">
+            Send Payment Reminder
+          </DialogTitle>
           <DialogDescription className="text-xs text-slate-500">
-            Invoice #{record.invoiceNumber} · Due: {record.dueDate} ({daysOverdue > 0 ? `${daysOverdue} days overdue` : "Due soon"})
+            Invoice #{record.invoiceNumber} · Due: {record.dueDate} (
+            {daysOverdue > 0 ? `${daysOverdue} days overdue` : "Due soon"})
           </DialogDescription>
         </DialogHeader>
 
@@ -867,7 +939,9 @@ export function SendReminderModal({
           <div>
             <div className="flex justify-between items-center mb-1">
               <label className="font-semibold text-slate-700">Message Preview</label>
-              <span className="text-[10px] text-slate-400">Includes customer name, amount, UPI link</span>
+              <span className="text-[10px] text-slate-400">
+                Includes customer name, amount, UPI link
+              </span>
             </div>
             <textarea
               rows={6}
@@ -884,10 +958,13 @@ export function SendReminderModal({
             <Button
               onClick={handleSend}
               className={`rounded-xl h-9 text-xs font-bold text-white flex items-center gap-1.5 ${
-                channel === "whatsapp" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-blue-600 hover:bg-blue-700"
+                channel === "whatsapp"
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
-              <Send size={14} /> Send on {channel === "whatsapp" ? "WhatsApp" : channel.toUpperCase()} & Log
+              <Send size={14} /> Send on{" "}
+              {channel === "whatsapp" ? "WhatsApp" : channel.toUpperCase()} & Log
             </Button>
           </div>
         </div>
@@ -934,7 +1011,7 @@ export function PromiseToPayModal({
         ptpDate,
         parseFloat(ptpAmount) || record.balanceAmount,
         ptpNote.trim(),
-        business?.id || ""
+        business?.id || "",
       );
 
       if (updated) {
@@ -954,7 +1031,9 @@ export function PromiseToPayModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md rounded-2xl p-6">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold text-slate-900">Log Promise-to-Pay (PTP)</DialogTitle>
+          <DialogTitle className="text-base font-bold text-slate-900">
+            Log Promise-to-Pay (PTP)
+          </DialogTitle>
           <DialogDescription className="text-xs text-slate-500">
             Customer commitment date to follow up on Invoice #{record.invoiceNumber}
           </DialogDescription>
@@ -962,7 +1041,9 @@ export function PromiseToPayModal({
 
         <form onSubmit={handleSubmit} className="mt-3 space-y-3.5 text-xs">
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Committed Payment Date *</label>
+            <label className="font-semibold text-slate-700 block mb-1">
+              Committed Payment Date *
+            </label>
             <Input
               required
               type="date"
@@ -983,7 +1064,9 @@ export function PromiseToPayModal({
           </div>
 
           <div>
-            <label className="font-semibold text-slate-700 block mb-1">Customer Commitment Remarks</label>
+            <label className="font-semibold text-slate-700 block mb-1">
+              Customer Commitment Remarks
+            </label>
             <Input
               placeholder="e.g. Promised to transfer via NEFT after clearance"
               value={ptpNote}
@@ -993,7 +1076,12 @@ export function PromiseToPayModal({
           </div>
 
           <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
-            <Button type="button" variant="outline" onClick={onClose} className="rounded-xl h-9 text-xs">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="rounded-xl h-9 text-xs"
+            >
               Cancel
             </Button>
             <Button
@@ -1054,7 +1142,7 @@ export function BatchAutoRemindModal({
           tone,
           sentBy: profile?.fullName || "Batch Scheduler",
         },
-        business?.id || ""
+        business?.id || "",
       );
     }
 
@@ -1072,7 +1160,8 @@ export function BatchAutoRemindModal({
             <Badge className="bg-blue-100 text-blue-700 border-0">{eligible.length} Pending</Badge>
           </DialogTitle>
           <DialogDescription className="text-xs text-slate-500">
-            Identifies customers matching reminder rules (3 days before, due today, +2d, +7d, +15d overdue).
+            Identifies customers matching reminder rules (3 days before, due today, +2d, +7d, +15d
+            overdue).
           </DialogDescription>
         </DialogHeader>
 
@@ -1084,7 +1173,9 @@ export function BatchAutoRemindModal({
             >
               {selectedIds.length === eligible.length ? "Deselect All" : "Select All Due Customers"}
             </button>
-            <span className="text-slate-500 text-[11px]">{selectedIds.length} of {eligible.length} selected</span>
+            <span className="text-slate-500 text-[11px]">
+              {selectedIds.length} of {eligible.length} selected
+            </span>
           </div>
 
           <div className="divide-y divide-slate-100 rounded-xl border border-slate-200 max-h-72 overflow-y-auto">
@@ -1113,13 +1204,23 @@ export function BatchAutoRemindModal({
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-slate-900">₹{r.balanceAmount.toLocaleString("en-IN")}</p>
+                    <p className="font-bold text-slate-900">
+                      ₹{r.balanceAmount.toLocaleString("en-IN")}
+                    </p>
                     <span
                       className={`text-[10px] font-bold ${
-                        days > 0 ? "text-rose-600" : days === 0 ? "text-amber-600" : "text-slate-400"
+                        days > 0
+                          ? "text-rose-600"
+                          : days === 0
+                            ? "text-amber-600"
+                            : "text-slate-400"
                       }`}
                     >
-                      {days > 0 ? `${days}d overdue` : days === 0 ? "Due today" : `Due ${r.dueDate}`}
+                      {days > 0
+                        ? `${days}d overdue`
+                        : days === 0
+                          ? "Due today"
+                          : `Due ${r.dueDate}`}
                     </span>
                   </div>
                 </div>
@@ -1174,7 +1275,9 @@ export function InvoiceStatementModal({
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-2xl max-h-[92vh] overflow-y-auto rounded-2xl p-6 print:p-0 print:border-0 print:shadow-none">
         <div className="flex justify-between items-center pb-3 border-b border-slate-100 print:hidden">
-          <DialogTitle className="text-sm font-bold text-slate-800">Tax Invoice & Statement Slip</DialogTitle>
+          <DialogTitle className="text-sm font-bold text-slate-800">
+            Tax Invoice & Statement Slip
+          </DialogTitle>
           <div className="flex gap-2">
             <Button
               variant="outline"
@@ -1195,39 +1298,57 @@ export function InvoiceStatementModal({
           {/* Header */}
           <div className="flex justify-between items-start border-b border-slate-200 pb-5">
             <div>
-              <h2 className="text-lg font-black text-slate-900 tracking-tight">{business?.name || "Occo Business"}</h2>
-              <p className="text-slate-500 text-[11px]">{business?.address || "Registered Business Address"}</p>
+              <h2 className="text-lg font-black text-slate-900 tracking-tight">
+                {business?.name || "Occo Business"}
+              </h2>
+              <p className="text-slate-500 text-[11px]">
+                {business?.address || "Registered Business Address"}
+              </p>
               <p className="text-slate-500 text-[11px]">Phone: {business?.phone || "N/A"}</p>
-              <p className="text-slate-500 text-[11px]">Email: {business?.email || "billing@business.com"}</p>
+              <p className="text-slate-500 text-[11px]">
+                Email: {business?.email || "billing@business.com"}
+              </p>
             </div>
             <div className="text-right">
               <span className="inline-block px-3 py-1 bg-slate-900 text-white rounded-lg text-xs font-bold uppercase tracking-wider">
                 PAYMENT INVOICE
               </span>
-              <p className="mt-2 text-xs font-bold text-slate-800 font-mono">#{record.invoiceNumber}</p>
-              <p className="text-slate-500 text-[11px]">Date: {new Date(record.createdAt).toLocaleDateString("en-IN")}</p>
-              <p className="text-slate-500 text-[11px]">Due Date: {new Date(record.dueDate).toLocaleDateString("en-IN")}</p>
+              <p className="mt-2 text-xs font-bold text-slate-800 font-mono">
+                #{record.invoiceNumber}
+              </p>
+              <p className="text-slate-500 text-[11px]">
+                Date: {new Date(record.createdAt).toLocaleDateString("en-IN")}
+              </p>
+              <p className="text-slate-500 text-[11px]">
+                Due Date: {new Date(record.dueDate).toLocaleDateString("en-IN")}
+              </p>
             </div>
           </div>
 
           {/* Bill To */}
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200/80">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Billed To</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+                Billed To
+              </span>
               <p className="font-bold text-sm text-slate-900">{record.customerName}</p>
               <p className="text-slate-600 text-xs">Phone: {record.customerPhone}</p>
-              {record.customerEmail && <p className="text-slate-600 text-xs">Email: {record.customerEmail}</p>}
+              {record.customerEmail && (
+                <p className="text-slate-600 text-xs">Email: {record.customerEmail}</p>
+              )}
             </div>
             <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200/80 flex justify-between items-center">
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Payment Status</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
+                  Payment Status
+                </span>
                 <span
                   className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-bold ${
                     record.status === "Paid"
                       ? "bg-emerald-100 text-emerald-800"
                       : record.status === "Partial"
-                      ? "bg-amber-100 text-amber-800"
-                      : "bg-rose-100 text-rose-800"
+                        ? "bg-amber-100 text-amber-800"
+                        : "bg-rose-100 text-rose-800"
                   }`}
                 >
                   {record.status.toUpperCase()}
@@ -1236,7 +1357,11 @@ export function InvoiceStatementModal({
               </div>
               {record.balanceAmount > 0 && qrUrl && (
                 <div className="text-center">
-                  <img src={qrUrl} alt="UPI QR" className="size-20 rounded-lg border bg-white p-1" />
+                  <img
+                    src={qrUrl}
+                    alt="UPI QR"
+                    className="size-20 rounded-lg border bg-white p-1"
+                  />
                   <span className="text-[9px] text-slate-500 block mt-0.5">Scan to Pay UPI</span>
                 </div>
               )}
@@ -1258,11 +1383,19 @@ export function InvoiceStatementModal({
                 <tr>
                   <td className="p-3">
                     <p className="font-bold text-slate-800">Invoice #{record.invoiceNumber}</p>
-                    <p className="text-[11px] text-slate-500">{record.notes || "Professional products / services rendered."}</p>
+                    <p className="text-[11px] text-slate-500">
+                      {record.notes || "Professional products / services rendered."}
+                    </p>
                   </td>
-                  <td className="p-3 text-right font-semibold">₹{record.totalAmount.toLocaleString("en-IN")}</td>
-                  <td className="p-3 text-right font-semibold text-emerald-600">₹{record.paidAmount.toLocaleString("en-IN")}</td>
-                  <td className="p-3 text-right font-black text-rose-600 text-sm">₹{record.balanceAmount.toLocaleString("en-IN")}</td>
+                  <td className="p-3 text-right font-semibold">
+                    ₹{record.totalAmount.toLocaleString("en-IN")}
+                  </td>
+                  <td className="p-3 text-right font-semibold text-emerald-600">
+                    ₹{record.paidAmount.toLocaleString("en-IN")}
+                  </td>
+                  <td className="p-3 text-right font-black text-rose-600 text-sm">
+                    ₹{record.balanceAmount.toLocaleString("en-IN")}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -1271,7 +1404,9 @@ export function InvoiceStatementModal({
           {/* Installments History */}
           {record.installments.length > 0 && (
             <div>
-              <span className="text-xs font-bold text-slate-700 block mb-2">Payment Receipt History</span>
+              <span className="text-xs font-bold text-slate-700 block mb-2">
+                Payment Receipt History
+              </span>
               <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
                 <table className="w-full text-left">
                   <thead className="bg-slate-50 border-b border-slate-200 text-[10px] text-slate-500 uppercase">

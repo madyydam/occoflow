@@ -1,14 +1,36 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
-  Building2, Users, Timer, CreditCard, TrendingUp, IndianRupee,
-  ArrowUpRight, AlertTriangle, CheckCircle2, Clock, Activity,
-  XCircle, RefreshCw,
+  Building2,
+  Users,
+  Timer,
+  CreditCard,
+  TrendingUp,
+  IndianRupee,
+  ArrowUpRight,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Activity,
+  XCircle,
+  RefreshCw,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
-import { AdminShell, AdminKpiCard, AdminPageHeader, AdminBadge, statusColor, AdminEmptyState } from "@/components/admin-shell";
+import {
+  AdminShell,
+  AdminKpiCard,
+  AdminPageHeader,
+  AdminBadge,
+  statusColor,
+  AdminEmptyState,
+} from "@/components/admin-shell";
 import { useAdminAuth } from "@/lib/admin-context";
-import { adminDashboardService, PLAN_LABELS, type DashboardStats, type RecentActivity } from "@/lib/admin-service";
+import {
+  adminDashboardService,
+  PLAN_LABELS,
+  type DashboardStats,
+  type RecentActivity,
+} from "@/lib/admin-service";
 import { supabase } from "@/lib/supabase";
 import { format, parseISO } from "date-fns";
 
@@ -40,14 +62,19 @@ function AdminDashboard() {
   })();
 
   const today = new Date().toLocaleDateString("en-IN", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 
-  const [systemHealth, setSystemHealth] = useState<{
-    label: string;
-    status: "Healthy" | "Not Connected" | "Down";
-    sub?: string;
-  }[]>([
+  const [systemHealth, setSystemHealth] = useState<
+    {
+      label: string;
+      status: "Healthy" | "Not Connected" | "Down";
+      sub?: string;
+    }[]
+  >([
     { label: "Database", status: "Healthy" },
     { label: "Authentication", status: "Healthy" },
     { label: "Payment Provider", status: "Not Connected" },
@@ -64,7 +91,9 @@ function AdminDashboard() {
       let dbMs = 0;
       try {
         const t0 = performance.now();
-        const { error } = await supabase.from("businesses").select("id", { count: "exact", head: true });
+        const { error } = await supabase
+          .from("businesses")
+          .select("id", { count: "exact", head: true });
         dbMs = Math.round(performance.now() - t0);
         dbStatus = error ? "Down" : "Healthy";
       } catch {
@@ -81,7 +110,8 @@ function AdminDashboard() {
       }
 
       // 3. Probe Payment Provider Live
-      const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
+      const env =
+        (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
       const hasPayment = Boolean(env["VITE_RAZORPAY_KEY_ID"] || env["VITE_STRIPE_PUBLIC_KEY"]);
       const paymentStatus: "Healthy" | "Not Connected" = hasPayment ? "Healthy" : "Not Connected";
 
@@ -119,11 +149,31 @@ function AdminDashboard() {
       }
 
       setSystemHealth([
-        { label: "Database", status: dbStatus, sub: dbStatus === "Healthy" ? `${dbMs}ms latency` : "Connection failed" },
-        { label: "Authentication", status: authStatus, sub: authStatus === "Healthy" ? "Supabase Auth active" : "Auth service unreachable" },
-        { label: "Payment Provider", status: paymentStatus, sub: hasPayment ? "Gateway online" : "No gateway configured" },
-        { label: "Email / SMTP", status: smtpStatus, sub: smtpStatus === "Healthy" ? "SMTP server active" : "Not Connected" },
-        { label: "Storage", status: storageStatus, sub: storageStatus === "Healthy" ? "Buckets ready" : "No buckets provisioned" },
+        {
+          label: "Database",
+          status: dbStatus,
+          sub: dbStatus === "Healthy" ? `${dbMs}ms latency` : "Connection failed",
+        },
+        {
+          label: "Authentication",
+          status: authStatus,
+          sub: authStatus === "Healthy" ? "Supabase Auth active" : "Auth service unreachable",
+        },
+        {
+          label: "Payment Provider",
+          status: paymentStatus,
+          sub: hasPayment ? "Gateway online" : "No gateway configured",
+        },
+        {
+          label: "Email / SMTP",
+          status: smtpStatus,
+          sub: smtpStatus === "Healthy" ? "SMTP server active" : "Not Connected",
+        },
+        {
+          label: "Storage",
+          status: storageStatus,
+          sub: storageStatus === "Healthy" ? "Buckets ready" : "No buckets provisioned",
+        },
       ]);
     } finally {
       setCheckingHealth(false);
@@ -160,8 +210,16 @@ function AdminDashboard() {
     const channel = supabase
       .channel("admin-dashboard-realtime-sync")
       .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, debouncedReload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "businesses" }, debouncedReload)
-      .on("postgres_changes", { event: "*", schema: "public", table: "subscriptions" }, debouncedReload)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "businesses" },
+        debouncedReload,
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "subscriptions" },
+        debouncedReload,
+      )
       .subscribe();
 
     return () => {
@@ -230,13 +288,18 @@ function AdminDashboard() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <AdminKpiCard
           label="Standard Plan Users"
-          value={(stats?.planBreakdown.standard_monthly ?? 0) + (stats?.planBreakdown.standard_yearly ?? 0)}
+          value={
+            (stats?.planBreakdown.standard_monthly ?? 0) +
+            (stats?.planBreakdown.standard_yearly ?? 0)
+          }
           icon={TrendingUp}
           tone="bg-blue-50 text-blue-600"
         />
         <AdminKpiCard
           label="Premium Plan Users"
-          value={(stats?.planBreakdown.premium_monthly ?? 0) + (stats?.planBreakdown.premium_yearly ?? 0)}
+          value={
+            (stats?.planBreakdown.premium_monthly ?? 0) + (stats?.planBreakdown.premium_yearly ?? 0)
+          }
           icon={TrendingUp}
           tone="bg-violet-50 text-violet-600"
         />
@@ -263,17 +326,38 @@ function AdminDashboard() {
           <h3 className="mb-4 font-display text-base font-bold text-[#0f172a]">Trial Overview</h3>
           {loading ? (
             <div className="space-y-3">
-              {[1,2,3,4].map((i) => <div key={i} className="h-10 animate-pulse rounded-lg bg-slate-100" />)}
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-10 animate-pulse rounded-lg bg-slate-100" />
+              ))}
             </div>
           ) : (
             <div className="space-y-2">
               {[
-                { label: "Active Trials", val: stats?.activeTrials ?? 0, color: "text-blue-600 bg-blue-50" },
-                { label: "Ending Today", val: stats?.trialExpiringToday ?? 0, color: "text-orange-600 bg-orange-50" },
-                { label: "Ending in 3 Days", val: stats?.trialExpiringIn3Days ?? 0, color: "text-amber-600 bg-amber-50" },
-                { label: "Expired", val: stats?.expiredTrials ?? 0, color: "text-red-600 bg-red-50" },
+                {
+                  label: "Active Trials",
+                  val: stats?.activeTrials ?? 0,
+                  color: "text-blue-600 bg-blue-50",
+                },
+                {
+                  label: "Ending Today",
+                  val: stats?.trialExpiringToday ?? 0,
+                  color: "text-orange-600 bg-orange-50",
+                },
+                {
+                  label: "Ending in 3 Days",
+                  val: stats?.trialExpiringIn3Days ?? 0,
+                  color: "text-amber-600 bg-amber-50",
+                },
+                {
+                  label: "Expired",
+                  val: stats?.expiredTrials ?? 0,
+                  color: "text-red-600 bg-red-50",
+                },
               ].map(({ label, val, color }) => (
-                <div key={label} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2.5">
+                <div
+                  key={label}
+                  className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2.5"
+                >
                   <span className="text-sm text-slate-600">{label}</span>
                   <span className={`rounded-md px-2 py-0.5 text-sm font-bold ${color}`}>{val}</span>
                 </div>
@@ -284,21 +368,32 @@ function AdminDashboard() {
 
         {/* Subscription breakdown */}
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 font-display text-base font-bold text-[#0f172a]">Plan Distribution</h3>
+          <h3 className="mb-4 font-display text-base font-bold text-[#0f172a]">
+            Plan Distribution
+          </h3>
           {loading ? (
             <div className="space-y-3">
-              {[1,2,3,4].map((i) => <div key={i} className="h-10 animate-pulse rounded-lg bg-slate-100" />)}
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-10 animate-pulse rounded-lg bg-slate-100" />
+              ))}
             </div>
           ) : (
             <div className="space-y-2">
               {Object.entries(stats?.planBreakdown ?? {}).map(([plan, count]) => (
-                <div key={plan} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2.5">
+                <div
+                  key={plan}
+                  className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2.5"
+                >
                   <span className="text-sm text-slate-600">{PLAN_LABELS[plan] ?? plan}</span>
-                  <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-sm font-bold text-emerald-600">{count}</span>
+                  <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-sm font-bold text-emerald-600">
+                    {count}
+                  </span>
                 </div>
               ))}
               {stats && Object.values(stats.planBreakdown).every((v) => v === 0) && (
-                <p className="py-4 text-center text-sm text-slate-400">No active subscriptions yet</p>
+                <p className="py-4 text-center text-sm text-slate-400">
+                  No active subscriptions yet
+                </p>
               )}
             </div>
           )}
@@ -315,7 +410,10 @@ function AdminDashboard() {
               title="Probe system health live"
               className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-[#2563eb] transition-colors cursor-pointer"
             >
-              <RefreshCw size={12} className={checkingHealth ? "animate-spin text-[#2563eb]" : ""} />
+              <RefreshCw
+                size={12}
+                className={checkingHealth ? "animate-spin text-[#2563eb]" : ""}
+              />
               <span>{checkingHealth ? "Checking…" : "Re-check"}</span>
             </button>
           </div>
@@ -324,14 +422,19 @@ function AdminDashboard() {
               const isHealthy = status === "Healthy";
               const isWarn = status === "Not Connected";
               return (
-                <div key={label} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2.5">
+                <div
+                  key={label}
+                  className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2.5"
+                >
                   <div className="min-w-0 pr-2">
                     <p className="text-sm font-semibold text-slate-700 leading-tight">{label}</p>
                     {sub && <p className="text-[10px] text-slate-400 truncate">{sub}</p>}
                   </div>
-                  <span className={`flex items-center gap-1 text-[11px] font-bold shrink-0 ${
-                    isHealthy ? "text-emerald-600" : isWarn ? "text-amber-600" : "text-red-600"
-                  }`}>
+                  <span
+                    className={`flex items-center gap-1 text-[11px] font-bold shrink-0 ${
+                      isHealthy ? "text-emerald-600" : isWarn ? "text-amber-600" : "text-red-600"
+                    }`}
+                  >
                     {isHealthy ? (
                       <CheckCircle2 size={12} />
                     ) : isWarn ? (
@@ -352,13 +455,18 @@ function AdminDashboard() {
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-display text-base font-bold text-[#0f172a]">Recent Activity</h3>
-          <a href="/admin/audit-logs" className="text-xs font-semibold text-[#2563eb] hover:underline">
+          <a
+            href="/admin/audit-logs"
+            className="text-xs font-semibold text-[#2563eb] hover:underline"
+          >
             View all →
           </a>
         </div>
         {loading ? (
           <div className="space-y-3">
-            {[1,2,3,4].map((i) => <div key={i} className="h-12 animate-pulse rounded-lg bg-slate-100" />)}
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-12 animate-pulse rounded-lg bg-slate-100" />
+            ))}
           </div>
         ) : activity.length ? (
           <div className="divide-y divide-slate-100">
@@ -371,9 +479,7 @@ function AdminDashboard() {
                   <p className="text-sm font-semibold text-[#0f172a] capitalize">
                     {act.title.replace(/_/g, " ")}
                   </p>
-                  {act.businessName && (
-                    <p className="text-xs text-slate-500">{act.businessName}</p>
-                  )}
+                  {act.businessName && <p className="text-xs text-slate-500">{act.businessName}</p>}
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="text-[11px] text-slate-400">

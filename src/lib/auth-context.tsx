@@ -186,71 +186,81 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [loadUserData]);
 
   // ── Actions ─────────────────────────────────────────────────────
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await authService.signIn(email, password);
     return { error: error?.message ?? null };
-  };
+  }, []);
 
-  const signUp = async ({
-    email,
-    password,
-    fullName,
-    businessName,
-    phone,
-  }: {
-    email: string;
-    password: string;
-    fullName: string;
-    businessName: string;
-    phone: string;
-  }) => {
-    // 1. Create auth user
-    const { data: authData, error: authError } = await authService.signUp(
+  const signUp = useCallback(
+    async ({
       email,
       password,
       fullName,
+      businessName,
       phone,
-    );
-    if (authError || !authData.user) {
-      return { error: authError?.message ?? "Signup failed" };
-    }
-    const userId = authData.user.id;
-
-    // 2. Provision workspace via server API (bypasses RLS chicken-and-egg deadlock)
-    try {
-      const provRes = await fetch("/api/auth/provision", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          businessName,
-          fullName,
-          phone,
-        }),
-      });
-      const provData = await provRes.json();
-      if (provData.business) {
-        setBusiness(provData.business);
+    }: {
+      email: string;
+      password: string;
+      fullName: string;
+      businessName: string;
+      phone: string;
+    }) => {
+      // 1. Create auth user
+      const { data: authData, error: authError } = await authService.signUp(
+        email,
+        password,
+        fullName,
+        phone,
+      );
+      if (authError || !authData.user) {
+        return { error: authError?.message ?? "Signup failed" };
       }
-      if (provData.subscription) {
-        setSubscription(provData.subscription);
-      }
-    } catch (e) {
-      console.warn("[AuthContext] Provision API call failed, falling back to direct creation:", e);
-      // Fallback
-      const biz = await businessService.create(businessName, "General");
-      if (biz) {
-        await businessService.addMember(userId, biz.id, "owner");
-        await profileService.update(userId, { businessId: biz.id, fullName, phone });
-        await subscriptionService.create(biz.id);
-      }
-    }
+      const userId = authData.user.id;
 
-    // Immediately reload user data so that state is fully hydrated
-    await loadUserData(authData.user);
+      // 2. Provision workspace via server API (bypasses RLS chicken-and-egg deadlock)
+      try {
+        const provRes = await fetch("/api/auth/provision", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            businessName,
+            fullName,
+            phone,
+          }),
+        });
+        const provData = await provRes.json();
+        if (provData.business) {
+          setBusiness(provData.business);
+        }
+        if (provData.subscription) {
+          setSubscription(provData.subscription);
+        }
+      } catch (e) {
+        console.warn(
+          "[AuthContext] Provision API call failed, falling back to direct creation:",
+          e,
+        );
+        // Fallback
+        const biz = await businessService.create(businessName, "General");
+        if (biz) {
+          await businessService.addMember(userId, biz.id, "owner");
+          await profileService.update(userId, {
+            businessId: biz.id,
+            fullName,
+            phone,
+          });
+          await subscriptionService.create(biz.id);
+        }
+      }
 
-    return { error: null };
-  };
+      // Immediately reload user data so that state is fully hydrated
+      await loadUserData(authData.user);
+
+      return { error: null };
+    },
+    [loadUserData],
+  );
 
   const signOut = useCallback(async () => {
     await authService.signOut();
@@ -282,23 +292,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSubscription(sub);
   }, [business]);
 
-  const updateBusiness = useCallback(async (patch: Partial<Business>) => {
-    if (!business) return false;
-    const ok = await businessService.update(business.id, patch);
-    if (ok) setBusiness((prev) => (prev ? { ...prev, ...patch } : prev));
-    return ok;
-  }, [business]);
+  const updateBusiness = useCallback(
+    async (patch: Partial<Business>) => {
+      if (!business) return false;
+      const ok = await businessService.update(business.id, patch);
+      if (ok) setBusiness((prev) => (prev ? { ...prev, ...patch } : prev));
+      return ok;
+    },
+    [business],
+  );
 
-  const updateProfile = useCallback(async (patch: Partial<Profile>) => {
-    if (!user) return false;
-    const cleanPatch: { fullName?: string; phone?: string; avatarUrl?: string } = {};
-    if (patch.fullName !== undefined) cleanPatch.fullName = patch.fullName;
-    if (patch.phone !== undefined) cleanPatch.phone = patch.phone;
-    if (patch.avatarUrl !== undefined) cleanPatch.avatarUrl = patch.avatarUrl;
-    const ok = await profileService.update(user.id, cleanPatch);
-    if (ok) setProfile((prev) => (prev ? { ...prev, ...patch } : prev));
-    return ok;
-  }, [user]);
+  const updateProfile = useCallback(
+    async (patch: Partial<Profile>) => {
+      if (!user) return false;
+      const cleanPatch: { fullName?: string; phone?: string; avatarUrl?: string } = {};
+      if (patch.fullName !== undefined) cleanPatch.fullName = patch.fullName;
+      if (patch.phone !== undefined) cleanPatch.phone = patch.phone;
+      if (patch.avatarUrl !== undefined) cleanPatch.avatarUrl = patch.avatarUrl;
+      const ok = await profileService.update(user.id, cleanPatch);
+      if (ok) setProfile((prev) => (prev ? { ...prev, ...patch } : prev));
+      return ok;
+    },
+    [user],
+  );
 
   const value = useMemo(
     () => ({
@@ -338,14 +354,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       refreshSubscription,
       updateBusiness,
       updateProfile,
-    ]
+    ],
   );
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────

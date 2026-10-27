@@ -1,8 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
-  Activity, Target, Users, TrendingUp, CheckCircle2,
-  Clock, RefreshCw, Loader2, Layers, Check
+  Activity,
+  Target,
+  Users,
+  TrendingUp,
+  CheckCircle2,
+  Clock,
+  RefreshCw,
+  Loader2,
+  Layers,
+  Check,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
 import { AdminShell, AdminKpiCard } from "@/components/admin-shell";
@@ -60,7 +68,10 @@ function SystemOperationsContent() {
         supabase.from("contacts").select("id", { count: "exact", head: true }),
         supabase.from("deals").select("id", { count: "exact", head: true }),
         supabase.from("tasks").select("id", { count: "exact", head: true }),
-        supabase.from("tasks").select("id", { count: "exact", head: true }).eq("status", "Completed"),
+        supabase
+          .from("tasks")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "Completed"),
       ]);
 
       setStats({
@@ -104,9 +115,7 @@ function SystemOperationsContent() {
   }, []);
 
   const winRate =
-    stats.totalLeads > 0
-      ? `${Math.round((stats.wonLeads / stats.totalLeads) * 100)}%`
-      : "0%";
+    stats.totalLeads > 0 ? `${Math.round((stats.wonLeads / stats.totalLeads) * 100)}%` : "0%";
 
   return (
     <div className="space-y-6">
@@ -191,7 +200,8 @@ function SystemOperationsContent() {
               <div>
                 <p className="font-bold text-[#0f172a]">Live Realtime Sync Active</p>
                 <p className="text-slate-500">
-                  Data reflects immediate inserts, updates, and completions across all tenant businesses.
+                  Data reflects immediate inserts, updates, and completions across all tenant
+                  businesses.
                 </p>
               </div>
             </div>

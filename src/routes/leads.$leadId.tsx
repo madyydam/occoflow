@@ -1,8 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  ArrowLeft, Pencil, Phone, Mail, Building2, Globe2,
-  CircleDollarSign, CalendarDays, Plus, Clock,
+  ArrowLeft,
+  Pencil,
+  Phone,
+  Mail,
+  Building2,
+  Globe2,
+  CircleDollarSign,
+  CalendarDays,
+  Plus,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCRM } from "@/lib/crm-context";
@@ -17,7 +25,10 @@ export const Route = createFileRoute("/leads/$leadId")({
   head: () => ({
     meta: [
       { title: "Lead Details | Occo Flow" },
-      { name: "description", content: "View customer details, pipeline stage, follow-ups and activity." },
+      {
+        name: "description",
+        content: "View customer details, pipeline stage, follow-ups and activity.",
+      },
     ],
   }),
   component: LeadDetailsPage,
@@ -35,7 +46,16 @@ function LeadDetailsPage() {
 
 function LeadDetailsContent() {
   const { leadId } = Route.useParams();
-  const { leads, updateLead, deleteLead, activities, addNote, addFollowUp, convertLeadToContact, convertLeadToDeal } = useCRM();
+  const {
+    leads,
+    updateLead,
+    deleteLead,
+    activities,
+    addNote,
+    addFollowUp,
+    convertLeadToContact,
+    convertLeadToDeal,
+  } = useCRM();
   const { user } = useAuth();
   const lead = leads.find((x) => x.id === leadId);
 
@@ -56,7 +76,8 @@ function LeadDetailsContent() {
     );
   }
 
-  const timeline = activities.filter((x) => x.leadId === lead.id)
+  const timeline = activities
+    .filter((x) => x.leadId === lead.id)
     .slice()
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -71,7 +92,11 @@ function LeadDetailsContent() {
   const handleAddFollowUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!followUpDate) return;
-    await addFollowUp({ leadId: lead.id, scheduledAt: new Date(followUpDate).toISOString(), note: followUpNote });
+    await addFollowUp({
+      leadId: lead.id,
+      scheduledAt: new Date(followUpDate).toISOString(),
+      note: followUpNote,
+    });
     setFollowUpDate("");
     setFollowUpNote("");
     setShowFollowUpForm(false);
@@ -96,16 +121,27 @@ function LeadDetailsContent() {
     <>
       {/* Back */}
       <div className="mb-6 flex items-center justify-between gap-3">
-        <Link to="/leads" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
+        <Link
+          to="/leads"
+          className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
+        >
           <ArrowLeft size={18} />
           <span className="hidden sm:inline">Back to Leads</span>
           <span className="sm:hidden">Back</span>
         </Link>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setEditOpen(true)} className="h-9 border-border shadow-none">
+          <Button
+            variant="outline"
+            onClick={() => setEditOpen(true)}
+            className="h-9 border-border shadow-none"
+          >
             <Pencil size={15} /> Edit
           </Button>
-          <Button variant="outline" onClick={handleDelete} className="h-9 border-destructive/30 text-destructive shadow-none hover:bg-destructive/5">
+          <Button
+            variant="outline"
+            onClick={handleDelete}
+            className="h-9 border-destructive/30 text-destructive shadow-none hover:bg-destructive/5"
+          >
             Delete
           </Button>
         </div>
@@ -119,8 +155,12 @@ function LeadDetailsContent() {
             <div className="flex items-center gap-4">
               <Avatar name={lead.name} size="lg" />
               <div className="min-w-0">
-                <h1 className="truncate font-display text-xl font-extrabold sm:text-2xl">{lead.name}</h1>
-                <p className="mt-1 truncate text-sm text-muted-foreground">{lead.company || "No company"}</p>
+                <h1 className="truncate font-display text-xl font-extrabold sm:text-2xl">
+                  {lead.name}
+                </h1>
+                <p className="mt-1 truncate text-sm text-muted-foreground">
+                  {lead.company || "No company"}
+                </p>
                 <div className="mt-2 flex items-center gap-2">
                   <StatusBadge status={lead.status} />
                   <StatusBadge status={lead.priority} />
@@ -128,8 +168,18 @@ function LeadDetailsContent() {
               </div>
             </div>
             <div className="mt-5 grid gap-1 border-t border-border pt-4 text-sm text-muted-foreground">
-              {lead.phone && <p className="flex items-center gap-2"><Phone size={15} />{lead.phone}</p>}
-              {lead.email && <p className="flex items-center gap-2"><Mail size={15} />{lead.email}</p>}
+              {lead.phone && (
+                <p className="flex items-center gap-2">
+                  <Phone size={15} />
+                  {lead.phone}
+                </p>
+              )}
+              {lead.email && (
+                <p className="flex items-center gap-2">
+                  <Mail size={15} />
+                  {lead.email}
+                </p>
+              )}
             </div>
             <div className="mt-5">
               <QuickActions phone={lead.phone} email={lead.email} />
@@ -162,18 +212,35 @@ function LeadDetailsContent() {
               <Info icon={Building2} label="Company" value={lead.company || "—"} />
               <Info icon={Globe2} label="Source" value={lead.source} />
               <Info icon={CircleDollarSign} label="Potential Value" value={money(lead.value)} />
-              <Info icon={CalendarDays} label="Added" value={format(parseISO(lead.createdAt), "MMM d, yyyy")} />
+              <Info
+                icon={CalendarDays}
+                label="Added"
+                value={format(parseISO(lead.createdAt), "MMM d, yyyy")}
+              />
             </div>
           </section>
 
           {/* Conversions */}
           <section className="rounded-lg border border-border bg-card p-5">
-            <h2 className="mb-3 font-display text-sm font-bold text-muted-foreground uppercase tracking-wide">Convert</h2>
+            <h2 className="mb-3 font-display text-sm font-bold text-muted-foreground uppercase tracking-wide">
+              Convert
+            </h2>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" onClick={handleConvertToContact} disabled={converting} className="border-border shadow-none">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleConvertToContact}
+                disabled={converting}
+                className="border-border shadow-none"
+              >
                 → Contact
               </Button>
-              <Button variant="outline" size="sm" onClick={handleConvertToDeal} className="border-border shadow-none">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleConvertToDeal}
+                className="border-border shadow-none"
+              >
                 → Deal
               </Button>
             </div>
@@ -186,24 +253,34 @@ function LeadDetailsContent() {
           <section className="rounded-lg border border-border bg-card p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-base font-bold">Follow-up</h2>
-              <Button variant="ghost" size="sm" onClick={() => setShowFollowUpForm(!showFollowUpForm)} className="text-primary">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowFollowUpForm(!showFollowUpForm)}
+                className="text-primary"
+              >
                 <Plus size={15} /> Schedule
               </Button>
             </div>
             {showFollowUpForm && (
               <form onSubmit={handleAddFollowUp} className="mt-4 space-y-2">
                 <input
-                  type="datetime-local" required
-                  value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)}
+                  type="datetime-local"
+                  required
+                  value={followUpDate}
+                  onChange={(e) => setFollowUpDate(e.target.value)}
                   className="h-10 w-full rounded-lg border border-border bg-card px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 />
                 <textarea
-                  value={followUpNote} onChange={(e) => setFollowUpNote(e.target.value)}
+                  value={followUpNote}
+                  onChange={(e) => setFollowUpNote(e.target.value)}
                   placeholder="Note (optional)"
                   rows={2}
                   className="w-full resize-none rounded-lg border border-border bg-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 />
-                <Button type="submit" size="sm" className="w-full">Schedule Follow-up</Button>
+                <Button type="submit" size="sm" className="w-full">
+                  Schedule Follow-up
+                </Button>
               </form>
             )}
             {lead.notes && (
@@ -218,19 +295,27 @@ function LeadDetailsContent() {
           <section className="rounded-lg border border-border bg-card p-5 sm:p-6">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-base font-bold">Notes & Activity</h2>
-              <Button variant="ghost" size="sm" onClick={() => setShowNoteForm(!showNoteForm)} className="text-primary">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowNoteForm(!showNoteForm)}
+                className="text-primary"
+              >
                 <Plus size={15} /> Note
               </Button>
             </div>
             {showNoteForm && (
               <form onSubmit={handleAddNote} className="mt-4">
                 <textarea
-                  value={noteText} onChange={(e) => setNoteText(e.target.value)}
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
                   placeholder="Write a note…"
                   className="w-full resize-none rounded-lg border border-border bg-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                   rows={3}
                 />
-                <Button type="submit" size="sm" className="mt-2">Add Note</Button>
+                <Button type="submit" size="sm" className="mt-2">
+                  Add Note
+                </Button>
               </form>
             )}
             <div className="mt-5 border-l border-border pl-4">
@@ -249,14 +334,20 @@ function LeadDetailsContent() {
                   </div>
                 ))
               ) : (
-                <p className="text-xs text-muted-foreground">Activity will appear here as you interact with this lead.</p>
+                <p className="text-xs text-muted-foreground">
+                  Activity will appear here as you interact with this lead.
+                </p>
               )}
             </div>
           </section>
         </div>
       </div>
 
-      <QuickForm kind={editOpen ? "lead" : null} initialLead={lead} onClose={() => setEditOpen(false)} />
+      <QuickForm
+        kind={editOpen ? "lead" : null}
+        initialLead={lead}
+        onClose={() => setEditOpen(false)}
+      />
     </>
   );
 }
@@ -264,7 +355,10 @@ function LeadDetailsContent() {
 function Info({ icon: Icon, label, value }: { icon: typeof Phone; label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><Icon size={14} />{label}</p>
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Icon size={14} />
+        {label}
+      </p>
       <p className="mt-1.5 break-words font-semibold">{value}</p>
     </div>
   );

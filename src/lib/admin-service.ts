@@ -182,8 +182,8 @@ const mapAdminSub = (r: any): AdminSubscription => ({
   businessId: r.business_id,
   businessName: r.businesses?.name ?? "",
   ownerName: Array.isArray(r.businesses?.profiles)
-    ? r.businesses.profiles[0]?.full_name ?? "Workspace Owner"
-    : r.businesses?.profiles?.full_name ?? "Workspace Owner",
+    ? (r.businesses.profiles[0]?.full_name ?? "Workspace Owner")
+    : (r.businesses?.profiles?.full_name ?? "Workspace Owner"),
   status: r.status,
   plan: r.plan,
   billingCycle: r.billing_cycle ?? null,
@@ -270,9 +270,17 @@ export const adminDashboardService = {
       { data: subs },
     ] = await Promise.all([
       supabase.from("businesses").select("id", { count: "exact", head: true }),
-      supabase.from("businesses").select("id", { count: "exact", head: true }).eq("is_suspended", false),
-      supabase.from("businesses").select("id", { count: "exact", head: true }).eq("is_suspended", true),
-      supabase.from("subscriptions").select("status, plan, billing_cycle, trial_ends_at, subscription_started_at"),
+      supabase
+        .from("businesses")
+        .select("id", { count: "exact", head: true })
+        .eq("is_suspended", false),
+      supabase
+        .from("businesses")
+        .select("id", { count: "exact", head: true })
+        .eq("is_suspended", true),
+      supabase
+        .from("subscriptions")
+        .select("status, plan, billing_cycle, trial_ends_at, subscription_started_at"),
     ]);
 
     const { count: totalUsers } = await supabase
@@ -299,11 +307,25 @@ export const adminDashboardService = {
 
     // Plan breakdown
     const planBreakdown = {
-      standard_monthly: allSubs.filter((s) => s.status === "subscribed" && (s.plan === "standard_monthly" || s.plan === "crm_monthly")).length,
-      standard_yearly: allSubs.filter((s) => s.status === "subscribed" && (s.plan === "standard_yearly" || s.plan === "crm_yearly")).length,
-      premium_monthly: allSubs.filter((s) => s.status === "subscribed" && s.plan === "premium_monthly").length,
-      premium_yearly: allSubs.filter((s) => s.status === "subscribed" && s.plan === "premium_yearly").length,
-      lifetime: allSubs.filter((s) => s.status === "subscribed" && (Boolean(s.plan && s.plan.includes("lifetime")) || s.billing_cycle === "lifetime")).length,
+      standard_monthly: allSubs.filter(
+        (s) =>
+          s.status === "subscribed" && (s.plan === "standard_monthly" || s.plan === "crm_monthly"),
+      ).length,
+      standard_yearly: allSubs.filter(
+        (s) =>
+          s.status === "subscribed" && (s.plan === "standard_yearly" || s.plan === "crm_yearly"),
+      ).length,
+      premium_monthly: allSubs.filter(
+        (s) => s.status === "subscribed" && s.plan === "premium_monthly",
+      ).length,
+      premium_yearly: allSubs.filter(
+        (s) => s.status === "subscribed" && s.plan === "premium_yearly",
+      ).length,
+      lifetime: allSubs.filter(
+        (s) =>
+          s.status === "subscribed" &&
+          (Boolean(s.plan && s.plan.includes("lifetime")) || s.billing_cycle === "lifetime"),
+      ).length,
     };
 
     // MRR
@@ -427,13 +449,20 @@ export const adminBusinessService = {
     if (!data) return null;
 
     // Get counts
-    const [{ count: leadCount }, { count: contactCount }, { count: dealCount }, { count: taskCount }] =
-      await Promise.all([
-        supabase.from("leads").select("id", { count: "exact", head: true }).eq("business_id", bizId),
-        supabase.from("contacts").select("id", { count: "exact", head: true }).eq("business_id", bizId),
-        supabase.from("deals").select("id", { count: "exact", head: true }).eq("business_id", bizId),
-        supabase.from("tasks").select("id", { count: "exact", head: true }).eq("business_id", bizId),
-      ]);
+    const [
+      { count: leadCount },
+      { count: contactCount },
+      { count: dealCount },
+      { count: taskCount },
+    ] = await Promise.all([
+      supabase.from("leads").select("id", { count: "exact", head: true }).eq("business_id", bizId),
+      supabase
+        .from("contacts")
+        .select("id", { count: "exact", head: true })
+        .eq("business_id", bizId),
+      supabase.from("deals").select("id", { count: "exact", head: true }).eq("business_id", bizId),
+      supabase.from("tasks").select("id", { count: "exact", head: true }).eq("business_id", bizId),
+    ]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const r = data as any;
@@ -464,10 +493,18 @@ export const adminBusinessService = {
     };
   },
 
-  async suspend(bizId: string, reason: string, adminUser: { id: string; email: string }): Promise<boolean> {
+  async suspend(
+    bizId: string,
+    reason: string,
+    adminUser: { id: string; email: string },
+  ): Promise<boolean> {
     const { error } = await supabase
       .from("businesses")
-      .update({ is_suspended: true, suspension_reason: reason, suspended_at: new Date().toISOString() })
+      .update({
+        is_suspended: true,
+        suspension_reason: reason,
+        suspended_at: new Date().toISOString(),
+      })
       .eq("id", bizId);
     if (!error) {
       await adminAuditService.log({
@@ -503,7 +540,7 @@ export const adminBusinessService = {
   async deletePermanently(
     userId: string,
     businessId: string,
-    adminUser?: { id: string; email: string }
+    adminUser?: { id: string; email: string },
   ): Promise<{ success: boolean; error?: string }> {
     try {
       const res = await fetch("/api/admin/delete-user", {
@@ -642,17 +679,19 @@ export const adminAuditService = {
     newValue?: Record<string, unknown>;
     metadata?: Record<string, unknown>;
   }): Promise<void> {
-    await supabase.from("admin_audit_logs").insert([{
-      admin_id: payload.adminId,
-      admin_email: payload.adminEmail,
-      action: payload.action,
-      entity_type: payload.entityType,
-      entity_id: payload.entityId ?? null,
-      entity_name: payload.entityName ?? "",
-      old_value: payload.oldValue ?? {},
-      new_value: payload.newValue ?? {},
-      metadata: payload.metadata ?? {},
-    }]);
+    await supabase.from("admin_audit_logs").insert([
+      {
+        admin_id: payload.adminId,
+        admin_email: payload.adminEmail,
+        action: payload.action,
+        entity_type: payload.entityType,
+        entity_id: payload.entityId ?? null,
+        entity_name: payload.entityName ?? "",
+        old_value: payload.oldValue ?? {},
+        new_value: payload.newValue ?? {},
+        metadata: payload.metadata ?? {},
+      },
+    ]);
   },
 
   async list(page = 0, perPage = 50): Promise<{ data: AdminAuditLog[]; total: number }> {
@@ -808,7 +847,8 @@ export const adminNotificationService = {
     };
     if (payload["scheduled_at"]) cleanPayload["scheduled_at"] = payload["scheduled_at"];
     if (payload["target_plan"]) cleanPayload["target_plan"] = payload["target_plan"];
-    if (Array.isArray(payload["target_business_ids"])) cleanPayload["target_business_ids"] = payload["target_business_ids"];
+    if (Array.isArray(payload["target_business_ids"]))
+      cleanPayload["target_business_ids"] = payload["target_business_ids"];
 
     const { error } = await supabase.from("platform_notifications_admin").insert([cleanPayload]);
     if (error) {
@@ -818,10 +858,7 @@ export const adminNotificationService = {
   },
 
   async delete(id: string): Promise<boolean> {
-    const { error } = await supabase
-      .from("platform_notifications_admin")
-      .delete()
-      .eq("id", id);
+    const { error } = await supabase.from("platform_notifications_admin").delete().eq("id", id);
     return !error;
   },
 };

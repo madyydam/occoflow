@@ -41,13 +41,13 @@ function ContactsContent() {
     if (!query.trim()) return contacts;
     const q = query.toLowerCase();
     return contacts.filter((x) =>
-      `${x.name} ${x.company} ${x.phone} ${x.email}`.toLowerCase().includes(q)
+      `${x.name} ${x.company} ${x.phone} ${x.email}`.toLowerCase().includes(q),
     );
   }, [contacts, query]);
 
   const active = useMemo(
     () => (selected ? contacts.find((x) => x.id === selected) : undefined),
-    [contacts, selected]
+    [contacts, selected],
   );
 
   return (
@@ -56,20 +56,13 @@ function ContactsContent() {
         title="Contacts"
         description={`${contacts.length} people in your network`}
         action={
-          <Button
-            className="hidden sm:flex lg:hidden"
-            onClick={() => setForm("contact")}
-          >
+          <Button className="hidden sm:flex lg:hidden" onClick={() => setForm("contact")}>
             <Plus size={16} /> Add contact
           </Button>
         }
       />
       <div className="mb-5">
-        <SearchBar
-          value={query}
-          onChange={setQuery}
-          placeholder="Search contacts..."
-        />
+        <SearchBar value={query} onChange={setQuery} placeholder="Search contacts..." />
       </div>
       {filtered.length ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -153,11 +146,7 @@ function ContactsContent() {
                   </Link>
                 </Button>
               )}
-              <Button
-                variant="outline"
-                className="flex-1"
-                onClick={() => setSelected(null)}
-              >
+              <Button variant="outline" className="flex-1" onClick={() => setSelected(null)}>
                 Close
               </Button>
             </div>

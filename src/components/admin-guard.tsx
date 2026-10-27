@@ -8,7 +8,11 @@ function AdminLoadingScreen() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0f172a]">
       <div className="flex flex-col items-center gap-4">
-        <img src="/logo.png" alt="Admin" className="size-14 rounded-2xl object-contain opacity-60 animate-pulse" />
+        <img
+          src="/logo.png"
+          alt="Admin"
+          className="size-14 rounded-2xl object-contain opacity-60 animate-pulse"
+        />
         <p className="text-sm font-medium text-white/40">Loading admin panel…</p>
       </div>
     </div>

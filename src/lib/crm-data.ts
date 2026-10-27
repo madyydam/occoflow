@@ -34,26 +34,47 @@ export type SubscriptionPlan =
   | "premium_yearly";
 export type BillingCycle = "monthly" | "yearly" | "lifetime" | "custom";
 export type AccessState =
-  | "loading"
-  | "unauthenticated"
-  | "trial_active"
-  | "trial_expired"
-  | "subscribed"
-  | "sub_expired";
+  "loading" | "unauthenticated" | "trial_active" | "trial_expired" | "subscribed" | "sub_expired";
 
 // ── Lookup Arrays ────────────────────────────────────────
 export const leadStatuses: LeadStatus[] = [
-  "New", "Contacted", "Qualified", "Follow-up", "Won", "Lost",
+  "New",
+  "Contacted",
+  "Qualified",
+  "Follow-up",
+  "Won",
+  "Lost",
 ];
 export const dealStages: DealStage[] = [
-  "New", "Qualified", "Proposal", "Negotiation", "Won", "Lost",
+  "New",
+  "Qualified",
+  "Proposal",
+  "Negotiation",
+  "Won",
+  "Lost",
 ];
 export const leadSources = [
-  "Website", "Instagram", "Google", "Referral", "Walk-in", "Facebook", "LinkedIn", "Other",
+  "Website",
+  "Instagram",
+  "Google",
+  "Referral",
+  "Walk-in",
+  "Facebook",
+  "LinkedIn",
+  "Other",
 ];
 export const industries = [
-  "General", "Agency", "Retail", "Healthcare", "Education", "Fitness",
-  "Food & Beverage", "Real Estate", "Technology", "Automotive", "Other",
+  "General",
+  "Agency",
+  "Retail",
+  "Healthcare",
+  "Education",
+  "Fitness",
+  "Food & Beverage",
+  "Real Estate",
+  "Technology",
+  "Automotive",
+  "Other",
 ];
 
 // ── Interfaces ───────────────────────────────────────────
@@ -203,8 +224,7 @@ export interface Activity {
 }
 
 // ── Utility Helpers ──────────────────────────────────────
-export const money = (value: number) =>
-  `₹${value.toLocaleString("en-IN")}`;
+export const money = (value: number) => `₹${value.toLocaleString("en-IN")}`;
 
 export const initials = (name: string) =>
   name

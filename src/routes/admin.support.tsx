@@ -1,14 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import {
-  MessageSquarePlus, Search, MessageSquare, CheckCircle2,
-  Clock, AlertCircle, Eye, ShieldCheck, Loader2, Star,
-  Lightbulb, Filter, Send, XCircle, RefreshCw, UserCheck
+  MessageSquarePlus,
+  Search,
+  MessageSquare,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Eye,
+  ShieldCheck,
+  Loader2,
+  Star,
+  Lightbulb,
+  Filter,
+  Send,
+  XCircle,
+  RefreshCw,
+  UserCheck,
 } from "lucide-react";
 import { AdminGuard } from "@/components/admin-guard";
 import {
-  AdminShell, AdminPageHeader, AdminBadge,
-  AdminKpiCard, AdminEmptyState
+  AdminShell,
+  AdminPageHeader,
+  AdminBadge,
+  AdminKpiCard,
+  AdminEmptyState,
 } from "@/components/admin-shell";
 import { useAdminAuth } from "@/lib/admin-context";
 import { adminSupportService, type AdminSupportTicket } from "@/lib/admin-service";
@@ -100,7 +116,7 @@ function AdminSupport() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "support_tickets" },
-        debouncedReload
+        debouncedReload,
       )
       .subscribe();
 
@@ -125,7 +141,12 @@ function AdminSupport() {
       // Status filter
       if (statusFilter !== "all") {
         if (statusFilter === "new" && t.status !== "new" && t.status !== "open") return false;
-        if (statusFilter === "under_review" && t.status !== "under_review" && t.status !== "waiting") return false;
+        if (
+          statusFilter === "under_review" &&
+          t.status !== "under_review" &&
+          t.status !== "waiting"
+        )
+          return false;
         if (statusFilter === "in_progress" && t.status !== "in_progress") return false;
         if (statusFilter === "resolved" && t.status !== "resolved") return false;
         if (statusFilter === "closed" && t.status !== "closed") return false;
@@ -166,16 +187,19 @@ function AdminSupport() {
   // Metrics
   const newCount = tickets.filter((t) => t.status === "new" || t.status === "open").length;
   const inProgressCount = tickets.filter(
-    (t) => t.status === "under_review" || t.status === "in_progress" || t.status === "waiting"
+    (t) => t.status === "under_review" || t.status === "in_progress" || t.status === "waiting",
   ).length;
-  const resolvedCount = tickets.filter((t) => t.status === "resolved" || t.status === "closed").length;
+  const resolvedCount = tickets.filter(
+    (t) => t.status === "resolved" || t.status === "closed",
+  ).length;
 
-  const ratedTickets = tickets.filter((t) => t.rating !== null && t.rating !== undefined && t.rating > 0);
+  const ratedTickets = tickets.filter(
+    (t) => t.rating !== null && t.rating !== undefined && t.rating > 0,
+  );
   const avgRating =
     ratedTickets.length > 0
       ? (
-          ratedTickets.reduce((acc, curr) => acc + (curr.rating || 0), 0) /
-          ratedTickets.length
+          ratedTickets.reduce((acc, curr) => acc + (curr.rating || 0), 0) / ratedTickets.length
         ).toFixed(1)
       : "5.0";
 
@@ -369,7 +393,11 @@ function AdminSupport() {
             <option value="30d">Last 30 Days</option>
           </select>
 
-          {(statusFilter !== "all" || typeFilter !== "all" || ratingFilter !== "all" || dateFilter !== "all" || search) && (
+          {(statusFilter !== "all" ||
+            typeFilter !== "all" ||
+            ratingFilter !== "all" ||
+            dateFilter !== "all" ||
+            search) && (
             <button
               type="button"
               onClick={() => {
@@ -444,15 +472,25 @@ function AdminSupport() {
                               </span>
                             )}
                           </div>
-                          <div className="font-bold text-[#0f172a] mt-0.5 truncate">{t.subject}</div>
-                          <div className="text-[11px] text-slate-400 line-clamp-1">{t.description}</div>
+                          <div className="font-bold text-[#0f172a] mt-0.5 truncate">
+                            {t.subject}
+                          </div>
+                          <div className="text-[11px] text-slate-400 line-clamp-1">
+                            {t.description}
+                          </div>
                         </td>
 
                         {/* Customer & Workspace */}
                         <td className="px-4 py-3.5">
-                          <div className="font-semibold text-slate-800">{t.userName || "Customer"}</div>
-                          <div className="text-[11px] text-slate-500">{t.businessName || "Workspace"}</div>
-                          {t.userEmail && <div className="text-[10px] text-slate-400 truncate">{t.userEmail}</div>}
+                          <div className="font-semibold text-slate-800">
+                            {t.userName || "Customer"}
+                          </div>
+                          <div className="text-[11px] text-slate-500">
+                            {t.businessName || "Workspace"}
+                          </div>
+                          {t.userEmail && (
+                            <div className="text-[10px] text-slate-400 truncate">{t.userEmail}</div>
+                          )}
                         </td>
 
                         {/* Type */}
@@ -462,8 +500,8 @@ function AdminSupport() {
                               t.type === "problem"
                                 ? "bg-red-50 text-red-700 border border-red-200"
                                 : t.type === "suggestion"
-                                ? "bg-blue-50 text-blue-700 border border-blue-200"
-                                : "bg-purple-50 text-purple-700 border border-purple-200"
+                                  ? "bg-blue-50 text-blue-700 border border-blue-200"
+                                  : "bg-purple-50 text-purple-700 border border-purple-200"
                             }`}
                           >
                             {t.type === "problem" ? (
@@ -555,20 +593,30 @@ function AdminSupport() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                 <div>
                   <span className="text-[10px] text-slate-400 uppercase font-bold block">User</span>
-                  <span className="font-semibold text-slate-800">{selectedTicket.userName || "Customer"}</span>
+                  <span className="font-semibold text-slate-800">
+                    {selectedTicket.userName || "Customer"}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Workspace</span>
-                  <span className="font-semibold text-slate-800">{selectedTicket.businessName || "Workspace"}</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                    Workspace
+                  </span>
+                  <span className="font-semibold text-slate-800">
+                    {selectedTicket.businessName || "Workspace"}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Email / Contact</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                    Email / Contact
+                  </span>
                   <span className="font-semibold text-slate-800 truncate block">
                     {selectedTicket.userEmail || "—"}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 uppercase font-bold block">Submitted</span>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold block">
+                    Submitted
+                  </span>
                   <span className="font-semibold text-slate-800">
                     {format(new Date(selectedTicket.createdAt), "dd MMM, h:mm a")}
                   </span>
@@ -583,8 +631,8 @@ function AdminSupport() {
                       selectedTicket.type === "problem"
                         ? "bg-red-50 text-red-700 border border-red-200"
                         : selectedTicket.type === "suggestion"
-                        ? "bg-blue-50 text-blue-700 border border-blue-200"
-                        : "bg-purple-50 text-purple-700 border border-purple-200"
+                          ? "bg-blue-50 text-blue-700 border border-blue-200"
+                          : "bg-purple-50 text-purple-700 border border-purple-200"
                     }`}
                   >
                     {selectedTicket.type}
@@ -592,7 +640,8 @@ function AdminSupport() {
 
                   {selectedTicket.rating && (
                     <span className="inline-flex items-center gap-1 text-amber-500 font-bold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md">
-                      <Star size={12} className="fill-amber-400" /> {selectedTicket.rating} / 5 Stars
+                      <Star size={12} className="fill-amber-400" /> {selectedTicket.rating} / 5
+                      Stars
                     </span>
                   )}
                 </div>
@@ -646,7 +695,8 @@ function AdminSupport() {
                   </label>
                   {selectedTicket.adminRespondedAt && (
                     <span className="text-[10px] text-slate-400">
-                      Last replied: {format(new Date(selectedTicket.adminRespondedAt), "dd MMM yyyy, h:mm a")}
+                      Last replied:{" "}
+                      {format(new Date(selectedTicket.adminRespondedAt), "dd MMM yyyy, h:mm a")}
                     </span>
                   )}
                 </div>
@@ -658,7 +708,8 @@ function AdminSupport() {
                   className="w-full rounded-xl border border-slate-200 bg-white p-3 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-blue-100"
                 />
                 <p className="text-[10px] text-slate-400">
-                  Tip: When you save, the user's CRM view updates immediately via live database synchronization.
+                  Tip: When you save, the user's CRM view updates immediately via live database
+                  synchronization.
                 </p>
               </div>
 

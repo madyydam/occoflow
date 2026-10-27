@@ -19,7 +19,13 @@ import {
   Share2,
 } from "lucide-react";
 import * as XLSX from "xlsx";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -28,21 +34,10 @@ import { useAuth } from "@/lib/auth-context";
 import { money, dealStages, leadStatuses } from "@/lib/crm-data";
 import { toast } from "sonner";
 
-export type ReportType =
-  | "executive"
-  | "leads"
-  | "deals"
-  | "tasks"
-  | "comprehensive";
+export type ReportType = "executive" | "leads" | "deals" | "tasks" | "comprehensive";
 
 export type DateRangePreset =
-  | "all_time"
-  | "today"
-  | "this_week"
-  | "this_month"
-  | "last_30_days"
-  | "this_quarter"
-  | "custom";
+  "all_time" | "today" | "this_week" | "this_month" | "last_30_days" | "this_quarter" | "custom";
 
 export function GenerateAnalyticsReportModal({
   open,
@@ -104,9 +99,12 @@ export function GenerateAnalyticsReportModal({
       return true;
     };
 
-    const selLeads = dateRange === "all_time" ? leads : leads.filter((l) => matchesDate(l.createdAt));
-    const selDeals = dateRange === "all_time" ? deals : deals.filter((d) => matchesDate(d.createdAt));
-    const selTasks = dateRange === "all_time" ? tasks : tasks.filter((t) => matchesDate(t.createdAt));
+    const selLeads =
+      dateRange === "all_time" ? leads : leads.filter((l) => matchesDate(l.createdAt));
+    const selDeals =
+      dateRange === "all_time" ? deals : deals.filter((d) => matchesDate(d.createdAt));
+    const selTasks =
+      dateRange === "all_time" ? tasks : tasks.filter((t) => matchesDate(t.createdAt));
 
     // Computations
     const totalLeads = selLeads.length;
@@ -176,16 +174,16 @@ export function GenerateAnalyticsReportModal({
     dateRange === "all_time"
       ? "All-Time Overview"
       : dateRange === "today"
-      ? "Today's Performance"
-      : dateRange === "this_week"
-      ? "This Week"
-      : dateRange === "this_month"
-      ? "This Month"
-      : dateRange === "last_30_days"
-      ? "Last 30 Days"
-      : dateRange === "this_quarter"
-      ? "This Quarter"
-      : `${startDate} to ${endDate}`;
+        ? "Today's Performance"
+        : dateRange === "this_week"
+          ? "This Week"
+          : dateRange === "this_month"
+            ? "This Month"
+            : dateRange === "last_30_days"
+              ? "Last 30 Days"
+              : dateRange === "this_quarter"
+                ? "This Quarter"
+                : `${startDate} to ${endDate}`;
 
   // ── 1. Export to Excel (.xlsx) ──────────────────────────────────
   const handleExportExcel = () => {
@@ -231,7 +229,9 @@ export function GenerateAnalyticsReportModal({
           "Created Date": l.createdAt ? new Date(l.createdAt).toLocaleDateString() : "",
           Notes: l.notes || "",
         }));
-        const wsLeads = XLSX.utils.json_to_sheet(leadRows.length > 0 ? leadRows : [{ Notice: "No leads in period" }]);
+        const wsLeads = XLSX.utils.json_to_sheet(
+          leadRows.length > 0 ? leadRows : [{ Notice: "No leads in period" }],
+        );
         XLSX.utils.book_append_sheet(wb, wsLeads, "Leads");
       }
 
@@ -245,7 +245,9 @@ export function GenerateAnalyticsReportModal({
           "Expected Close Date": d.closeDate || "Not set",
           "Created Date": d.createdAt ? new Date(d.createdAt).toLocaleDateString() : "",
         }));
-        const wsDeals = XLSX.utils.json_to_sheet(dealRows.length > 0 ? dealRows : [{ Notice: "No deals in period" }]);
+        const wsDeals = XLSX.utils.json_to_sheet(
+          dealRows.length > 0 ? dealRows : [{ Notice: "No deals in period" }],
+        );
         XLSX.utils.book_append_sheet(wb, wsDeals, "Deals");
       }
 
@@ -259,7 +261,9 @@ export function GenerateAnalyticsReportModal({
           Status: t.status,
           Completed: t.completed ? "Yes" : "No",
         }));
-        const wsTasks = XLSX.utils.json_to_sheet(taskRows.length > 0 ? taskRows : [{ Notice: "No tasks in period" }]);
+        const wsTasks = XLSX.utils.json_to_sheet(
+          taskRows.length > 0 ? taskRows : [{ Notice: "No tasks in period" }],
+        );
         XLSX.utils.book_append_sheet(wb, wsTasks, "Tasks");
       }
 
@@ -323,7 +327,8 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
                   Generate Analytics Report
                 </DialogTitle>
                 <DialogDescription className="text-xs text-slate-500">
-                  Create customized business intelligence summaries, Excel workbooks, or printable PDFs.
+                  Create customized business intelligence summaries, Excel workbooks, or printable
+                  PDFs.
                 </DialogDescription>
               </div>
             </div>
@@ -348,10 +353,26 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {[
-                  { id: "comprehensive", label: "📑 Master 360° Report", desc: "All KPIs, Leads, Deals & Tasks" },
-                  { id: "executive", label: "📊 Executive Summary", desc: "High-level revenues & win rates" },
-                  { id: "leads", label: "👥 Leads & Enquiries", desc: "Conversion rates & sources" },
-                  { id: "deals", label: "💼 Sales & Pipeline", desc: "Stages, volume & closed revenue" },
+                  {
+                    id: "comprehensive",
+                    label: "📑 Master 360° Report",
+                    desc: "All KPIs, Leads, Deals & Tasks",
+                  },
+                  {
+                    id: "executive",
+                    label: "📊 Executive Summary",
+                    desc: "High-level revenues & win rates",
+                  },
+                  {
+                    id: "leads",
+                    label: "👥 Leads & Enquiries",
+                    desc: "Conversion rates & sources",
+                  },
+                  {
+                    id: "deals",
+                    label: "💼 Sales & Pipeline",
+                    desc: "Stages, volume & closed revenue",
+                  },
                   { id: "tasks", label: "⏰ Productivity Log", desc: "Follow-up tasks completion" },
                 ].map((item) => (
                   <button
@@ -403,7 +424,9 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
               {dateRange === "custom" && (
                 <div className="grid grid-cols-2 gap-3 mt-2.5">
                   <div>
-                    <span className="text-[10px] text-slate-500 font-medium block mb-1">From Date</span>
+                    <span className="text-[10px] text-slate-500 font-medium block mb-1">
+                      From Date
+                    </span>
                     <Input
                       type="date"
                       value={startDate}
@@ -412,7 +435,9 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
                     />
                   </div>
                   <div>
-                    <span className="text-[10px] text-slate-500 font-medium block mb-1">To Date</span>
+                    <span className="text-[10px] text-slate-500 font-medium block mb-1">
+                      To Date
+                    </span>
                     <Input
                       type="date"
                       value={endDate}
@@ -426,7 +451,9 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
 
             {/* 3. Included Breakdown Checkboxes */}
             <div className="rounded-xl border border-slate-200/90 bg-slate-50/60 p-3 space-y-2">
-              <span className="text-[11px] font-bold text-slate-700 block">Include Additional Analytics Sections:</span>
+              <span className="text-[11px] font-bold text-slate-700 block">
+                Include Additional Analytics Sections:
+              </span>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -470,7 +497,9 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
               </div>
               <div>
                 <span className="text-[10px] text-slate-500 block">Won Revenue</span>
-                <span className="font-bold text-emerald-700">{money(filteredData.wonDealsValue)}</span>
+                <span className="font-bold text-emerald-700">
+                  {money(filteredData.wonDealsValue)}
+                </span>
               </div>
               <div>
                 <span className="text-[10px] text-slate-500 block">Win Rate</span>
@@ -538,51 +567,84 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
               <div className="flex justify-between items-start border-b border-slate-200 pb-4">
                 <div>
                   <h2 className="text-base font-extrabold text-slate-900">{businessName}</h2>
-                  <p className="text-[11px] text-slate-500">Business Analytics & Growth Intelligence Report</p>
-                  <p className="text-[10px] text-slate-400">Generated on {new Date().toLocaleDateString("en-IN")}</p>
+                  <p className="text-[11px] text-slate-500">
+                    Business Analytics & Growth Intelligence Report
+                  </p>
+                  <p className="text-[10px] text-slate-400">
+                    Generated on {new Date().toLocaleDateString("en-IN")}
+                  </p>
                 </div>
                 <div className="text-right">
                   <Badge className="bg-slate-900 text-white text-[10px] uppercase font-bold tracking-wider">
                     {reportPeriodLabel}
                   </Badge>
-                  <p className="text-[10px] text-slate-400 mt-1 font-mono">By: {profile?.fullName || "Administrator"}</p>
+                  <p className="text-[10px] text-slate-400 mt-1 font-mono">
+                    By: {profile?.fullName || "Administrator"}
+                  </p>
                 </div>
               </div>
 
               {/* KPI Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
-                  <span className="text-[10px] text-slate-500 font-semibold block">TOTAL LEADS</span>
-                  <span className="text-lg font-black text-slate-900">{filteredData.totalLeads}</span>
-                  <span className="text-[10px] text-emerald-600 block">{filteredData.wonLeads} won</span>
+                  <span className="text-[10px] text-slate-500 font-semibold block">
+                    TOTAL LEADS
+                  </span>
+                  <span className="text-lg font-black text-slate-900">
+                    {filteredData.totalLeads}
+                  </span>
+                  <span className="text-[10px] text-emerald-600 block">
+                    {filteredData.wonLeads} won
+                  </span>
                 </div>
                 <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
-                  <span className="text-[10px] text-slate-500 font-semibold block">CONVERSION RATE</span>
-                  <span className="text-lg font-black text-blue-700">{filteredData.leadConversionRate}%</span>
-                  <span className="text-[10px] text-slate-400 block">{filteredData.activeLeads} in progress</span>
+                  <span className="text-[10px] text-slate-500 font-semibold block">
+                    CONVERSION RATE
+                  </span>
+                  <span className="text-lg font-black text-blue-700">
+                    {filteredData.leadConversionRate}%
+                  </span>
+                  <span className="text-[10px] text-slate-400 block">
+                    {filteredData.activeLeads} in progress
+                  </span>
                 </div>
                 <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
-                  <span className="text-[10px] text-slate-500 font-semibold block">WON REVENUE</span>
-                  <span className="text-lg font-black text-emerald-700">{money(filteredData.wonDealsValue)}</span>
-                  <span className="text-[10px] text-emerald-600 block">{filteredData.wonDeals.length} deals closed</span>
+                  <span className="text-[10px] text-slate-500 font-semibold block">
+                    WON REVENUE
+                  </span>
+                  <span className="text-lg font-black text-emerald-700">
+                    {money(filteredData.wonDealsValue)}
+                  </span>
+                  <span className="text-[10px] text-emerald-600 block">
+                    {filteredData.wonDeals.length} deals closed
+                  </span>
                 </div>
                 <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
-                  <span className="text-[10px] text-slate-500 font-semibold block">OPEN PIPELINE</span>
-                  <span className="text-lg font-black text-amber-700">{money(filteredData.openDealsValue)}</span>
-                  <span className="text-[10px] text-slate-400 block">{filteredData.openDeals.length} deals open</span>
+                  <span className="text-[10px] text-slate-500 font-semibold block">
+                    OPEN PIPELINE
+                  </span>
+                  <span className="text-lg font-black text-amber-700">
+                    {money(filteredData.openDealsValue)}
+                  </span>
+                  <span className="text-[10px] text-slate-400 block">
+                    {filteredData.openDeals.length} deals open
+                  </span>
                 </div>
               </div>
 
               {/* Pipeline Funnel */}
               {includePipeline && (
                 <div>
-                  <h4 className="font-bold text-slate-800 text-xs mb-2">Deal Pipeline Distribution</h4>
+                  <h4 className="font-bold text-slate-800 text-xs mb-2">
+                    Deal Pipeline Distribution
+                  </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 border border-slate-200 rounded-xl p-3 bg-slate-50/50">
                     {dealStages.map((stg) => (
                       <div key={stg} className="flex justify-between items-center text-xs">
                         <span className="text-slate-600">{stg}:</span>
                         <span className="font-bold text-slate-800">
-                          {filteredData.stagesMap[stg]?.count || 0} ({money(filteredData.stagesMap[stg]?.value || 0)})
+                          {filteredData.stagesMap[stg]?.count || 0} (
+                          {money(filteredData.stagesMap[stg]?.value || 0)})
                         </span>
                       </div>
                     ))}
@@ -596,7 +658,10 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
                   <h4 className="font-bold text-slate-800 text-xs mb-2">Lead Sources Breakdown</h4>
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(filteredData.sourcesMap).map(([src, count]) => (
-                      <div key={src} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs">
+                      <div
+                        key={src}
+                        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs"
+                      >
                         <span className="text-slate-500">{src}: </span>
                         <span className="font-bold text-slate-800">{count}</span>
                       </div>
@@ -623,7 +688,9 @@ Generated: ${new Date().toLocaleDateString("en-IN")}
                           <tr key={d.id}>
                             <td className="p-2.5 font-semibold text-slate-800">{d.title}</td>
                             <td className="p-2.5 text-slate-600">{d.customer}</td>
-                            <td className="p-2.5 text-right font-bold text-emerald-600">{money(d.value)}</td>
+                            <td className="p-2.5 text-right font-bold text-emerald-600">
+                              {money(d.value)}
+                            </td>
                           </tr>
                         ))}
                       </tbody>

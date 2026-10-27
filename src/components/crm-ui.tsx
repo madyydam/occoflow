@@ -1,62 +1,743 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Phone, MessageCircle, Mail, Clock3, ArrowUpRight, Search, Filter, Plus, X, Check, ChevronRight, CalendarDays, Building2, CircleUserRound, Inbox, Trash2 } from "lucide-react";
+import {
+  Phone,
+  MessageCircle,
+  Mail,
+  Clock3,
+  ArrowUpRight,
+  Search,
+  Filter,
+  Plus,
+  X,
+  Check,
+  ChevronRight,
+  CalendarDays,
+  Building2,
+  CircleUserRound,
+  Inbox,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { useCRM } from "@/lib/crm-context";
-import { leadStatuses, dealStages, money, type Lead, type Deal, type Task, type Contact } from "@/lib/crm-data";
+import {
+  leadStatuses,
+  dealStages,
+  money,
+  type Lead,
+  type Deal,
+  type Task,
+  type Contact,
+} from "@/lib/crm-data";
 
-export function PageTitle({eyebrow,title,description,action}:{eyebrow?:string;title:string;description?:string;action?:ReactNode}) { return <div className="mb-5 lg:hidden grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3"><div className="min-w-0">{eyebrow&&<p className="mb-1 text-[11px] font-bold uppercase tracking-[0.13em] text-primary">{eyebrow}</p>}<h2 className="font-display text-2xl font-extrabold leading-tight text-foreground sm:text-[27px]">{title}</h2>{description&&<p className="mt-1 text-xs text-muted-foreground sm:text-sm">{description}</p>}</div>{action}</div> }
-export function SectionHeading({title,link,linkText="View all"}:{title:string;link?:"/leads"|"/deals"|"/tasks"|"/calendar";linkText?:string}) { return <div className="mb-4 flex items-center justify-between gap-3"><h3 className="font-display text-[17px] font-bold sm:text-lg">{title}</h3>{link&&<Link to={link} className="flex shrink-0 items-center gap-1 text-xs font-bold text-primary">{linkText}<ChevronRight size={15}/></Link>}</div> }
-export function Avatar({name,size="md"}:{name:string;size?:"sm"|"md"|"lg"}) { return <div className={`grid shrink-0 place-items-center rounded-full bg-sky-soft font-bold text-primary ${size === "lg" ? "size-14 text-lg" : size === "sm" ? "size-8.5 text-xs" : "size-10 text-xs"}`}>{name.split(" ").slice(0,2).map(x=>x[0]).join("")}</div> }
-export function StatusBadge({status}:{status:string}) { const tone = status === "Won" || status === "Completed" ? "bg-success-soft text-success" : status === "Lost" || status === "High" ? "bg-destructive/10 text-destructive" : status === "New" ? "bg-sky-soft text-primary" : status === "Qualified" || status === "Proposal" ? "bg-violet-soft text-violet" : status === "Follow-up" || status === "Negotiation" ? "bg-warning-soft text-warning" : "bg-muted text-muted-foreground"; return <Badge className={`rounded-md border-0 px-2 py-0.5 text-[10px] font-bold shadow-none hover:${tone} ${tone}`}>{status}</Badge> }
-export function SearchBar({value,onChange,placeholder}:{value:string;onChange:(value:string)=>void;placeholder:string}) { return <div className="relative"><Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"/><Input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} className="h-10 rounded-lg border-border bg-card pl-10 text-xs shadow-none placeholder:text-muted-foreground" /></div> }
-export function EmptyState({title,description,onAdd,action="Add item"}:{title:string;description:string;onAdd?:()=>void;action?:string}) { return <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card px-5 py-8 text-center sm:py-9"><div className="mb-3 grid size-11 place-items-center rounded-xl bg-accent text-primary"><Inbox size={22}/></div><h3 className="font-display text-sm font-bold sm:text-base">{title}</h3><p className="mt-1.5 max-w-xs text-xs text-muted-foreground">{description}</p>{onAdd&&<Button onClick={onAdd} className="mt-3.5 h-8.5 rounded-lg px-3.5 text-xs font-semibold"><Plus size={15}/>{action}</Button>}</div> }
-export function QuickActions({phone,email,onDelete}:{phone:string;email?:string|undefined;onDelete?:(()=>void)|undefined}) { return <div className="flex items-center gap-2"><Button variant="outline" size="sm" className="h-8 flex-1 border-border text-xs shadow-none" onClick={()=>toast.info(`Call ${phone} using your phone`)}><Phone size={13}/> Call</Button><Button variant="outline" size="sm" className="h-8 flex-1 border-border text-xs shadow-none" onClick={()=>toast.info(`Message ${phone} using your messaging app`)}><MessageCircle size={13}/> Message</Button>{email&&<Button variant="outline" size="icon" className="size-8 border-border shadow-none" title="Email" onClick={()=>toast.info(`Email ${email} using your mail app`)}><Mail size={13}/></Button>}{onDelete&&<Button variant="outline" size="icon" className="size-8 shrink-0 border-border text-muted-foreground hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive shadow-none transition-colors cursor-pointer" title="Delete lead" onClick={(e)=>{e.preventDefault();e.stopPropagation();onDelete();}}><Trash2 size={13}/></Button>}</div> }
-export function LeadCard({lead,compact=false,onDelete}:{lead:Lead;compact?:boolean|undefined;onDelete?:((lead:Lead)=>void)|undefined}) { return <article className="rounded-xl border border-border bg-card p-3.5 shadow-2xs transition-all hover:shadow-xs sm:p-4"><div className="flex min-w-0 items-start justify-between gap-2"><Link to="/leads/$leadId" params={{leadId:lead.id}} className="flex min-w-0 flex-1 items-start gap-2.5"><Avatar name={lead.name} size="sm"/><div className="min-w-0 flex-1"><h3 className="truncate text-xs font-bold text-foreground sm:text-[13px] hover:text-primary transition-colors">{lead.name}</h3><p className="mt-0.5 truncate text-[11px] text-muted-foreground">{lead.company}</p></div></Link><div className="flex items-center gap-1.5 shrink-0"><StatusBadge status={lead.status}/>{onDelete&&<button type="button" onClick={(e)=>{e.preventDefault();e.stopPropagation();onDelete(lead);}} className="rounded-lg p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer" title="Delete lead"><Trash2 size={13}/></button>}</div></div>{!compact&&<><div className="mt-3 grid grid-cols-2 gap-y-2 border-b border-border pb-3 text-xs"><div><p className="text-[11px] text-muted-foreground">Phone</p><p className="mt-0.5 font-medium">{lead.phone}</p></div><div><p className="text-[11px] text-muted-foreground">Source</p><p className="mt-0.5 font-medium">{lead.source}</p></div><div><p className="text-[11px] text-muted-foreground">Next follow-up</p><p className="mt-0.5 font-semibold text-primary">{lead.followUp}</p></div><div><p className="text-[11px] text-muted-foreground">Potential value</p><p className="mt-0.5 font-semibold">{money(lead.value)}</p></div></div><div className="mt-2.5"><QuickActions phone={lead.phone} email={lead.email} onDelete={onDelete?()=>onDelete(lead):undefined}/></div></>}{compact&&<div className="mt-2.5 flex items-center justify-between gap-2 border-t border-border pt-2.5 text-xs"><span className="text-[11px] text-muted-foreground">{lead.createdAt} · {lead.source}</span><span className="font-bold text-xs">{money(lead.value)}</span></div>}</article> }
-export function DealCard({deal}:{deal:Deal}) { return <article className="rounded-xl border border-border bg-card p-3 shadow-2xs transition-all hover:shadow-xs"><div className="flex items-start justify-between gap-2"><div className="min-w-0"><h3 className="truncate text-xs font-bold sm:text-[13px]">{deal.title}</h3><p className="mt-0.5 text-[11px] text-muted-foreground">{deal.customer}</p></div><ArrowUpRight size={15} className="shrink-0 text-muted-foreground"/></div><div className="mt-3 flex items-center justify-between gap-2"><strong className="font-display text-sm font-bold">{money(deal.value)}</strong><StatusBadge status={deal.stage}/></div><div className="mt-2.5 flex items-center gap-1.5 border-t border-border pt-2.5 text-[11px] text-muted-foreground"><CalendarDays size={12}/> Closing {deal.closeDate}</div></article> }
-export function TaskCard({task}:{task:Task}) { const {completeTask}=useCRM(); return <article className="flex items-start gap-2.5 rounded-xl border border-border bg-card p-3 shadow-2xs"><Button variant="outline" size="icon" aria-label={task.completed?"Mark incomplete":"Complete task"} onClick={()=>completeTask(task.id)} className={`mt-0.5 size-5 shrink-0 rounded-full p-0 shadow-none ${task.completed?"border-success bg-success text-primary-foreground":"border-border"}`}>{task.completed&&<Check size={12}/>}</Button><div className="min-w-0 flex-1"><p className={`text-xs font-semibold sm:text-[13px] ${task.completed?"text-muted-foreground line-through":""}`}>{task.title}</p><p className="mt-0.5 text-[11px] text-muted-foreground">{task.customer}</p><div className="mt-2 flex items-center gap-2.5 text-[11px] text-muted-foreground"><span className="flex items-center gap-1"><CalendarDays size={12}/>{task.date}</span><span className="flex items-center gap-1"><Clock3 size={12}/>{task.time}</span></div></div><StatusBadge status={task.priority}/></article> }
-export function KpiCard({label,value,icon:Icon,tone,change}:{label:string;value:string|number;icon:typeof CircleUserRound;tone:string;change?:string}) { return <div className="rounded-xl border border-border bg-card p-3 shadow-2xs transition-all hover:shadow-xs sm:p-3.5"><div className="flex items-start justify-between"><span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-xs">{label}</span><div className={`grid size-7.5 shrink-0 place-items-center rounded-lg ${tone}`}><Icon size={15}/></div></div><p className="mt-2 font-display text-[21px] font-extrabold leading-none sm:text-[23px]">{value}</p>{change&&<p className="mt-2 text-[10px] font-medium text-muted-foreground">{change}</p>}</div> }
-const fieldClass="h-11 rounded-lg border-border bg-card shadow-none";
-function Field({label,children}:{label:string;children:ReactNode}) { return <label className="block space-y-1.5 text-xs font-bold text-foreground">{label}{children}</label> }
-function TextField({label,value,onChange,placeholder,type="text"}:{label:string;value:string;onChange:(v:string)=>void;placeholder?:string;type?:string}) { return <Field label={label}><Input required={label==="Name"||label==="Phone"||label==="Deal name"||label==="Task title"} type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} className={fieldClass}/></Field> }
-function SelectField({label,value,onChange,options}:{label:string;value:string;onChange:(v:string)=>void;options:string[]}) { return <Field label={label}><select value={value} onChange={e=>onChange(e.target.value)} className="block h-11 w-full rounded-lg border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring">{options.map(x=><option key={x}>{x}</option>)}</select></Field> }
-export function QuickForm({kind,onClose,initialLead}:{kind:"lead"|"deal"|"task"|"contact"|null;onClose:()=>void;initialLead?:Lead}) {
-  const {addLead,updateLead,addDeal,addTask,addContact}=useCRM();
-  const [name,setName]=useState(""); const [phone,setPhone]=useState(""); const [email,setEmail]=useState(""); const [company,setCompany]=useState(""); const [source,setSource]=useState("Website"); const [status,setStatus]=useState("New"); const [value,setValue]=useState(""); const [followUp,setFollowUp]=useState(""); const [notes,setNotes]=useState(""); const [more,setMore]=useState(false); const [customer,setCustomer]=useState(""); const [date,setDate]=useState(""); const [time,setTime]=useState(""); const [priority,setPriority]=useState("Medium"); const [submitting,setSubmitting]=useState(false);
-  useEffect(()=>{ if(kind) {setName(initialLead?.name ?? "");setPhone(initialLead?.phone ?? "");setEmail(initialLead?.email ?? "");setCompany(initialLead?.company ?? "");setSource(initialLead?.source ?? "Website");setStatus(initialLead?.status ?? "New");setValue(initialLead?.value ? String(initialLead.value) : "");setFollowUp(initialLead?.followUp ?? "");setNotes(initialLead?.notes ?? "");setMore(Boolean(initialLead));setCustomer("");setDate("");setTime("");setPriority(initialLead?.priority ?? "Medium");} },[kind,initialLead]);
-  const submit=async (e:React.FormEvent)=>{
+export function PageTitle({
+  eyebrow,
+  title,
+  description,
+  action,
+}: {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="mb-5 lg:hidden grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3">
+      <div className="min-w-0">
+        {eyebrow && (
+          <p className="mb-1 text-[11px] font-bold uppercase tracking-[0.13em] text-primary">
+            {eyebrow}
+          </p>
+        )}
+        <h2 className="font-display text-2xl font-extrabold leading-tight text-foreground sm:text-[27px]">
+          {title}
+        </h2>
+        {description && (
+          <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{description}</p>
+        )}
+      </div>
+      {action}
+    </div>
+  );
+}
+export function SectionHeading({
+  title,
+  link,
+  linkText = "View all",
+}: {
+  title: string;
+  link?: "/leads" | "/deals" | "/tasks" | "/calendar";
+  linkText?: string;
+}) {
+  return (
+    <div className="mb-4 flex items-center justify-between gap-3">
+      <h3 className="font-display text-[17px] font-bold sm:text-lg">{title}</h3>
+      {link && (
+        <Link to={link} className="flex shrink-0 items-center gap-1 text-xs font-bold text-primary">
+          {linkText}
+          <ChevronRight size={15} />
+        </Link>
+      )}
+    </div>
+  );
+}
+export function Avatar({ name, size = "md" }: { name: string; size?: "sm" | "md" | "lg" }) {
+  return (
+    <div
+      className={`grid shrink-0 place-items-center rounded-full bg-sky-soft font-bold text-primary ${size === "lg" ? "size-14 text-lg" : size === "sm" ? "size-8.5 text-xs" : "size-10 text-xs"}`}
+    >
+      {name
+        .split(" ")
+        .slice(0, 2)
+        .map((x) => x[0])
+        .join("")}
+    </div>
+  );
+}
+export function StatusBadge({ status }: { status: string }) {
+  const tone =
+    status === "Won" || status === "Completed"
+      ? "bg-success-soft text-success"
+      : status === "Lost" || status === "High"
+        ? "bg-destructive/10 text-destructive"
+        : status === "New"
+          ? "bg-sky-soft text-primary"
+          : status === "Qualified" || status === "Proposal"
+            ? "bg-violet-soft text-violet"
+            : status === "Follow-up" || status === "Negotiation"
+              ? "bg-warning-soft text-warning"
+              : "bg-muted text-muted-foreground";
+  return (
+    <Badge
+      className={`rounded-md border-0 px-2 py-0.5 text-[10px] font-bold shadow-none hover:${tone} ${tone}`}
+    >
+      {status}
+    </Badge>
+  );
+}
+export function SearchBar({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+}) {
+  return (
+    <div className="relative">
+      <Search
+        size={16}
+        className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+      />
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="h-10 rounded-lg border-border bg-card pl-10 text-xs shadow-none placeholder:text-muted-foreground"
+      />
+    </div>
+  );
+}
+export function EmptyState({
+  title,
+  description,
+  onAdd,
+  action = "Add item",
+}: {
+  title: string;
+  description: string;
+  onAdd?: () => void;
+  action?: string;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card px-5 py-8 text-center sm:py-9">
+      <div className="mb-3 grid size-11 place-items-center rounded-xl bg-accent text-primary">
+        <Inbox size={22} />
+      </div>
+      <h3 className="font-display text-sm font-bold sm:text-base">{title}</h3>
+      <p className="mt-1.5 max-w-xs text-xs text-muted-foreground">{description}</p>
+      {onAdd && (
+        <Button onClick={onAdd} className="mt-3.5 h-8.5 rounded-lg px-3.5 text-xs font-semibold">
+          <Plus size={15} />
+          {action}
+        </Button>
+      )}
+    </div>
+  );
+}
+export function QuickActions({
+  phone,
+  email,
+  onDelete,
+}: {
+  phone: string;
+  email?: string | undefined;
+  onDelete?: (() => void) | undefined;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-8 flex-1 border-border text-xs shadow-none"
+        onClick={() => toast.info(`Call ${phone} using your phone`)}
+      >
+        <Phone size={13} /> Call
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-8 flex-1 border-border text-xs shadow-none"
+        onClick={() => toast.info(`Message ${phone} using your messaging app`)}
+      >
+        <MessageCircle size={13} /> Message
+      </Button>
+      {email && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8 border-border shadow-none"
+          title="Email"
+          onClick={() => toast.info(`Email ${email} using your mail app`)}
+        >
+          <Mail size={13} />
+        </Button>
+      )}
+      {onDelete && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8 shrink-0 border-border text-muted-foreground hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive shadow-none transition-colors cursor-pointer"
+          title="Delete lead"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete();
+          }}
+        >
+          <Trash2 size={13} />
+        </Button>
+      )}
+    </div>
+  );
+}
+export function LeadCard({
+  lead,
+  compact = false,
+  onDelete,
+}: {
+  lead: Lead;
+  compact?: boolean | undefined;
+  onDelete?: ((lead: Lead) => void) | undefined;
+}) {
+  return (
+    <article className="rounded-xl border border-border bg-card p-3.5 shadow-2xs transition-all hover:shadow-xs sm:p-4">
+      <div className="flex min-w-0 items-start justify-between gap-2">
+        <Link
+          to="/leads/$leadId"
+          params={{ leadId: lead.id }}
+          className="flex min-w-0 flex-1 items-start gap-2.5"
+        >
+          <Avatar name={lead.name} size="sm" />
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-xs font-bold text-foreground sm:text-[13px] hover:text-primary transition-colors">
+              {lead.name}
+            </h3>
+            <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{lead.company}</p>
+          </div>
+        </Link>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <StatusBadge status={lead.status} />
+          {onDelete && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete(lead);
+              }}
+              className="rounded-lg p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors cursor-pointer"
+              title="Delete lead"
+            >
+              <Trash2 size={13} />
+            </button>
+          )}
+        </div>
+      </div>
+      {!compact && (
+        <>
+          <div className="mt-3 grid grid-cols-2 gap-y-2 border-b border-border pb-3 text-xs">
+            <div>
+              <p className="text-[11px] text-muted-foreground">Phone</p>
+              <p className="mt-0.5 font-medium">{lead.phone}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Source</p>
+              <p className="mt-0.5 font-medium">{lead.source}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Next follow-up</p>
+              <p className="mt-0.5 font-semibold text-primary">{lead.followUp}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-muted-foreground">Potential value</p>
+              <p className="mt-0.5 font-semibold">{money(lead.value)}</p>
+            </div>
+          </div>
+          <div className="mt-2.5">
+            <QuickActions
+              phone={lead.phone}
+              email={lead.email}
+              onDelete={onDelete ? () => onDelete(lead) : undefined}
+            />
+          </div>
+        </>
+      )}
+      {compact && (
+        <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-border pt-2.5 text-xs">
+          <span className="text-[11px] text-muted-foreground">
+            {lead.createdAt} · {lead.source}
+          </span>
+          <span className="font-bold text-xs">{money(lead.value)}</span>
+        </div>
+      )}
+    </article>
+  );
+}
+export function DealCard({ deal }: { deal: Deal }) {
+  return (
+    <article className="rounded-xl border border-border bg-card p-3 shadow-2xs transition-all hover:shadow-xs">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="truncate text-xs font-bold sm:text-[13px]">{deal.title}</h3>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">{deal.customer}</p>
+        </div>
+        <ArrowUpRight size={15} className="shrink-0 text-muted-foreground" />
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <strong className="font-display text-sm font-bold">{money(deal.value)}</strong>
+        <StatusBadge status={deal.stage} />
+      </div>
+      <div className="mt-2.5 flex items-center gap-1.5 border-t border-border pt-2.5 text-[11px] text-muted-foreground">
+        <CalendarDays size={12} /> Closing {deal.closeDate}
+      </div>
+    </article>
+  );
+}
+export function TaskCard({ task }: { task: Task }) {
+  const { completeTask } = useCRM();
+  return (
+    <article className="flex items-start gap-2.5 rounded-xl border border-border bg-card p-3 shadow-2xs">
+      <Button
+        variant="outline"
+        size="icon"
+        aria-label={task.completed ? "Mark incomplete" : "Complete task"}
+        onClick={() => completeTask(task.id)}
+        className={`mt-0.5 size-5 shrink-0 rounded-full p-0 shadow-none ${task.completed ? "border-success bg-success text-primary-foreground" : "border-border"}`}
+      >
+        {task.completed && <Check size={12} />}
+      </Button>
+      <div className="min-w-0 flex-1">
+        <p
+          className={`text-xs font-semibold sm:text-[13px] ${task.completed ? "text-muted-foreground line-through" : ""}`}
+        >
+          {task.title}
+        </p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">{task.customer}</p>
+        <div className="mt-2 flex items-center gap-2.5 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <CalendarDays size={12} />
+            {task.date}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock3 size={12} />
+            {task.time}
+          </span>
+        </div>
+      </div>
+      <StatusBadge status={task.priority} />
+    </article>
+  );
+}
+export function KpiCard({
+  label,
+  value,
+  icon: Icon,
+  tone,
+  change,
+}: {
+  label: string;
+  value: string | number;
+  icon: typeof CircleUserRound;
+  tone: string;
+  change?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-3 shadow-2xs transition-all hover:shadow-xs sm:p-3.5">
+      <div className="flex items-start justify-between">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-xs">
+          {label}
+        </span>
+        <div className={`grid size-7.5 shrink-0 place-items-center rounded-lg ${tone}`}>
+          <Icon size={15} />
+        </div>
+      </div>
+      <p className="mt-2 font-display text-[21px] font-extrabold leading-none sm:text-[23px]">
+        {value}
+      </p>
+      {change && <p className="mt-2 text-[10px] font-medium text-muted-foreground">{change}</p>}
+    </div>
+  );
+}
+const fieldClass = "h-11 rounded-lg border-border bg-card shadow-none";
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <label className="block space-y-1.5 text-xs font-bold text-foreground">
+      {label}
+      {children}
+    </label>
+  );
+}
+function TextField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+}) {
+  return (
+    <Field label={label}>
+      <Input
+        required={
+          label === "Name" || label === "Phone" || label === "Deal name" || label === "Task title"
+        }
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className={fieldClass}
+      />
+    </Field>
+  );
+}
+function SelectField({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+}) {
+  return (
+    <Field label={label}>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="block h-11 w-full rounded-lg border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+      >
+        {options.map((x) => (
+          <option key={x}>{x}</option>
+        ))}
+      </select>
+    </Field>
+  );
+}
+export function QuickForm({
+  kind,
+  onClose,
+  initialLead,
+}: {
+  kind: "lead" | "deal" | "task" | "contact" | null;
+  onClose: () => void;
+  initialLead?: Lead;
+}) {
+  const { addLead, updateLead, addDeal, addTask, addContact } = useCRM();
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [source, setSource] = useState("Website");
+  const [status, setStatus] = useState("New");
+  const [value, setValue] = useState("");
+  const [followUp, setFollowUp] = useState("");
+  const [notes, setNotes] = useState("");
+  const [more, setMore] = useState(false);
+  const [customer, setCustomer] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [priority, setPriority] = useState("Medium");
+  const [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    if (kind) {
+      setName(initialLead?.name ?? "");
+      setPhone(initialLead?.phone ?? "");
+      setEmail(initialLead?.email ?? "");
+      setCompany(initialLead?.company ?? "");
+      setSource(initialLead?.source ?? "Website");
+      setStatus(initialLead?.status ?? "New");
+      setValue(initialLead?.value ? String(initialLead.value) : "");
+      setFollowUp(initialLead?.followUp ?? "");
+      setNotes(initialLead?.notes ?? "");
+      setMore(Boolean(initialLead));
+      setCustomer("");
+      setDate("");
+      setTime("");
+      setPriority(initialLead?.priority ?? "Medium");
+    }
+  }, [kind, initialLead]);
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const id=crypto.randomUUID();
-      if(kind==="lead") {
-        const data={name:name.trim(),phone:phone.trim(),email:email.trim(),company:company.trim(),source,status:status as Lead["status"],priority:(priority as Lead["priority"])||"Medium",value:Number(value)||0,followUp:followUp||"Not scheduled",notes:notes.trim(),category:"General enquiry"};
-        if(initialLead) await updateLead(initialLead.id,data);
-        else await addLead(data as any);
+      const id = crypto.randomUUID();
+      if (kind === "lead") {
+        const data = {
+          name: name.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          company: company.trim(),
+          source,
+          status: status as Lead["status"],
+          priority: (priority as Lead["priority"]) || "Medium",
+          value: Number(value) || 0,
+          followUp: followUp || "Not scheduled",
+          notes: notes.trim(),
+          category: "General enquiry",
+        };
+        if (initialLead) await updateLead(initialLead.id, data);
+        else await addLead(data as unknown as Parameters<typeof addLead>[0]);
       }
-      if(kind==="deal") {
-        await addDeal({id,title:name.trim(),customer:(customer.trim()||"New customer"),value:Number(value)||0,stage:status as Deal["stage"],closeDate:date?date:null});
+      if (kind === "deal") {
+        await addDeal({
+          id,
+          title: name.trim(),
+          customer: customer.trim() || "New customer",
+          value: Number(value) || 0,
+          stage: status as Deal["stage"],
+          closeDate: date ? date : null,
+        });
       }
-      if(kind==="task") {
-        await addTask({id,title:name.trim(),customer:(customer.trim()||"General"),dueDate:date?date:null,dueTime:time||"",priority:(priority as Task["priority"])||"Medium",completed:false});
+      if (kind === "task") {
+        await addTask({
+          id,
+          title: name.trim(),
+          customer: customer.trim() || "General",
+          dueDate: date ? date : null,
+          dueTime: time || "",
+          priority: (priority as Task["priority"]) || "Medium",
+          completed: false,
+        });
       }
-      if(kind==="contact") {
-        await addContact({id,name:name.trim(),phone:phone.trim(),email:email.trim(),company:company.trim(),lastInteraction:"Just added"});
+      if (kind === "contact") {
+        await addContact({
+          id,
+          name: name.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          company: company.trim(),
+          lastInteraction: "Just added",
+        });
       }
       onClose();
     } finally {
       setSubmitting(false);
     }
   };
-  const title=kind==="lead"?(initialLead?"Edit lead":"Add lead"):kind==="deal"?"Add deal":kind==="task"?"Add task":"Add contact";
-  return <Dialog open={Boolean(kind)} onOpenChange={open=>{if(!open&&!submitting)onClose()}}><DialogContent className="left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90dvh] w-[calc(100vw-32px)] max-w-[480px] overflow-y-auto rounded-2xl p-0 shadow-2xl"><DialogHeader className="sticky top-0 z-10 border-b border-border bg-card px-5 py-4 sm:px-6"><DialogTitle className="font-display text-base font-bold sm:text-lg">{title}</DialogTitle></DialogHeader><form onSubmit={submit} className="space-y-4 px-5 py-5 sm:px-6">
-    {(kind==="lead"||kind==="contact")&&<><TextField label="Name" value={name} onChange={setName} placeholder="Customer name"/><div className="grid grid-cols-2 gap-3"><TextField label="Phone" value={phone} onChange={setPhone} placeholder="Phone number" type="tel"/><TextField label="Email" value={email} onChange={setEmail} placeholder="Email address" type="email"/></div><TextField label="Company" value={company} onChange={setCompany} placeholder="Company or business"/></>}
-    {kind==="lead"&&<><div className="grid grid-cols-2 gap-3"><SelectField label="Lead source" value={source} onChange={setSource} options={["Website","Referral","Google","Instagram","Walk-in","Other"]}/><SelectField label="Status" value={status} onChange={setStatus} options={leadStatuses}/></div><div className="grid grid-cols-2 gap-3"><TextField label="Potential value" value={value} onChange={setValue} type="number" placeholder="₹ 0"/><SelectField label="Priority" value={priority} onChange={setPriority} options={["Low","Medium","High"]}/></div><div className="grid grid-cols-1 gap-3"><TextField label="Next follow-up" value={followUp} onChange={setFollowUp} placeholder="e.g. Tomorrow, 2 PM"/></div><Button type="button" variant="ghost" onClick={()=>setMore(!more)} className="h-9 px-0 text-primary">{more?"Less details":"More details"}<ChevronRight size={15} className={more?"rotate-90":""}/></Button>{more&&<Field label="Notes"><textarea value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Add a note about this lead..." rows={3} className="block w-full resize-none rounded-lg border border-border bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-ring"/></Field>}</>}
-    {kind==="deal"&&<><TextField label="Deal name" value={name} onChange={setName} placeholder="What is this deal for?"/><TextField label="Customer" value={customer} onChange={setCustomer} placeholder="Customer name"/><div className="grid grid-cols-2 gap-3"><TextField label="Value" value={value} onChange={setValue} type="number" placeholder="₹ 0"/><SelectField label="Stage" value={status === "Contacted"||status === "Follow-up" ? "New" : status} onChange={setStatus} options={dealStages}/></div><TextField label="Expected close" value={date} onChange={setDate} type="date"/></>}
-    {kind==="task"&&<><TextField label="Task title" value={name} onChange={setName} placeholder="What needs to be done?"/><TextField label="Customer / Lead" value={customer} onChange={setCustomer} placeholder="Related customer"/><div className="grid grid-cols-2 gap-3"><TextField label="Date" value={date} onChange={setDate} type="date"/><TextField label="Time" value={time} onChange={setTime} type="time"/></div><SelectField label="Priority" value={priority} onChange={setPriority} options={["Low","Medium","High"]}/></>}
-    <div className="sticky bottom-0 -mx-6 border-t border-border bg-card px-6 py-4"><Button type="submit" disabled={submitting} className="h-12 w-full rounded-lg font-bold">{submitting ? "Saving..." : `Save ${kind === "lead" ? "Lead" : kind === "deal" ? "Deal" : kind === "task" ? "Task" : "Contact"}`}</Button></div></form></DialogContent></Dialog>
+  const title =
+    kind === "lead"
+      ? initialLead
+        ? "Edit lead"
+        : "Add lead"
+      : kind === "deal"
+        ? "Add deal"
+        : kind === "task"
+          ? "Add task"
+          : "Add contact";
+  return (
+    <Dialog
+      open={Boolean(kind)}
+      onOpenChange={(open) => {
+        if (!open && !submitting) onClose();
+      }}
+    >
+      <DialogContent className="left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-h-[90dvh] w-[calc(100vw-32px)] max-w-[480px] overflow-y-auto rounded-2xl p-0 shadow-2xl">
+        <DialogHeader className="sticky top-0 z-10 border-b border-border bg-card px-5 py-4 sm:px-6">
+          <DialogTitle className="font-display text-base font-bold sm:text-lg">{title}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={submit} className="space-y-4 px-5 py-5 sm:px-6">
+          {(kind === "lead" || kind === "contact") && (
+            <>
+              <TextField label="Name" value={name} onChange={setName} placeholder="Customer name" />
+              <div className="grid grid-cols-2 gap-3">
+                <TextField
+                  label="Phone"
+                  value={phone}
+                  onChange={setPhone}
+                  placeholder="Phone number"
+                  type="tel"
+                />
+                <TextField
+                  label="Email"
+                  value={email}
+                  onChange={setEmail}
+                  placeholder="Email address"
+                  type="email"
+                />
+              </div>
+              <TextField
+                label="Company"
+                value={company}
+                onChange={setCompany}
+                placeholder="Company or business"
+              />
+            </>
+          )}
+          {kind === "lead" && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <SelectField
+                  label="Lead source"
+                  value={source}
+                  onChange={setSource}
+                  options={["Website", "Referral", "Google", "Instagram", "Walk-in", "Other"]}
+                />
+                <SelectField
+                  label="Status"
+                  value={status}
+                  onChange={setStatus}
+                  options={leadStatuses}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <TextField
+                  label="Potential value"
+                  value={value}
+                  onChange={setValue}
+                  type="number"
+                  placeholder="₹ 0"
+                />
+                <SelectField
+                  label="Priority"
+                  value={priority}
+                  onChange={setPriority}
+                  options={["Low", "Medium", "High"]}
+                />
+              </div>
+              <div className="grid grid-cols-1 gap-3">
+                <TextField
+                  label="Next follow-up"
+                  value={followUp}
+                  onChange={setFollowUp}
+                  placeholder="e.g. Tomorrow, 2 PM"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setMore(!more)}
+                className="h-9 px-0 text-primary"
+              >
+                {more ? "Less details" : "More details"}
+                <ChevronRight size={15} className={more ? "rotate-90" : ""} />
+              </Button>
+              {more && (
+                <Field label="Notes">
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add a note about this lead..."
+                    rows={3}
+                    className="block w-full resize-none rounded-lg border border-border bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </Field>
+              )}
+            </>
+          )}
+          {kind === "deal" && (
+            <>
+              <TextField
+                label="Deal name"
+                value={name}
+                onChange={setName}
+                placeholder="What is this deal for?"
+              />
+              <TextField
+                label="Customer"
+                value={customer}
+                onChange={setCustomer}
+                placeholder="Customer name"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <TextField
+                  label="Value"
+                  value={value}
+                  onChange={setValue}
+                  type="number"
+                  placeholder="₹ 0"
+                />
+                <SelectField
+                  label="Stage"
+                  value={status === "Contacted" || status === "Follow-up" ? "New" : status}
+                  onChange={setStatus}
+                  options={dealStages}
+                />
+              </div>
+              <TextField label="Expected close" value={date} onChange={setDate} type="date" />
+            </>
+          )}
+          {kind === "task" && (
+            <>
+              <TextField
+                label="Task title"
+                value={name}
+                onChange={setName}
+                placeholder="What needs to be done?"
+              />
+              <TextField
+                label="Customer / Lead"
+                value={customer}
+                onChange={setCustomer}
+                placeholder="Related customer"
+              />
+              <div className="grid grid-cols-2 gap-3">
+                <TextField label="Date" value={date} onChange={setDate} type="date" />
+                <TextField label="Time" value={time} onChange={setTime} type="time" />
+              </div>
+              <SelectField
+                label="Priority"
+                value={priority}
+                onChange={setPriority}
+                options={["Low", "Medium", "High"]}
+              />
+            </>
+          )}
+          <div className="sticky bottom-0 -mx-6 border-t border-border bg-card px-6 py-4">
+            <Button
+              type="submit"
+              disabled={submitting}
+              className="h-12 w-full rounded-lg font-bold"
+            >
+              {submitting
+                ? "Saving..."
+                : `Save ${kind === "lead" ? "Lead" : kind === "deal" ? "Deal" : kind === "task" ? "Task" : "Contact"}`}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 }
