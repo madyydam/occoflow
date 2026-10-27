@@ -178,9 +178,12 @@ export const customSoftwareService = {
       }
 
       return { success: true, data: mapCustomInquiry(data) };
-    } catch (err: any) {
+    } catch (err) {
       console.error("[customSoftwareService] Unexpected error:", err);
-      return { success: false, error: err?.message || "An unexpected error occurred." };
+      return {
+        success: false,
+        error: err instanceof Error ? err.message : "An unexpected error occurred.",
+      };
     }
   },
 
@@ -297,7 +300,7 @@ export const customSoftwareService = {
     adminNotes?: string,
   ): Promise<boolean> {
     try {
-      const updates: Record<string, any> = {
+      const updates: Record<string, unknown> = {
         status,
         updated_at: new Date().toISOString(),
       };

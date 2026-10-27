@@ -214,7 +214,7 @@ const mapTicket = (r: any): AdminSupportTicket => ({
   id: r.id,
   businessId: r.business_id ?? null,
   userId: r.user_id ?? null,
-  type: (r.type as any) || "problem",
+  type: (r.type as AdminSupportTicket["type"]) || "problem",
   subject: r.subject || "",
   description: r.description ?? "",
   priority: r.priority || "medium",
@@ -579,8 +579,11 @@ export const adminBusinessService = {
         await supabase.from("memberships").delete().eq("user_id", userId);
         await supabase.from("profiles").delete().eq("id", userId);
         return { success: true };
-      } catch (fallbackErr: any) {
-        return { success: false, error: fallbackErr?.message || "Failed to delete user" };
+      } catch (fallbackErr) {
+        return {
+          success: false,
+          error: fallbackErr instanceof Error ? fallbackErr.message : "Failed to delete user",
+        };
       }
     }
   },

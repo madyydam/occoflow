@@ -628,11 +628,12 @@ export const taskService = {
   async update(id: string, patch: Partial<Task>): Promise<boolean> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const p: any = {};
+    const legacyPatch = patch as Partial<Task> & { date?: string; time?: string };
     if (patch.title !== undefined) p.title = patch.title;
     if (patch.status !== undefined) p.status = patch.status;
     if (patch.priority !== undefined) p.priority = patch.priority;
-    if (patch.dueDate !== undefined || (patch as any).date !== undefined) {
-      const rawDate = patch.dueDate || (patch as any).date;
+    if (patch.dueDate !== undefined || legacyPatch.date !== undefined) {
+      const rawDate = patch.dueDate || legacyPatch.date;
       p.due_date =
         rawDate &&
         rawDate !== "Today" &&
@@ -643,8 +644,8 @@ export const taskService = {
             ? new Date().toISOString().split("T")[0]
             : null;
     }
-    if (patch.dueTime !== undefined || (patch as any).time !== undefined) {
-      p.due_time = patch.dueTime || (patch as any).time || "";
+    if (patch.dueTime !== undefined || legacyPatch.time !== undefined) {
+      p.due_time = patch.dueTime || legacyPatch.time || "";
     }
     if (patch.description !== undefined) p.description = patch.description;
     const { error } = await supabase.from("tasks").update(p).eq("id", id);
@@ -810,7 +811,7 @@ const mapFeedbackItem = (r: any): UserFeedbackItem => ({
   id: r.id,
   businessId: r.business_id,
   userId: r.user_id,
-  type: (r.type as any) || "problem",
+  type: (r.type as UserFeedbackItem["type"]) || "problem",
   subject: r.subject || "",
   description: r.description || "",
   priority: r.priority || "medium",

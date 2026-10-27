@@ -137,10 +137,13 @@ export async function handleCustomSoftwareApi(request: Request): Promise<Respons
       }),
       { status: 201, headers },
     );
-  } catch (err: any) {
+  } catch (err) {
     console.error("[CustomSoftwareApi] Internal server error:", err);
     return new Response(
-      JSON.stringify({ success: false, error: err?.message || "Internal server error." }),
+      JSON.stringify({
+        success: false,
+        error: err instanceof Error ? err.message : "Internal server error.",
+      }),
       { status: 500, headers },
     );
   }

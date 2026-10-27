@@ -86,7 +86,7 @@ export const teamService = {
           const phone = prof?.phone || "";
 
           // Calculate assigned tasks & leads
-          const assignedTasks = tasks.filter((t) => (t as any).assignedUserId === m.user_id);
+          const assignedTasks = tasks.filter((t) => t.assignedUserId === m.user_id);
           const completedTasks = assignedTasks.filter((t) => t.completed).length;
           const assignedLeads = leads.filter((l) => l.assignedUserId === m.user_id).length;
 
@@ -126,7 +126,7 @@ export const teamService = {
           try {
             const parsed = JSON.parse(act.detail || "{}");
             if (parsed && parsed.status === "invited") {
-              const assignedTasks = tasks.filter((t) => (t as any).assignedUserId === act.id);
+              const assignedTasks = tasks.filter((t) => t.assignedUserId === act.id);
               const completedTasks = assignedTasks.filter((t) => t.completed).length;
               const assignedLeads = leads.filter((l) => l.assignedUserId === act.id).length;
 

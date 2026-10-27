@@ -358,7 +358,7 @@ export function AssignTeamTaskModal({
         status: "Pending",
         completed: false,
         assignedUserId: assignedMemberId,
-      } as any);
+      } as unknown as Parameters<typeof addTask>[0]);
 
       toast.success(`Task assigned to ${assignedName}!`);
       onTaskCreated();
