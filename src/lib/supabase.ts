@@ -13,10 +13,21 @@ import type {
 } from "./crm-data";
 
 // ── Client ────────────────────────────────────────────────────────
-const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
-const supabaseUrl = env["VITE_SUPABASE_URL"] || "";
+const metaEnv = typeof import.meta !== "undefined" ? import.meta.env : undefined;
+const procEnv = typeof process !== "undefined" ? process.env : undefined;
 
-const supabaseAnonKey = env["VITE_SUPABASE_ANON_KEY"] || env["VITE_SUPABASE_PUBLISHABLE_KEY"] || "";
+const supabaseUrl =
+  metaEnv?.["VITE_SUPABASE_URL"] ||
+  procEnv?.["VITE_SUPABASE_URL"] ||
+  procEnv?.["SUPABASE_URL"] ||
+  "";
+
+const supabaseAnonKey =
+  metaEnv?.["VITE_SUPABASE_ANON_KEY"] ||
+  metaEnv?.["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
+  procEnv?.["VITE_SUPABASE_ANON_KEY"] ||
+  procEnv?.["SUPABASE_PUBLISHABLE_KEY"] ||
+  "";
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn(
