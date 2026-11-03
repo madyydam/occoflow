@@ -13,7 +13,11 @@ function getSupabaseAdmin(cfEnv: CfEnv = {}) {
     cfEnv["SUPABASE_URL"] || process.env["SUPABASE_URL"] || env["VITE_SUPABASE_URL"] || "";
 
   const supabaseSecretKey =
-    cfEnv["SUPABASE_SECRET_KEY"] || process.env["SUPABASE_SECRET_KEY"] || "";
+    cfEnv["SUPABASE_SECRET_KEY"] ||
+    cfEnv["SUPABASE_SERVICE_ROLE_KEY"] ||
+    process.env["SUPABASE_SECRET_KEY"] ||
+    process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
+    "";
 
   return createClient(
     supabaseUrl || "https://placeholder.supabase.co",

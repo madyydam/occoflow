@@ -12,7 +12,12 @@ interface CfEnv {
 // ── Supabase admin client factory (created per-request with CF env) ─
 function makeSupabaseAdmin(cfEnv: CfEnv) {
   const url = cfEnv["SUPABASE_URL"] || process.env["SUPABASE_URL"] || "";
-  const secret = cfEnv["SUPABASE_SECRET_KEY"] || process.env["SUPABASE_SECRET_KEY"] || "";
+  const secret =
+    cfEnv["SUPABASE_SECRET_KEY"] ||
+    cfEnv["SUPABASE_SERVICE_ROLE_KEY"] ||
+    process.env["SUPABASE_SECRET_KEY"] ||
+    process.env["SUPABASE_SERVICE_ROLE_KEY"] ||
+    "";
   return createClient(url || "https://placeholder.supabase.co", secret || "dummy_secret_key", {
     auth: { persistSession: false, autoRefreshToken: false },
   });

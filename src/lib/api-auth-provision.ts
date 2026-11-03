@@ -3,7 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env || {};
 const supabaseUrl = env["VITE_SUPABASE_URL"] || process.env["SUPABASE_URL"] || "";
 
-const supabaseSecretKey = process.env["SUPABASE_SECRET_KEY"] || "";
+const supabaseSecretKey =
+  process.env["SUPABASE_SECRET_KEY"] || process.env["SUPABASE_SERVICE_ROLE_KEY"] || "";
 
 // Server-side service-role client that bypasses RLS safely
 const supabaseAdmin = createClient(
